@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 MidiServer="*res://midi/MidiServer.cs"
+MidiRecorder="*res://midi/recorder/MidiRecorder.cs"
 MidiScheduler="*res://midi/scheduler/MidiScheduler.cs"
 
 [dotnet]

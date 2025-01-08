@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Godot;
+using thesis.midi.recorder;
+using thesis.midi.scheduler.component;
+using static thesis.midi.MidiServer.OutputName;
 
 namespace thesis.midi.scheduler;
 
 public partial class MidiScheduler : Node
 {
-	public record struct NoteData(double RelativeTime, double Length, int Note, int Velocity);
+	public static MidiScheduler Instance;
+	
+	public record struct NoteData(double Time, double Length, int Note, int Velocity);
 
 	public class MeasureData
 	{
@@ -36,9 +41,12 @@ public partial class MidiScheduler : Node
 	
 	public override void _Ready()
 	{
+		Instance = this;
+		
 		BPM = 150;
 
-		Components.Add(new MetronomeMidiSchedulerComponent(this));
+		Components.Add(new MetronomeMidiSchedulerComponent { Scheduler = this, Recorder = MidiRecorder.Instance });
+		Components.Add(new RepeaterMidiSchedulerComponent { Scheduler = this, Recorder = MidiRecorder.Instance });
 
 		Start();
 	}
@@ -74,8 +82,12 @@ public partial class MidiScheduler : Node
 		// Call components every measure
 		var currentMeasure = (int)Math.Truncate(newCurrentTime);
 		if ((int)Math.Truncate(CurrentTime) != currentMeasure)
+		{
+			MidiRecorder.Instance.FillMeasures(currentMeasure);
+			
 			foreach (var component in Components)
 				component.HandleMeasure(currentMeasure);
+		}
 		
 		// Update current time
 		CurrentTime = newCurrentTime;
@@ -83,27 +95,28 @@ public partial class MidiScheduler : Node
 		// Play notes when needed
 		lock (NoteQueue)
 			while (NoteQueue.TryPeek(out _, out var time) && time < CurrentTime)
-				PlayNote(NoteQueue.Dequeue());
+				MidiServer.Instance.Send(Algorithm, NoteQueue.Dequeue());
 	}
 
-	public void PlayNote(NoteData note)
-	{
-		MidiServer.Instance.Send(MidiServer.OutputName.Algorithm, note);
-	}
-	
 	public void AddMeasure(int measure, MeasureData data)
 	{
 		lock (NoteQueue)
 		{
-			
 			foreach (var note in data.Notes)
 			{
-				NoteQueue.Enqueue(note, note.RelativeTime + measure);
+				NoteQueue.Enqueue(note, note.Time + measure);
 
+				// if (note.Note != 70)
+				// 	GD.Print(note);
+				
 				// Add note off
+				if (note.Length == 0.0) continue;
 				if (note.Velocity <= 0) continue;
-				var noteOffTime = note.RelativeTime + note.Length;
+				var noteOffTime = note.Time + note.Length;
 				NoteQueue.Enqueue(new NoteData(noteOffTime, 0, note.Note, 0), noteOffTime + measure);
+				
+				// if (note.Note != 70)
+				// 	GD.Print("Add off!");
 			}
 		}
 	}
