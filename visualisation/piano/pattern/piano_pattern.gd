@@ -7,12 +7,12 @@ extends Node2D
 
 @onready var scene := get_parent()
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if wrap_octave:
-		var held_pattern: String = MidiPerformanceServer.GetHeldPattern()
+		var held_pattern: String = get_parent().GetHeldPattern()
 		
 		for child: PianoKey in get_children():
 			child.update_pressed(held_pattern[child.index % 12] == "1")
 	else:
 		for child: PianoKey in get_children():
-			child.update_pressed(MidiPerformanceServer.Keys[child.index])
+			child.update_pressed(get_parent().Keys[child.index])

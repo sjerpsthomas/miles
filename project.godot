@@ -17,7 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-MidiPerformanceServer="*res://midi/MidiPerformanceServer.cs"
+MidiServer="*res://midi/MidiServer.cs"
+MidiScheduler="*res://midi/scheduler/MidiScheduler.cs"
 
 [dotnet]
 

@@ -1,12 +1,9 @@
 extends Sprite2D
 
 
-@onready var scene := get_parent()
-
-
 # -
 func _process(delta: float) -> void:
-	var held_pattern: String = MidiPerformanceServer.GetHeldPattern()
+	var held_pattern: String = get_parent().GetHeldPattern()
 	
 	match held_pattern:
 		"100001010000": position.x += 128 * delta

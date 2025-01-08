@@ -21,9 +21,9 @@ func _process(_delta: float) -> void:
 	var new_clicked := Input.is_action_pressed("click") and entered
 	
 	if not clicked and new_clicked:
-		MidiPerformanceServer.Send(output, index + 36, 100)
+		MidiServer.Send(1, index + 36, 100)
 	elif clicked and not new_clicked:
-		MidiPerformanceServer.Send(output, index + 36, 0)
+		MidiServer.Send(1, index + 36, 0)
 	
 	clicked = new_clicked
 
