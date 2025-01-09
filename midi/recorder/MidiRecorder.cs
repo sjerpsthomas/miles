@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Godot;
 using MeasureData = thesis.midi.scheduler.MidiScheduler.MeasureData;
 using OutputName = thesis.midi.MidiServer.OutputName;
@@ -25,6 +27,34 @@ public partial class MidiRecorder : Node
 		while (Measures.Count < newMeasureCount)
 			Measures.Add(new MeasureData());
 	}
+
+	public void ProcessPendingNote(NoteData pendingNote, double endTime)
+	{
+		// Find measure of pending note, create empty measure(s)
+		var measureNum = (int)Math.Truncate(pendingNote.Time);
+		FillMeasures(measureNum + 1);
+
+		// Change length and time of pending note
+		pendingNote.Length = endTime - pendingNote.Time;
+		pendingNote.Time -= measureNum;
+			
+		// Add pending note to measure
+		var measure = Measures[measureNum];
+		measure.Notes.Add(pendingNote);
+	}
+	
+	public void CutOff(int newMeasureCount)
+	{
+		// Process all pending notes
+		foreach (var pendingNote in PendingNotes)
+			ProcessPendingNote(pendingNote, newMeasureCount);
+		PendingNotes.Clear();
+        
+		// Fill measures
+		FillMeasures(newMeasureCount);
+	}
+
+	public List<NoteData> PendingNotes = new();
 	
 	public void OnMidiServerNoteSent(OutputName outputName, NoteData noteData)
 	{
@@ -32,30 +62,21 @@ public partial class MidiRecorder : Node
 		
 		if (noteData.Velocity > 0)
 		{
-			var measure = (int)Math.Truncate(noteData.Time);
-			
-			// Create new measures
-			FillMeasures(measure + 1);
-			
-			// Populate the last measure
-			var lastMeasure = Measures[^1];
+			// Assert no pending notes exist
+			var pendingNoteIndex = PendingNotes.FindLastIndex(note => note.Note == noteData.Note);
+			Debug.Assert(pendingNoteIndex == -1);
 
-			noteData.Time -= measure;
-			lastMeasure.Notes.Add(noteData);
+			PendingNotes.Add(noteData);
 		}
 		else
 		{
-			// Find corresponding 'on' note
-			var lastMeasure = Measures.Count - 1;
-			var lastPlayedMeasure = Measures[lastMeasure];
-			var lastNoteIndex = lastPlayedMeasure.Notes.FindLastIndex(note => note.Note == noteData.Note && note.Length == 0.0);
-
-			if (lastNoteIndex == -1) return;
-			var lastNote = lastPlayedMeasure.Notes[lastNoteIndex];
-
-			lastNote.Length = (noteData.Time) - (lastNote.Time + lastMeasure);
-
-			lastPlayedMeasure.Notes[lastNoteIndex] = lastNote;
+			// Find pending note, return if none found
+			var findPendingNotes = PendingNotes.FindAll(note => note.Note == noteData.Note);
+			if (findPendingNotes is not [var pendingNote]) return;
+			
+			PendingNotes.Remove(pendingNote);
+			
+			ProcessPendingNote(pendingNote, noteData.Time);
 		}
 	}
 }

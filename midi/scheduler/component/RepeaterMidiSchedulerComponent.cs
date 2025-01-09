@@ -8,8 +8,7 @@ public class RepeaterMidiSchedulerComponent : MidiSchedulerComponent
     {
         if ((currentMeasure + 2) % 4 == 0)
         {
-            GD.Print(Scheduler);
-            GD.Print(Recorder);
+            Recorder.CutOff(currentMeasure);
             
             Scheduler.AddMeasure(measure: currentMeasure, Recorder.Measures[^2]);
             Scheduler.AddMeasure(measure: currentMeasure + 1, Recorder.Measures[^1]);

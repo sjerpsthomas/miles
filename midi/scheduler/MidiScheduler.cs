@@ -83,8 +83,6 @@ public partial class MidiScheduler : Node
 		var currentMeasure = (int)Math.Truncate(newCurrentTime);
 		if ((int)Math.Truncate(CurrentTime) != currentMeasure)
 		{
-			MidiRecorder.Instance.FillMeasures(currentMeasure);
-			
 			foreach (var component in Components)
 				component.HandleMeasure(currentMeasure);
 		}
@@ -114,9 +112,6 @@ public partial class MidiScheduler : Node
 				if (note.Velocity <= 0) continue;
 				var noteOffTime = note.Time + note.Length;
 				NoteQueue.Enqueue(new NoteData(noteOffTime, 0, note.Note, 0), noteOffTime + measure);
-				
-				// if (note.Note != 70)
-				// 	GD.Print("Add off!");
 			}
 		}
 	}
