@@ -15,14 +15,9 @@ public partial class MidiScheduler : Node
 	
 	public record struct NoteData(double Time, double Length, int Note, int Velocity);
 
-	public class MeasureData
+	public class MeasureData(params NoteData[] notes)
 	{
-		public List<NoteData> Notes;
-
-		public MeasureData(params NoteData[] notes)
-		{
-			Notes = notes.ToList();
-		}
+		public List<NoteData> Notes = notes.ToList();
 	}
 	
 	// ReSharper disable once InconsistentNaming
@@ -45,9 +40,23 @@ public partial class MidiScheduler : Node
 		
 		BPM = 150;
 
-		Components.Add(new MetronomeMidiSchedulerComponent { Scheduler = this, Recorder = MidiRecorder.Instance });
-		Components.Add(new RepeaterMidiSchedulerComponent { Scheduler = this, Recorder = MidiRecorder.Instance });
-
+		Components.Add(new MetronomeMidiSchedulerComponent
+		{
+			Scheduler = this,
+			Recorder = MidiRecorder.Instance
+		});
+		Components.Add(new RepeaterMidiSchedulerComponent
+		{
+			Scheduler = this,
+			Recorder = MidiRecorder.Instance
+		});
+		Components.Add(new FileMidiSchedulerComponent
+		{
+			Scheduler = this,
+			Recorder = MidiRecorder.Instance,
+			FileName = "res://midi/files/turkish_march.mid"
+		});
+        
 		Start();
 	}
 
