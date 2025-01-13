@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Godot;
+using thesis.midi.core;
 using thesis.midi.recorder;
 using thesis.midi.scheduler.component;
 using static thesis.midi.MidiServer.OutputName;
@@ -12,14 +12,7 @@ namespace thesis.midi.scheduler;
 public partial class MidiScheduler : Node
 {
 	public static MidiScheduler Instance;
-	
-	public record struct NoteData(double Time, double Length, int Note, int Velocity);
 
-	public class MeasureData(params NoteData[] notes)
-	{
-		public List<NoteData> Notes = notes.ToList();
-	}
-	
 	// ReSharper disable once InconsistentNaming
 	public double BPM;
 
@@ -27,7 +20,7 @@ public partial class MidiScheduler : Node
 	// Fractional part: part within measure
 	public double CurrentTime = -1.0;
 	
-	public PriorityQueue<NoteData, double> NoteQueue = new();
+	public PriorityQueue<MidiNote, double> NoteQueue = new();
 
 	public DateTime StartDateTime;
 	public bool Enabled;
@@ -105,23 +98,29 @@ public partial class MidiScheduler : Node
 				MidiServer.Instance.Send(Algorithm, NoteQueue.Dequeue());
 	}
 
-	public void AddMeasure(int measure, MeasureData data)
+	public void AddMeasure(int measureNum, MidiMeasure measure)
 	{
 		lock (NoteQueue)
 		{
-			foreach (var note in data.Notes)
+			foreach (var note in measure.Notes)
 			{
-				NoteQueue.Enqueue(note, note.Time + measure);
+				NoteQueue.Enqueue(note, note.Time + measureNum);
 
-				// if (note.Note != 70)
-				// 	GD.Print(note);
-				
 				// Add note off
 				if (note.Length == 0.0) continue;
 				if (note.Velocity <= 0) continue;
 				var noteOffTime = note.Time + note.Length;
-				NoteQueue.Enqueue(new NoteData(noteOffTime, 0, note.Note, 0), noteOffTime + measure);
+				NoteQueue.Enqueue(new MidiNote(noteOffTime, 0, note.Note, 0), noteOffTime + measureNum);
 			}
+		}
+	}
+
+	public void AddSong(int startMeasureNum, MidiSong song)
+	{
+		lock (NoteQueue)
+		{
+			for (var index = 0; index < song.Measures.Count; index++)
+				AddMeasure(startMeasureNum + index, song.Measures[index]);
 		}
 	}
 }

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using Godot;
 using NAudio.Midi;
+using thesis.midi.core;
 using thesis.util;
-
-using MeasureData = thesis.midi.scheduler.MidiScheduler.MeasureData;
-using NoteData = thesis.midi.scheduler.MidiScheduler.NoteData;
 
 namespace thesis.midi.scheduler.component;
 
@@ -19,14 +17,13 @@ public class FileMidiSchedulerComponent : MidiSchedulerComponent
         if (currentMeasure != 0) return;
         
         // Add all measures from file
-        var measures = FileToMeasures();
-        for (var index = 0; index < measures.Count; index++)
-            Scheduler.AddMeasure(index, measures[index]);
+        var song = FileToSong();
+        Scheduler.AddSong(0, song);
     }
 
-    private List<MeasureData> FileToMeasures()
+    private MidiSong FileToSong()
     {
-        List<MeasureData> measures = [];
+        var song = new MidiSong([]);
         
         var mf = new MidiFile(
             new FileAccessStream(FileName, FileAccess.ModeFlags.Read),
@@ -41,26 +38,22 @@ public class FileMidiSchedulerComponent : MidiSchedulerComponent
                 if (midiEvent is not NoteOnEvent noteOnEvent) continue;
                 
                 // Compute time and length
-                var time = ConvertTime(noteOnEvent.AbsoluteTime, mf.DeltaTicksPerQuarterNote);
-                var length = ConvertTime(noteOnEvent.NoteLength, mf.DeltaTicksPerQuarterNote);
+                var time = (double)noteOnEvent.AbsoluteTime / (mf.DeltaTicksPerQuarterNote * 4);
+                var length = (double)noteOnEvent.NoteLength / (mf.DeltaTicksPerQuarterNote * 4);
 
                 // Add necessary empty measures
                 var measureNum = (int)Math.Truncate(time);
-                while (measures.Count <= measureNum)
-                    measures.Add(new MeasureData());
+                song.Fill(measureNum + 1);
 
                 // Create new note
-                var note = new NoteData(time - measureNum, length, noteOnEvent.NoteNumber, noteOnEvent.Velocity);
+                var note = new MidiNote(time - measureNum, length, noteOnEvent.NoteNumber, noteOnEvent.Velocity);
                 
                 // Add note to measure
-                var measure = measures[measureNum];
+                var measure = song.Measures[measureNum];
                 measure.Notes.Add(note);
             }
         }
 
-        return measures;
+        return song;
     }
-
-    private double ConvertTime(long eventTime, int ticksPerQuarterNote) =>
-        (double)eventTime / (ticksPerQuarterNote * 4);
 }

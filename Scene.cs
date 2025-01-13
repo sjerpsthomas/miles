@@ -1,11 +1,12 @@
 using Godot;
 using Godot.Collections;
 using thesis.midi;
+using thesis.midi.core;
+using thesis.midi.scheduler;
 
 namespace thesis;
 
 using OutputName = MidiServer.OutputName;
-using NoteData = midi.scheduler.MidiScheduler.NoteData;
 
 public partial class Scene : Node2D
 {
@@ -25,7 +26,7 @@ public partial class Scene : Node2D
 		MidiServer.Instance.NoteSent += OnMidiServerNoteSent;
 	}
 
-	public void OnMidiServerNoteSent(OutputName outputName, NoteData noteData)
+	public void OnMidiServerNoteSent(OutputName outputName, MidiNote noteData)
 	{
 		var note = noteData.Note;
 		var pressed = noteData.Velocity > 0;

@@ -2,19 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Godot;
-using MeasureData = thesis.midi.scheduler.MidiScheduler.MeasureData;
+using thesis.midi.core;
 using OutputName = thesis.midi.MidiServer.OutputName;
-using NoteData = thesis.midi.scheduler.MidiScheduler.NoteData;
 
 namespace thesis.midi.recorder;
 
 public partial class MidiRecorder : Node
 {
 	public static MidiRecorder Instance;
+
+	public MidiSong Song = new([]);
 	
-	public List<MeasureData> Measures = [];
-	
-	public List<NoteData> PendingNotes = [];
+	public List<MidiNote> PendingNotes = [];
 	
 	public override void _Ready()
 	{
@@ -23,18 +22,11 @@ public partial class MidiRecorder : Node
 		MidiServer.Instance.NoteSent += OnMidiServerNoteSent;
 	}
 
-	public void FillMeasures(int newMeasureCount)
-	{
-		// Create new measures until count is reached
-		while (Measures.Count <= newMeasureCount)
-			Measures.Add(new MeasureData());
-	}
-
-	public void ProcessPendingNote(NoteData pendingNote, double endTime)
+	public void ProcessPendingNote(MidiNote pendingNote, double endTime)
 	{
 		// Find measure of pending note, create empty measure(s)
 		var measureNum = (int)Math.Truncate(pendingNote.Time);
-		FillMeasures(measureNum);
+		Song.Fill(measureNum + 1);
 
 		// Change length and time of pending note
 		Debug.Assert(endTime >= pendingNote.Time);
@@ -42,7 +34,7 @@ public partial class MidiRecorder : Node
 		pendingNote.Time -= measureNum;
 			
 		// Add pending note to measure
-		var measure = Measures[measureNum];
+		var measure = Song.Measures[measureNum];
 		measure.Notes.Add(pendingNote);
 	}
 	
@@ -54,33 +46,33 @@ public partial class MidiRecorder : Node
 		PendingNotes.Clear();
         
 		// Fill measures
-		FillMeasures(newMeasureCount - 1);
+		Song.Fill(newMeasureCount);
 	}
 
-	public void OnMidiServerNoteSent(OutputName outputName, NoteData noteData)
+	public void OnMidiServerNoteSent(OutputName outputName, MidiNote midiNote)
 	{
 		if (outputName != OutputName.Loopback) return;
 		
-		if (noteData.Velocity > 0)
+		if (midiNote.Velocity > 0)
 		{
 			// Assert no similar pending notes exist
-			var pendingNoteIndex = PendingNotes.FindLastIndex(note => note.Note == noteData.Note);
+			var pendingNoteIndex = PendingNotes.FindLastIndex(note => note.Note == midiNote.Note);
 			Debug.Assert(pendingNoteIndex == -1);
 
 			// Add note to pending list
-			PendingNotes.Add(noteData);
+			PendingNotes.Add(midiNote);
 		}
 		else
 		{
 			// Find pending note, return if none found
-			var findPendingNotes = PendingNotes.FindAll(note => note.Note == noteData.Note);
+			var findPendingNotes = PendingNotes.FindAll(note => note.Note == midiNote.Note);
 			if (findPendingNotes is not [var pendingNote]) return;
 			
 			// Remove note from pending list
 			PendingNotes.Remove(pendingNote);
 			
 			// Add pending note to corresponding measure
-			ProcessPendingNote(pendingNote, noteData.Time);
+			ProcessPendingNote(pendingNote, midiNote.Time);
 		}
 	}
 }

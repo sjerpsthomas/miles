@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Godot;
 using NAudio.Midi;
+using thesis.midi.core;
 using thesis.midi.scheduler;
 using static thesis.midi.scheduler.MidiScheduler;
 
@@ -21,7 +22,7 @@ public partial class MidiServer : Node
 
     public Dictionary<OutputName, MidiOut> Outputs;
 
-    public delegate void NoteSentHandler(OutputName outputName, NoteData note);
+    public delegate void NoteSentHandler(OutputName outputName, MidiNote note);
 
     public event NoteSentHandler NoteSent;
     
@@ -48,7 +49,7 @@ public partial class MidiServer : Node
         };
     }
 
-    public void Send(OutputName outputName, NoteData note)
+    public void Send(OutputName outputName, MidiNote note)
     {
         var noteEvent = new NoteOnEvent(0, 1, note.Note, note.Velocity, 0);
         Outputs[outputName].Send(noteEvent.GetAsShortMessage());
@@ -57,7 +58,7 @@ public partial class MidiServer : Node
     }
     
     public void Send(OutputName outputName, int note, int velocity) =>
-        Send(outputName, new NoteData(MidiScheduler.Instance.CurrentTime, 0.0, note, velocity));
+        Send(outputName, new MidiNote(MidiScheduler.Instance.CurrentTime, 0.0, note, velocity));
     
     private MidiOut FindMidiOut(string name)
     {
