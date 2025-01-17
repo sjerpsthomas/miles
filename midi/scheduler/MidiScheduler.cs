@@ -5,7 +5,11 @@ using Godot;
 using thesis.midi.core;
 using thesis.midi.recorder;
 using thesis.midi.scheduler.component;
-using static thesis.midi.MidiServer.OutputName;
+using thesis.midi.scheduler.component.solo;
+using static thesis.midi.core.SongInfo;
+using static thesis.midi.core.SongInfo.ChordType;
+using static thesis.midi.core.SongInfo.Key;
+using static thesis.midi.core.SongInfo.SoloType;
 
 namespace thesis.midi.scheduler;
 
@@ -31,25 +35,65 @@ public partial class MidiScheduler : Node
 	{
 		Instance = this;
 		
-		BPM = 150;
-
-		Components.Add(new MetronomeMidiSchedulerComponent
-		{
-			Scheduler = this,
-			Recorder = MidiRecorder.Instance
-		});
-		Components.Add(new RepeaterMidiSchedulerComponent
-		{
-			Scheduler = this,
-			Recorder = MidiRecorder.Instance
-		});
+		BPM = 169;
+		
 		Components.Add(new FileMidiSchedulerComponent
 		{
 			Scheduler = this,
 			Recorder = MidiRecorder.Instance,
-			FileName = "res://midi/files/turkish_march.mid"
+			FileName = "res://midi/files/anotheryou_BACK.mid"
 		});
-        
+
+		// TODO read from file
+		var songInfo = new SongInfo([
+			new MeasureInfo(Eb, Major, Learner),
+			new MeasureInfo(Eb, Major, Learner),
+			new MeasureInfo(D, HalfDim7, Learner),
+			new MeasureInfo(G, Dominant, Learner),
+
+			new MeasureInfo(C, Minor, Algorithm),
+			new MeasureInfo(C, Minor, Algorithm),
+			new MeasureInfo(Bb, Minor, Algorithm),
+			new MeasureInfo(Eb, Dominant, Algorithm),
+
+			new MeasureInfo(Ab, Major, Learner),
+			new MeasureInfo(Db, Dominant, Learner),
+			new MeasureInfo(Eb, Major, Learner),
+			new MeasureInfo(C, Minor, Learner),
+
+			new MeasureInfo(F, Dominant, Algorithm),
+			new MeasureInfo(F, Dominant, Algorithm),
+			new MeasureInfo(F, Minor, Algorithm),
+			new MeasureInfo(Bb, Dominant, Algorithm),
+
+			new MeasureInfo(Eb, Major, Learner),
+			new MeasureInfo(Eb, Major, Learner),
+			new MeasureInfo(D, HalfDim7, Learner),
+			new MeasureInfo(G, Dominant, Learner),
+
+			new MeasureInfo(C, Minor, Algorithm),
+			new MeasureInfo(C, Minor, Algorithm),
+			new MeasureInfo(Bb, Minor, Algorithm),
+			new MeasureInfo(Eb, Dominant, Algorithm),
+
+			new MeasureInfo(Ab, Major, Learner),
+			new MeasureInfo(Db, Dominant, Learner),
+			new MeasureInfo(Eb, Major, Learner),
+			new MeasureInfo(D, Major, Learner),
+
+			new MeasureInfo(Eb, Major, Algorithm),
+			new MeasureInfo(C, Dominant, Algorithm),
+			new MeasureInfo(F, Minor, Algorithm),
+			new MeasureInfo(Eb, Major, Algorithm),
+		]);
+
+		Components.Add(
+			new SoloMidiSchedulerComponent(songInfo, MidiSong.FromFile("res://midi/files/anotheryou_SOLO.mid"))
+			{
+				Scheduler = this,
+				Recorder = MidiRecorder.Instance,
+			});
+		
 		Start();
 	}
 
@@ -95,7 +139,7 @@ public partial class MidiScheduler : Node
 		// Play notes when needed
 		lock (NoteQueue)
 			while (NoteQueue.TryPeek(out _, out var time) && time < CurrentTime)
-				MidiServer.Instance.Send(Algorithm, NoteQueue.Dequeue());
+				MidiServer.Instance.Send(NoteQueue.Dequeue());
 	}
 
 	public void AddMeasure(int measureNum, MidiMeasure measure)
@@ -110,7 +154,7 @@ public partial class MidiScheduler : Node
 				if (note.Length == 0.0) continue;
 				if (note.Velocity <= 0) continue;
 				var noteOffTime = note.Time + note.Length;
-				NoteQueue.Enqueue(new MidiNote(noteOffTime, 0, note.Note, 0), noteOffTime + measureNum);
+				NoteQueue.Enqueue(new MidiNote(note.OutputName, noteOffTime, 0, note.Note, 0), noteOffTime + measureNum);
 			}
 		}
 	}

@@ -1,3 +1,3 @@
 ﻿namespace thesis.midi.core;
 
-public record struct MidiNote(double Time, double Length, int Note, int Velocity);
+public record struct MidiNote(MidiServer.OutputName OutputName, double Time, double Length, int Note, int Velocity);

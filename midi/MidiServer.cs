@@ -18,6 +18,11 @@ public partial class MidiServer : Node
     {
         Loopback = 0,
         Algorithm,
+        Metronome,
+        Backing1Bass,
+        Backing2Piano,
+        Backing3Guitar,
+        Backing4Drums,
     }
 
     public Dictionary<OutputName, MidiOut> Outputs;
@@ -36,7 +41,12 @@ public partial class MidiServer : Node
         Outputs = new()
         {
             [OutputName.Loopback] = FindMidiOut("Learner"), // TODO rename
-            [OutputName.Algorithm] = FindMidiOut("Algorithm")
+            [OutputName.Algorithm] = FindMidiOut("Algorithm"),
+            [OutputName.Metronome] = FindMidiOut("Metronome"),
+            [OutputName.Backing1Bass] = FindMidiOut("Backing 1 - Bass"),
+            [OutputName.Backing2Piano] = FindMidiOut("Backing 2 - Piano"),
+            [OutputName.Backing3Guitar] = FindMidiOut("Backing 3 - Guitar"),
+            [OutputName.Backing4Drums] = FindMidiOut("Backing 4 - Drums"),
         };
 
         GD.Print("[MIDI] Setup successful!");
@@ -49,16 +59,16 @@ public partial class MidiServer : Node
         };
     }
 
-    public void Send(OutputName outputName, MidiNote note)
+    public void Send(MidiNote note)
     {
         var noteEvent = new NoteOnEvent(0, 1, note.Note, note.Velocity, 0);
-        Outputs[outputName].Send(noteEvent.GetAsShortMessage());
+        Outputs[note.OutputName].Send(noteEvent.GetAsShortMessage());
 
-        NoteSent!(outputName, note);
+        NoteSent!(note.OutputName, note);
     }
     
     public void Send(OutputName outputName, int note, int velocity) =>
-        Send(outputName, new MidiNote(MidiScheduler.Instance.CurrentTime, 0.0, note, velocity));
+        Send(new MidiNote(outputName, MidiScheduler.Instance.CurrentTime, 0.0, note, velocity));
     
     private MidiOut FindMidiOut(string name)
     {
