@@ -1,0 +1,81 @@
+[gd_scene load_steps=3 format=3 uid="uid://65keuotl25i5"]
+
+[ext_resource type="Script" path="res://screen/_standard_editor/chord_edit/chord_edit.gd" id="1_5hpyi"]
+[ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="1_8ekii"]
+
+[node name="ChordEdit" type="Panel"]
+offset_right = 392.0
+offset_bottom = 96.0
+script = ExtResource("1_5hpyi")
+
+[node name="KeyOptionButton" type="OptionButton" parent="."]
+layout_mode = 2
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 144.0
+offset_bottom = 80.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("1_8ekii")
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+item_count = 12
+popup/item_0/text = "C"
+popup/item_1/text = "Db"
+popup/item_1/id = 1
+popup/item_2/text = "D"
+popup/item_2/id = 2
+popup/item_3/text = "Eb"
+popup/item_3/id = 3
+popup/item_4/text = "E"
+popup/item_4/id = 4
+popup/item_5/text = "F"
+popup/item_5/id = 5
+popup/item_6/text = "Gb"
+popup/item_6/id = 6
+popup/item_7/text = "G"
+popup/item_7/id = 7
+popup/item_8/text = "Ab"
+popup/item_8/id = 8
+popup/item_9/text = "A"
+popup/item_9/id = 9
+popup/item_10/text = "Bb"
+popup/item_10/id = 10
+popup/item_11/text = "B"
+popup/item_11/id = 11
+
+[node name="TypeOptionButton" type="OptionButton" parent="."]
+layout_mode = 2
+offset_left = 160.0
+offset_top = 16.0
+offset_right = 288.0
+offset_bottom = 80.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("1_8ekii")
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+item_count = 4
+popup/item_0/text = "Major"
+popup/item_1/text = "Dominant"
+popup/item_1/id = 1
+popup/item_2/text = "Minor"
+popup/item_2/id = 2
+popup/item_3/text = "HalfDim7"
+popup/item_3/id = 3
+
+[node name="DeleteButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 312.0
+offset_top = 16.0
+offset_right = 376.0
+offset_bottom = 80.0
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.31085, 0.246696, 1)
+theme_override_fonts/font = ExtResource("1_8ekii")
+theme_override_font_sizes/font_size = 30
+text = "Delete"
+
+[connection signal="item_selected" from="KeyOptionButton" to="." method="_on_key_option_button_item_selected"]
+[connection signal="item_selected" from="TypeOptionButton" to="." method="_on_type_option_button_item_selected"]
+[connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]

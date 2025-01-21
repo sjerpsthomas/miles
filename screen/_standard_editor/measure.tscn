@@ -1,8 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://ck5k24lvwxhxq"]
+[gd_scene load_steps=3 format=3 uid="uid://ck5k24lvwxhxq"]
 
 [ext_resource type="Script" path="res://screen/_standard_editor/measure.gd" id="1_7tgc7"]
 
-[node name="Measure" type="Container"]
-offset_right = 128.0
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mdo4x"]
+
+[node name="Measure" type="Panel"]
+offset_right = 192.0
 offset_bottom = 64.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_mdo4x")
 script = ExtResource("1_7tgc7")
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]

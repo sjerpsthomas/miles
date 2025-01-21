@@ -7,8 +7,9 @@
 bg_color = Color(1, 1, 1, 1)
 
 [node name="StandardView" type="Panel"]
-offset_right = 512.0
-offset_bottom = 572.0
+custom_minimum_size = Vector2(768, 265)
+offset_right = 768.0
+offset_bottom = 265.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_3s4bp")
 script = ExtResource("1_lemjx")
 
@@ -40,17 +41,17 @@ use_parent_material = false
 clip_contents = false
 custom_minimum_size = Vector2(0, 0)
 layout_direction = 0
-layout_mode = 0
-anchors_preset = 0
+layout_mode = 1
+anchors_preset = 10
 anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 0.0
+anchor_right = 1.0
 anchor_bottom = 0.0
 offset_left = 0.0
 offset_top = 0.0
-offset_right = 512.0
-offset_bottom = 64.0
-grow_horizontal = 1
+offset_right = 0.0
+offset_bottom = 48.0
+grow_horizontal = 2
 grow_vertical = 1
 rotation = 0.0
 scale = Vector2(1, 1)
@@ -99,3 +100,11 @@ language = ""
 structured_text_bidi_override = 0
 structured_text_bidi_override_options = []
 script = null
+
+[node name="Measures" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

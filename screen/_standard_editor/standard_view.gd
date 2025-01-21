@@ -1,13 +1,41 @@
 extends Panel
 
 
-func load_sheet(standard_name: String) -> void:
+var standard_name: String
+
+var data
+
+signal measure_clicked(measure_num: int)
+
+
+func load_sheet(new_standard_name: String) -> void:
+	standard_name = new_standard_name
 	$Label.text = standard_name
 	
 	var file_name := "user://saves/" + standard_name + "/sheet.json"
 	var file := FileAccess.open(file_name, FileAccess.READ)
 	
-	var data = JSON.parse_string(file.get_as_text())
+	data = JSON.parse_string(file.get_as_text())
+	
+	file.close()
+	
+	refresh()
+
+
+func save_sheet() -> void:
+	var file_name := "user://saves/" + standard_name + "/sheet.json"
+	var file := FileAccess.open(file_name, FileAccess.WRITE)
+	
+	var text = JSON.stringify(data)
+	
+	file.store_string(text)
+	
+	file.close()
+
+
+func refresh() -> void:
+	for measure in $Measures.get_children():
+		measure.queue_free()
 	
 	var position_index := 0
 	var pickup_measure_count: int = data["PickupMeasureCount"]
@@ -26,13 +54,21 @@ func load_sheet(standard_name: String) -> void:
 			chords.push_back(new_chord)
 		
 		var measure = preload("res://screen/_standard_editor/measure.tscn").instantiate()
-		add_child(measure)
+		$Measures.add_child(measure)
 		
-		measure.position.x = 128 * (position_index % 4)
+		measure.position.x = 192 * (position_index % 4)
 		measure.position.y = 64 * (position_index / 4) + 64
 		
-		measure.add_chords(chords, i < pickup_measure_count)
+		measure.is_pickup_measure = i < pickup_measure_count
+		measure.initialize(chords)
+		
+		measure.clicked.connect(_on_measure_clicked.bind(i))
 		
 		position_index += 1
 	
 	size.y = 64 * (position_index / 4) + 64
+	custom_minimum_size.y = size.y
+
+
+func _on_measure_clicked(measure_num: int) -> void:
+	measure_clicked.emit(measure_num)

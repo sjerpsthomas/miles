@@ -1,5 +1,5 @@
 class_name StandardEditorMeasure
-extends Container
+extends Panel
 
 
 enum KeyEnum { C = 0, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B }
@@ -26,18 +26,20 @@ class Chord:
 		
 		return KeyEnum.find_key(key) + type_str
 
-var chords: Array[Chord]
 
-func add_chords(new_chords: Array[Chord], is_pickup_measure: bool) -> void:
-	chords = new_chords
-	
-	var chord_width := size.x / chords.size()
+var is_pickup_measure := false
+
+signal clicked
+
+
+func initialize(new_chords: Array[Chord]) -> void:
+	var chord_width := size.x / new_chords.size()
 	
 	if is_pickup_measure:
 		modulate.a = 0.5
 	
-	for i in chords.size():
-		var chord := chords[i]
+	for i in range(new_chords.size()):
+		var chord := new_chords[i]
 		
 		var chord_instance := preload("res://screen/_standard_editor/chord.tscn").instantiate()
 		add_child(chord_instance)
@@ -48,3 +50,8 @@ func add_chords(new_chords: Array[Chord], is_pickup_measure: bool) -> void:
 		if is_pickup_measure: chord_text = "(" + chord_text + ")"
 		
 		chord_instance.get_node("Label").text = chord_text
+
+
+func _on_gui_input(event: InputEvent) -> void:
+	if event.is_action_pressed("click"):
+		clicked.emit()
