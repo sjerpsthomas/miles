@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
+
 
 namespace thesis.midi.core;
 
 public class LeadSheet
 {
     public enum SoloType { Learner, Algorithm }
+
+    public string PickupMeasureCount;
     
     public List<List<Chord>> Chords;
+    
     public List<SoloType> SoloDivision;
     
     public Chord ChordAtTime(double time)
@@ -24,4 +29,8 @@ public class LeadSheet
         
         return measureChords[(int)Math.Truncate(measureTime * measureChords.Count)];
     }
+
+    private static JsonSerializerOptions _jsonOptions = new() { IncludeFields = true, WriteIndented = true };
+    public string Serialize() => JsonSerializer.Serialize(this, _jsonOptions);
+    public static LeadSheet Deserialize(string data) => JsonSerializer.Deserialize<LeadSheet>(data, _jsonOptions);
 }

@@ -11,7 +11,7 @@ public class Chord
     
     public enum TypeEnum
     {
-        Major,
+        Major = 0,
         Dominant,
         Minor,
         HalfDim7,

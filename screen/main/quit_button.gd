@@ -1,5 +1,5 @@
 extends "res://screen/chord_button.gd"
 
 
-func press() -> void:
+func _pressed() -> void:
 	get_tree().quit()
