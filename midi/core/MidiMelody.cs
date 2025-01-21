@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
-using OutputName = thesis.midi.MidiServer.OutputName;
-
-using TempNoteList = System.Collections.Generic.List<(int note, int velocity, double time, double length)>;
 
 namespace thesis.midi.core;
 
@@ -12,23 +8,24 @@ public class MidiMelody
 {
     public record class MelodyNote(int Note, int Velocity, double Length, double RestLength);
 
-    public List<MelodyNote> Melody = [];
+    public List<MelodyNote> Melody;
 
-    public MidiMelody(MidiSong song, SongInfo songInfo)
+    public MidiMelody(MidiSong song, LeadSheet leadSheet)
     {
-        Melody = GetNotes(song.Measures, songInfo, 0);
+        Melody = GetNotes(song.Measures, leadSheet, 0);
     }
 
-    public List<MelodyNote> GetNotes(List<MidiMeasure> measures, SongInfo songInfo, int measureNum)
+    public List<MelodyNote> GetNotes(List<MidiMeasure> measures, LeadSheet leadSheet, int measureNum)
     {
         // Get notes from song info, sort by time
-        var notes = measures.Zip(songInfo.Info.Skip(measureNum))
-            .SelectMany((tuple, i) =>
+        var notes = measures
+            .SelectMany((measure, i) =>
             {
-                var (measure, info) = tuple;
-                return measure.Notes.Select(note =>
-                    (note: info.GetRelativeNote(note.Note), velocity: note.Velocity, time: note.Time + i,
-                        length: note.Length));
+                return measure.Notes.Select(note => (
+                    note: leadSheet.ChordAtTime(note.Time + i).GetRelativeNote(note.Note),
+                    velocity: note.Velocity,
+                    time: note.Time + i,
+                    length: note.Length));
             })
             .OrderBy(tuple => tuple.time).ToList();
 
@@ -43,7 +40,7 @@ public class MidiMelody
             var note = notes[index];
             var nextNote = notes[index + 1];
             
-            var newLength = Math.Max(note.length, nextNote.time - note.time);
+            var newLength = Math.Min(note.length, nextNote.time - note.time);
             var restTime = nextNote.time - (note.time + newLength);
             
             melody.Add(new MelodyNote(note.note, note.velocity, newLength, restTime));

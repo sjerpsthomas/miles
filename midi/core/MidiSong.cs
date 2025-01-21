@@ -6,11 +6,13 @@ using thesis.util;
 
 namespace thesis.midi.core;
 
-public record struct MidiSong(List<MidiMeasure> Measures)
+public class MidiSong
 {
+    public List<MidiMeasure> Measures = [];
+
     public static MidiSong FromFile(string fileName)
     {
-        var song = new MidiSong([]);
+        var song = new MidiSong();
         
         var mf = new MidiFile(
             new FileAccessStream(fileName, FileAccess.ModeFlags.Read),
@@ -59,4 +61,6 @@ public record struct MidiSong(List<MidiMeasure> Measures)
     {
         while (Measures.Count < newMeasureCount) Measures.Add(new MidiMeasure([]));
     }
+    
+    
 }

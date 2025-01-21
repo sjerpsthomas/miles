@@ -4,13 +4,14 @@ using Godot;
 using NAudio.Midi;
 using thesis.midi.core;
 using thesis.midi.scheduler;
-using static thesis.midi.scheduler.MidiScheduler;
 
 namespace thesis.midi;
 
 public partial class MidiServer : Node
 {
     public static MidiServer Instance;
+
+    public MidiScheduler Scheduler;
     
     public MidiIn LearnerIn;
 
@@ -34,13 +35,13 @@ public partial class MidiServer : Node
     public override void _Ready()
     {
         Instance = this;
-
+        
         LearnerIn = FindMidiIn("LKMK3 MIDI");
         LearnerIn.Start();
         
         Outputs = new()
         {
-            [OutputName.Loopback] = FindMidiOut("Learner"), // TODO rename
+            [OutputName.Loopback] = FindMidiOut("Loopback"),
             [OutputName.Algorithm] = FindMidiOut("Algorithm"),
             [OutputName.Metronome] = FindMidiOut("Metronome"),
             [OutputName.Backing1Bass] = FindMidiOut("Backing 1 - Bass"),
@@ -68,7 +69,7 @@ public partial class MidiServer : Node
     }
     
     public void Send(OutputName outputName, int note, int velocity) =>
-        Send(new MidiNote(outputName, MidiScheduler.Instance.CurrentTime, 0.0, note, velocity));
+        Send(new MidiNote(outputName, Scheduler?.CurrentTime ?? 0.0, 0.0, note, velocity));
     
     private MidiOut FindMidiOut(string name)
     {

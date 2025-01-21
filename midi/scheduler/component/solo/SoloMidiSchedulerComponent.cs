@@ -7,17 +7,17 @@ namespace thesis.midi.scheduler.component.solo;
 
 public class SoloMidiSchedulerComponent : MidiSchedulerComponent
 {
-    public SongInfo SongInfo;
+    public LeadSheet LeadSheet;
 
     public FactorOracle FactorOracle = new();
 
     private MidiMelody _melody;
     
-    public SoloMidiSchedulerComponent(SongInfo songInfo, MidiSong solo)
+    public SoloMidiSchedulerComponent(LeadSheet leadSheet, MidiSong solo)
     {
-        SongInfo = songInfo;
+        LeadSheet = leadSheet;
         
-        _melody = new MidiMelody(solo, SongInfo);
+        _melody = new MidiMelody(solo, leadSheet);
 
         foreach (var note in _melody.Melody)
             FactorOracle.AddNote(note);
@@ -27,14 +27,14 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
     {
         if (currentMeasure == 0) return;
         if ((currentMeasure + 4) % 8 != 0) return;
-        if (currentMeasure >= SongInfo.Info.Count) return;
+        if (currentMeasure >= LeadSheet.Chords.Count) return;
         
         // Flush recording
         Recorder.Flush(currentMeasure);
         
         // Add notes to melody
         var recordedMeasures = Recorder.Song.Measures.TakeLast(4).ToList();
-        var newNotes = _melody.GetNotes(recordedMeasures, SongInfo, currentMeasure);
+        var newNotes = _melody.GetNotes(recordedMeasures, LeadSheet, currentMeasure);
         _melody.Melody.AddRange(newNotes);
         
         // Train factor oracle
@@ -64,7 +64,7 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
             var measureNum = (int)Math.Truncate(time);
             var measure = measures[measureNum];
 
-            var absoluteNote = SongInfo.Info[currentMeasure + measureNum].GetAbsoluteNote(note.Note);
+            var absoluteNote = LeadSheet.ChordAtTime(currentMeasure + time).GetAbsoluteNote(note.Note);
             var newNote = new MidiNote(MidiServer.OutputName.Algorithm, time - measureNum, note.Length, absoluteNote, note.Velocity);
             measure.Notes.Add(newNote);
             

@@ -6,17 +6,16 @@ using thesis.midi.core;
 using thesis.midi.recorder;
 using thesis.midi.scheduler.component;
 using thesis.midi.scheduler.component.solo;
-using static thesis.midi.core.SongInfo;
-using static thesis.midi.core.SongInfo.ChordType;
-using static thesis.midi.core.SongInfo.Key;
-using static thesis.midi.core.SongInfo.SoloType;
+using static thesis.midi.core.Chord.KeyEnum;
+using static thesis.midi.core.Chord.TypeEnum;
+using static thesis.midi.core.LeadSheet.SoloType;
 
 namespace thesis.midi.scheduler;
 
 public partial class MidiScheduler : Node
 {
-	public static MidiScheduler Instance;
-
+	[Export] public MidiRecorder Recorder;
+	
 	// ReSharper disable once InconsistentNaming
 	public double BPM;
 
@@ -33,65 +32,47 @@ public partial class MidiScheduler : Node
 	
 	public override void _Ready()
 	{
-		Instance = this;
-		
 		BPM = 169;
 		
 		Components.Add(new FileMidiSchedulerComponent
 		{
 			Scheduler = this,
-			Recorder = MidiRecorder.Instance,
+			Recorder = Recorder,
 			FileName = "res://midi/files/anotheryou_BACK.mid"
 		});
 
 		// TODO read from file
-		var songInfo = new SongInfo([
-			new MeasureInfo(Eb, Major, Learner),
-			new MeasureInfo(Eb, Major, Learner),
-			new MeasureInfo(D, HalfDim7, Learner),
-			new MeasureInfo(G, Dominant, Learner),
-
-			new MeasureInfo(C, Minor, Algorithm),
-			new MeasureInfo(C, Minor, Algorithm),
-			new MeasureInfo(Bb, Minor, Algorithm),
-			new MeasureInfo(Eb, Dominant, Algorithm),
-
-			new MeasureInfo(Ab, Major, Learner),
-			new MeasureInfo(Db, Dominant, Learner),
-			new MeasureInfo(Eb, Major, Learner),
-			new MeasureInfo(C, Minor, Learner),
-
-			new MeasureInfo(F, Dominant, Algorithm),
-			new MeasureInfo(F, Dominant, Algorithm),
-			new MeasureInfo(F, Minor, Algorithm),
-			new MeasureInfo(Bb, Dominant, Algorithm),
-
-			new MeasureInfo(Eb, Major, Learner),
-			new MeasureInfo(Eb, Major, Learner),
-			new MeasureInfo(D, HalfDim7, Learner),
-			new MeasureInfo(G, Dominant, Learner),
-
-			new MeasureInfo(C, Minor, Algorithm),
-			new MeasureInfo(C, Minor, Algorithm),
-			new MeasureInfo(Bb, Minor, Algorithm),
-			new MeasureInfo(Eb, Dominant, Algorithm),
-
-			new MeasureInfo(Ab, Major, Learner),
-			new MeasureInfo(Db, Dominant, Learner),
-			new MeasureInfo(Eb, Major, Learner),
-			new MeasureInfo(D, Major, Learner),
-
-			new MeasureInfo(Eb, Major, Algorithm),
-			new MeasureInfo(C, Dominant, Algorithm),
-			new MeasureInfo(F, Minor, Algorithm),
-			new MeasureInfo(Eb, Major, Algorithm),
-		]);
+		var leadSheet = new LeadSheet()
+		{
+			Chords =
+			[
+				[new Chord(Eb, Major)], [new Chord(Eb, Major)], [new Chord(D, HalfDim7)], [new Chord(G, Dominant)],
+				[new Chord(C, Minor)], [new Chord(C, Minor)], [new Chord(Bb, Minor)], [new Chord(Eb, Dominant)],
+				[new Chord(Ab, Major)], [new Chord(Db, Dominant)], [new Chord(Eb, Major)], [new Chord(C, Minor)],
+				[new Chord(F, Dominant)], [new Chord(F, Dominant)], [new Chord(F, Minor)], [new Chord(Bb, Dominant)],
+				[new Chord(Eb, Major)], [new Chord(Eb, Major)], [new Chord(D, HalfDim7)], [new Chord(G, Dominant)],
+				[new Chord(C, Minor)], [new Chord(C, Minor)], [new Chord(Bb, Minor)], [new Chord(Eb, Dominant)],
+				[new Chord(Ab, Major)], [new Chord(Db, Dominant)], [new Chord(Eb, Major)], [new Chord(D, Major)],
+				[new Chord(Eb, Major)], [new Chord(C, Dominant)], [new Chord(F, Minor)], [new Chord(Eb, Major)]
+			],
+			SoloDivision =
+			[
+				Learner, Learner, Learner, Learner,
+				Algorithm, Algorithm, Algorithm, Algorithm,
+				Learner, Learner, Learner, Learner,
+				Algorithm, Algorithm, Algorithm, Algorithm,
+				Learner, Learner, Learner, Learner,
+				Algorithm, Algorithm, Algorithm, Algorithm,
+				Learner, Learner, Learner, Learner,
+				Algorithm, Algorithm, Algorithm, Algorithm,
+			]
+		};
 
 		Components.Add(
-			new SoloMidiSchedulerComponent(songInfo, MidiSong.FromFile("res://midi/files/anotheryou_SOLO.mid"))
+			new SoloMidiSchedulerComponent(leadSheet, MidiSong.FromFile("res://midi/files/anotheryou_SOLO.mid"))
 			{
 				Scheduler = this,
-				Recorder = MidiRecorder.Instance,
+				Recorder = Recorder,
 			});
 		
 		Start();
@@ -99,10 +80,17 @@ public partial class MidiScheduler : Node
 
 	public void Start()
 	{
+		MidiServer.Instance.Scheduler = this;
 		Enabled = true;
 		
 		var thread = new Thread(Run);
 		thread.Start();
+	}
+
+	public void Stop()
+	{
+		MidiServer.Instance.Scheduler = null;
+		Enabled = false;
 	}
 	
 	public void Run()

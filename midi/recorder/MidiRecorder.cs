@@ -9,16 +9,12 @@ namespace thesis.midi.recorder;
 
 public partial class MidiRecorder : Node
 {
-	public static MidiRecorder Instance;
-
-	public MidiSong Song = new([]);
+	public MidiSong Song = new();
 	
 	public List<MidiNote> PendingNotes = [];
 	
 	public override void _Ready()
 	{
-		Instance = this;
-		
 		MidiServer.Instance.NoteSent += OnMidiServerNoteSent;
 	}
 

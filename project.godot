@@ -11,15 +11,13 @@ config_version=5
 [application]
 
 config/name="thesis"
-run/main_scene="res://scene.tscn"
+run/main_scene="res://screen/main/main_screen.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 MidiServer="*res://midi/MidiServer.cs"
-MidiRecorder="*res://midi/recorder/MidiRecorder.cs"
-MidiScheduler="*res://midi/scheduler/MidiScheduler.cs"
 
 [dotnet]
 
