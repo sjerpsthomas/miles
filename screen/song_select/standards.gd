@@ -14,6 +14,9 @@ func _ready() -> void:
 func refresh() -> void:
 	var standard_name := standard_names[index]
 	
+	for child in get_children():
+		child.queue_free()
+	
 	var standard_view := preload("res://screen/_standard_editor/standard_view.tscn").instantiate()
 	add_child(standard_view)
 	

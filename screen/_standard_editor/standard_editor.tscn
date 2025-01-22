@@ -1,20 +1,25 @@
-[gd_scene load_steps=5 format=3 uid="uid://dem8e1kcd3vo3"]
+[gd_scene load_steps=6 format=3 uid="uid://dem8e1kcd3vo3"]
 
 [ext_resource type="Script" path="res://screen/_standard_editor/standard_editor.gd" id="1_f2q36"]
 [ext_resource type="PackedScene" uid="uid://bk265yvb0xqjm" path="res://screen/_standard_editor/standard_view.tscn" id="1_nper8"]
 [ext_resource type="Script" path="res://screen/_standard_editor/panel.gd" id="2_05bg8"]
 [ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="3_wcr5e"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wmhtm"]
+bg_color = Color(1, 1, 1, 1)
+
 [node name="StandardEditor" type="Node2D" node_paths=PackedStringArray("standard_view")]
 script = ExtResource("1_f2q36")
 standard_view = NodePath("ScrollContainer/StandardView")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
-offset_left = 476.0
+offset_left = 460.0
 offset_top = 16.0
-offset_right = 1252.0
+offset_right = 1236.0
 offset_bottom = 632.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_wmhtm")
 horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
 
 [node name="StandardView" parent="ScrollContainer" instance=ExtResource("1_nper8")]
 layout_mode = 2

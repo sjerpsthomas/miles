@@ -2,7 +2,7 @@ class_name StandardEditor
 extends Node2D
 
 
-static var standard_name: String = "Needlessly Long"
+static var standard_name: String = ""
 
 @export var standard_view: Node
 

@@ -1,5 +1,5 @@
 class_name StandardEditorMeasure
-extends Panel
+extends NinePatchRect
 
 
 enum KeyEnum { C = 0, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B }
@@ -19,7 +19,7 @@ class Chord:
 	func _to_string() -> String:
 		var type_str: String
 		match type:
-			TypeEnum.Major: type_str = "M7"
+			TypeEnum.Major: type_str = "Δ7"
 			TypeEnum.Dominant: type_str = "7"
 			TypeEnum.Minor: type_str = "m7"
 			TypeEnum.HalfDim7: type_str = "m7b5"

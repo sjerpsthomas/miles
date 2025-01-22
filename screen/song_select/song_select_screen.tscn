@@ -1,38 +1,40 @@
-[gd_scene load_steps=6 format=3 uid="uid://bhgo3qcys2jqj"]
+[gd_scene load_steps=7 format=3 uid="uid://bhgo3qcys2jqj"]
 
-[ext_resource type="Script" path="res://screen/song_select/SongSelectScreen.cs" id="1_saoi4"]
+[ext_resource type="Script" path="res://screen/InputScreen.cs" id="1_juavs"]
 [ext_resource type="Script" path="res://screen/chord_button.gd" id="2_i52sf"]
 [ext_resource type="Script" path="res://screen/song_select/standards.gd" id="3_4udxo"]
 [ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="4_a108o"]
+[ext_resource type="Script" path="res://screen/song_select/edit_button.gd" id="5_v337t"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yk4dy"]
 bg_color = Color(1, 1, 1, 1)
 
 [node name="SongSelectScreen" type="Node2D"]
-script = ExtResource("1_saoi4")
+script = ExtResource("1_juavs")
 
 [node name="Standards" type="ScrollContainer" parent="."]
-offset_left = 56.0
+offset_left = 460.0
 offset_top = 16.0
-offset_right = 832.0
+offset_right = 1236.0
 offset_bottom = 632.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_yk4dy")
 horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
 script = ExtResource("3_4udxo")
 
 [node name="LeftButton" type="Button" parent="."]
-offset_left = 24.0
+offset_left = 428.0
 offset_top = 292.0
-offset_right = 88.0
+offset_right = 492.0
 offset_bottom = 356.0
 focus_mode = 0
 text = "<"
 script = ExtResource("2_i52sf")
 
 [node name="RightButton" type="Button" parent="."]
-offset_left = 800.0
+offset_left = 1204.0
 offset_top = 292.0
-offset_right = 864.0
+offset_right = 1268.0
 offset_bottom = 356.0
 focus_mode = 0
 text = ">"
@@ -44,10 +46,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 918.0
-offset_top = 28.0
-offset_right = 1194.0
-offset_bottom = 72.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 292.0
+offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 0
@@ -55,7 +57,7 @@ theme_override_colors/font_color = Color(0.25, 1, 0.25, 1)
 theme_override_fonts/font = ExtResource("4_a108o")
 theme_override_font_sizes/font_size = 30
 text = "Edit standard"
+script = ExtResource("5_v337t")
 
 [connection signal="pressed" from="LeftButton" to="Standards" method="_on_left_button_pressed"]
 [connection signal="pressed" from="RightButton" to="Standards" method="_on_right_button_pressed"]
-[connection signal="pressed" from="EditButton" to="." method="_on_save_and_return_button_pressed"]
