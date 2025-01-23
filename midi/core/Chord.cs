@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Godot;
 
 namespace thesis.midi.core;
@@ -63,9 +62,9 @@ public class Chord
     
     public static Dictionary<TypeEnum, List<int>> AbsoluteToRelative = new()
     {
-        [TypeEnum.Major] =    [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6], // C D  E  F G  A  B
-        [TypeEnum.Dominant] = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 6, 6], // C D  E  F G  A  Bb
-        [TypeEnum.Minor] =    [0, 0, 1, 2, 2, 3, 3, 4, 5, 5, 6, 6], // C D  Eb F G  Ab Bb
+        [TypeEnum.Major] =    [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6], // C D  E  F G  A  B
+        [TypeEnum.Dominant] = [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6], // C D  E  F G  A  Bb
+        [TypeEnum.Minor] =    [0, 1, 1, 2, 2, 3, 3, 4, 5, 5, 6, 6], // C D  Eb F G  Ab Bb
         [TypeEnum.HalfDim7] = [0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6], // C Db Eb F Gb Ab Bb
     };
 
@@ -79,21 +78,30 @@ public class Chord
     
     public int GetRelativeNote(int absoluteNote)
     {
-        // Transpose to C
-        absoluteNote -= (int)Key;
-            
         // Limit to octave
         var octave = absoluteNote / 12;
         absoluteNote -= 12 * octave;
 
         // Get relative note
-        var relativeNote = AbsoluteToRelative[Type][absoluteNote];
+        // (act as if note is in C major)
+        var relativeNote = AbsoluteToRelative[TypeEnum.Major][absoluteNote];
 
         // Add back 'octave'
         relativeNote += 7 * octave;
         return relativeNote;
     }
 
+    // From Godot source
+    public static int PosMod(int a, int b)
+    {
+        var c = a % b;
+        if ((c < 0 && b > 0) || (c > 0 && b < 0))
+        {
+            c += b;
+        }
+        return c;
+    }
+    
     public int GetAbsoluteNote(int relativeNote)
     {
         // Limit to 'octave'
@@ -101,14 +109,12 @@ public class Chord
         relativeNote -= 7 * octave;
             
         // Get absolute note
-        var absoluteNote = RelativeToAbsolute[Type][relativeNote];
-
+        var relativeIndex = relativeNote - AbsoluteToRelative[TypeEnum.Major][(int)Key];
+        var absoluteNote = PosMod(RelativeToAbsolute[Type][PosMod(relativeIndex, 7)] + (int)Key, 12);
+        
         // Add back octave
         absoluteNote += 12 * octave;
             
-        // Transpose to key
-        absoluteNote += (int)Key;
-
         return absoluteNote;
     }
 }
