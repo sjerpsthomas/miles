@@ -33,48 +33,25 @@ public partial class MidiScheduler : Node
 	public override void _Ready()
 	{
 		BPM = 169;
+
+		var standardPath = "user://saves/There Will Never Be Another You/";
+
+		var backingTrack = MidiSong.FromFile(standardPath + "back.mid");
+		var soloTrack = MidiSong.FromFile(standardPath + "solo.mid");
+		var leadSheet = LeadSheet.FromFile(standardPath + "sheet.json");
 		
-		Components.Add(new FileMidiSchedulerComponent
+		Components.Add(new SongMidiSchedulerComponent
 		{
 			Scheduler = this,
 			Recorder = Recorder,
-			FileName = "res://midi/files/anotheryou_BACK.mid"
+			Song = backingTrack
 		});
 
-		// TODO read from file
-		var leadSheet = new LeadSheet()
+		Components.Add(new SoloMidiSchedulerComponent(soloTrack, leadSheet, new FactorOracleSoloist())
 		{
-			Chords =
-			[
-				[new Chord(Eb, Major)], [new Chord(Eb, Major)], [new Chord(D, HalfDim7)], [new Chord(G, Dominant)],
-				[new Chord(C, Minor)], [new Chord(C, Minor)], [new Chord(Bb, Minor)], [new Chord(Eb, Dominant)],
-				[new Chord(Ab, Major)], [new Chord(Db, Dominant)], [new Chord(Eb, Major)], [new Chord(C, Minor)],
-				[new Chord(F, Dominant)], [new Chord(F, Dominant)], [new Chord(F, Minor)], [new Chord(Bb, Dominant)],
-				[new Chord(Eb, Major)], [new Chord(Eb, Major)], [new Chord(D, HalfDim7)], [new Chord(G, Dominant)],
-				[new Chord(C, Minor)], [new Chord(C, Minor)], [new Chord(Bb, Minor)], [new Chord(Eb, Dominant)],
-				[new Chord(Ab, Major)], [new Chord(Db, Dominant)], [new Chord(Eb, Major)], [new Chord(D, Major)],
-				[new Chord(Eb, Major)], [new Chord(C, Dominant)], [new Chord(F, Minor)], [new Chord(Eb, Major)]
-			],
-			SoloDivision =
-			[
-				Learner, Learner, Learner, Learner,
-				Algorithm, Algorithm, Algorithm, Algorithm,
-				Learner, Learner, Learner, Learner,
-				Algorithm, Algorithm, Algorithm, Algorithm,
-				Learner, Learner, Learner, Learner,
-				Algorithm, Algorithm, Algorithm, Algorithm,
-				Learner, Learner, Learner, Learner,
-				Algorithm, Algorithm, Algorithm, Algorithm,
-			]
-		};
-
-		Components.Add(
-			new SoloMidiSchedulerComponent(MidiSong.FromFile("res://midi/files/anotheryou_SOLO.mid"), leadSheet,
-				new FactorOracleSoloist())
-			{
-				Scheduler = this,
-				Recorder = Recorder,
-			});
+			Scheduler = this,
+			Recorder = Recorder,
+		});
 		
 		Start();
 	}

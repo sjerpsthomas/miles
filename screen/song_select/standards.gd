@@ -23,11 +23,6 @@ func refresh() -> void:
 	standard_view.load_sheet(standard_name)
 
 
-func _on_left_button_pressed() -> void:
-	index = posmod(index - 1, standard_names.size())
-	refresh()
-
-
-func _on_right_button_pressed() -> void:
-	index = posmod(index + 1, standard_names.size())
+func navigate(direction: int) -> void:
+	index = posmod(index + direction, standard_names.size())
 	refresh()

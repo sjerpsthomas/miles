@@ -20,10 +20,12 @@ public partial class InputScreen : Node
 
 	public void _on_MidiServer_NoteSent(MidiServer.OutputName outputName, MidiNote note)
 	{
+		var index = note.Note % 12;
+		
 		if (note.Velocity > 0)
-			Counts[note.Note % 12]++;
+			Counts[index]++;
 		else
-			Counts[note.Note % 12]--;
+			if (--Counts[index] < 0) Counts[index] = 0;
 
 		if (IsInstanceValid(this))
 			CallDeferred("DoPress");

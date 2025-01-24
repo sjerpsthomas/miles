@@ -28,5 +28,5 @@ text = "Quit (Cmin)"
 script = ExtResource("4_tdv8w")
 chord = "100100010000"
 
-[connection signal="Press" from="." to="StartButton" method="_on_main_screen_press"]
-[connection signal="Press" from="." to="QuitButton" method="_on_main_screen_press"]
+[connection signal="Press" from="." to="StartButton" method="_on_screen_press"]
+[connection signal="Press" from="." to="QuitButton" method="_on_screen_press"]

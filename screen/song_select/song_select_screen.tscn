@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bhgo3qcys2jqj"]
 
 [ext_resource type="Script" path="res://screen/InputScreen.cs" id="1_juavs"]
-[ext_resource type="Script" path="res://screen/chord_button.gd" id="2_i52sf"]
+[ext_resource type="Script" path="res://screen/song_select/navigation_button.gd" id="3_0rf8i"]
 [ext_resource type="Script" path="res://screen/song_select/standards.gd" id="3_4udxo"]
 [ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="4_a108o"]
 [ext_resource type="Script" path="res://screen/song_select/edit_button.gd" id="5_v337t"]
@@ -29,7 +29,9 @@ offset_right = 492.0
 offset_bottom = 356.0
 focus_mode = 0
 text = "<"
-script = ExtResource("2_i52sf")
+script = ExtResource("3_0rf8i")
+direction = -1
+chord = "101000010000"
 
 [node name="RightButton" type="Button" parent="."]
 offset_left = 1204.0
@@ -38,7 +40,9 @@ offset_right = 1268.0
 offset_bottom = 356.0
 focus_mode = 0
 text = ">"
-script = ExtResource("2_i52sf")
+script = ExtResource("3_0rf8i")
+direction = 1
+chord = "100001010000"
 
 [node name="EditButton" type="Button" parent="."]
 anchors_preset = 8
@@ -59,5 +63,5 @@ theme_override_font_sizes/font_size = 30
 text = "Edit standard"
 script = ExtResource("5_v337t")
 
-[connection signal="pressed" from="LeftButton" to="Standards" method="_on_left_button_pressed"]
-[connection signal="pressed" from="RightButton" to="Standards" method="_on_right_button_pressed"]
+[connection signal="Press" from="." to="LeftButton" method="_on_screen_press"]
+[connection signal="Press" from="." to="RightButton" method="_on_screen_press"]

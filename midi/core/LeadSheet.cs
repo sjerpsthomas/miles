@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Godot;
 
 
 namespace thesis.midi.core;
@@ -34,5 +35,13 @@ public class LeadSheet
 
     private static JsonSerializerOptions _jsonOptions = new() { IncludeFields = true, WriteIndented = true };
     public string Serialize() => JsonSerializer.Serialize(this, _jsonOptions);
-    public static LeadSheet Deserialize(string data) => JsonSerializer.Deserialize<LeadSheet>(data, _jsonOptions);
+
+    public static LeadSheet FromFile(string path)
+    {
+        var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
+        var text = file.GetAsText();
+        file.Close();
+        
+        return JsonSerializer.Deserialize<LeadSheet>(text, _jsonOptions);
+    }
 }

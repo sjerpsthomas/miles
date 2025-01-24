@@ -6,7 +6,7 @@ var keys_pressed: bool
 
 
 
-func _on_main_screen_press() -> void:
+func _on_screen_press() -> void:
 	var counts_string: String = get_parent().CountsString
 	var new_keys_pressed := counts_string == chord
 	

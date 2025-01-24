@@ -1,14 +1,14 @@
 ﻿using thesis.midi.core;
 namespace thesis.midi.scheduler.component;
 
-public class FileMidiSchedulerComponent : MidiSchedulerComponent
+public class SongMidiSchedulerComponent : MidiSchedulerComponent
 {
-    public string FileName;
+    public MidiSong Song;
     
     public override void HandleMeasure(int currentMeasure)
     {
         // Add all measures from file at start
         if (currentMeasure == 0)
-            Scheduler.AddSong(0, MidiSong.FromFile(FileName));
+            Scheduler.AddSong(0, Song);
     }
 }
