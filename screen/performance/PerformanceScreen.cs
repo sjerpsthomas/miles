@@ -2,13 +2,12 @@ using Godot;
 using Godot.Collections;
 using thesis.midi;
 using thesis.midi.core;
-using thesis.midi.scheduler;
 
-namespace thesis;
+namespace thesis.screen.performance;
 
 using OutputName = MidiServer.OutputName;
 
-public partial class Scene : Node2D
+public partial class PerformanceScreen : Node2D
 {
 	public const int KeyCount = 61;
 	

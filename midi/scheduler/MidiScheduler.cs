@@ -32,14 +32,19 @@ public partial class MidiScheduler : Node
 	
 	public override void _Ready()
 	{
-		BPM = 169;
+		// Get path of standard
+		var standardName = (string)GetNode("/root/PerformanceScreenInit").Get("standard_name");
+		var standardPath = $"user://saves/{standardName}/";
 
-		var standardPath = "user://saves/There Will Never Be Another You/";
-
+		// Load necessary files
 		var backingTrack = MidiSong.FromFile(standardPath + "back.mid");
 		var soloTrack = MidiSong.FromFile(standardPath + "solo.mid");
 		var leadSheet = LeadSheet.FromFile(standardPath + "sheet.json");
 		
+		// Get BPM
+		BPM = leadSheet.BPM;
+		
+		// Add components
 		Components.Add(new SongMidiSchedulerComponent
 		{
 			Scheduler = this,
@@ -53,6 +58,7 @@ public partial class MidiScheduler : Node
 			Recorder = Recorder,
 		});
 		
+		// Start
 		Start();
 	}
 

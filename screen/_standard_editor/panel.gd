@@ -1,7 +1,7 @@
 extends Panel
 
 
-@export var standard_view: Control
+@export var standard_view: StandardView
 
 var measure_num: int = -1
 
@@ -11,6 +11,7 @@ func _ready() -> void:
 
 func init() -> void:
 	$ExtraOptions/RhythmTypeOptionButton.select(standard_view.data["Style"])
+	$ExtraOptions/BPMTextEdit.text = str(int(standard_view.data["BPM"]))
 
 func _on_standard_view_measure_clicked(new_measure_num: int) -> void:
 	for chord_edit in $Chords.get_children():
@@ -74,6 +75,13 @@ func apply_to_standard_view() -> void:
 	
 	standard_view.data["Style"] = $ExtraOptions/RhythmTypeOptionButton.selected
 	
+	var bpm_text: String = $ExtraOptions/BPMTextEdit.text
+	if bpm_text.is_valid_int():
+		standard_view.data["BPM"] = int(bpm_text)
+		$ExtraOptions/BPMTextEdit.flat = false
+	else:
+		$ExtraOptions/BPMTextEdit.flat = true
+	
 	standard_view.refresh()
 
 func _on_add_chord_button_pressed() -> void:
@@ -82,6 +90,9 @@ func _on_add_chord_button_pressed() -> void:
 	apply_to_standard_view()
 
 func _on_rhythm_type_option_button_item_selected(_index: int) -> void:
+	apply_to_standard_view()
+
+func _on_bpm_text_edit_text_changed(new_text: String) -> void:
 	apply_to_standard_view()
 
 func _on_user_folder_button_pressed() -> void:

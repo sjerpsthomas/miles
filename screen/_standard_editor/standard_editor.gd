@@ -4,7 +4,7 @@ extends Node2D
 
 static var standard_name: String = ""
 
-@export var standard_view: Node
+@export var standard_view: StandardView
 
 
 func _ready() -> void: load_standard()

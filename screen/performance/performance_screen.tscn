@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://8fqvos4og1fa"]
+
+[ext_resource type="Script" path="res://screen/performance/PerformanceScreen.cs" id="1_wg3x3"]
+[ext_resource type="Script" path="res://midi/recorder/MidiRecorder.cs" id="2_c7q52"]
+[ext_resource type="Script" path="res://midi/scheduler/MidiScheduler.cs" id="3_3ekko"]
+[ext_resource type="PackedScene" uid="uid://bbdqe6y8lqrnr" path="res://visualisation/piano/pattern/piano_pattern.tscn" id="4_6udha"]
+
+[node name="PerformanceScreen" type="Node2D"]
+script = ExtResource("1_wg3x3")
+
+[node name="Logic" type="Node" parent="."]
+
+[node name="MidiRecorder" type="Node" parent="Logic"]
+unique_name_in_owner = true
+script = ExtResource("2_c7q52")
+
+[node name="MidiScheduler" type="Node" parent="Logic" node_paths=PackedStringArray("Recorder")]
+unique_name_in_owner = true
+script = ExtResource("3_3ekko")
+Recorder = NodePath("../MidiRecorder")
+
+[node name="PianoOctave" parent="." instance=ExtResource("4_6udha")]
+position = Vector2(486, 24)
+key_offset = 24
+
+[node name="PianoOctave2" parent="." instance=ExtResource("4_6udha")]
+position = Vector2(304, 24)
+key_offset = 12
+
+[node name="PianoOctave3" parent="." instance=ExtResource("4_6udha")]
+position = Vector2(668, 24)
+key_offset = 36

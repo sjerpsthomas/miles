@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bhgo3qcys2jqj"]
+[gd_scene load_steps=10 format=3 uid="uid://bhgo3qcys2jqj"]
 
 [ext_resource type="Script" path="res://screen/InputScreen.cs" id="1_juavs"]
 [ext_resource type="Script" path="res://screen/song_select/navigation_button.gd" id="3_0rf8i"]
@@ -6,6 +6,8 @@
 [ext_resource type="FontFile" uid="uid://dcfa6hmqj0pyx" path="res://font/Mansalva-Regular.ttf" id="3_aaxsh"]
 [ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="4_a108o"]
 [ext_resource type="Script" path="res://screen/song_select/edit_button.gd" id="5_v337t"]
+[ext_resource type="Script" path="res://screen/song_select/start_button.gd" id="7_h535r"]
+[ext_resource type="Script" path="res://screen/song_select/back_button.gd" id="8_acwt4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yk4dy"]
 bg_color = Color(1, 1, 1, 1)
@@ -68,5 +70,31 @@ theme_override_font_sizes/font_size = 30
 text = "Edit"
 script = ExtResource("5_v337t")
 
+[node name="StartButton" type="Button" parent="."]
+offset_left = 1008.0
+offset_top = 496.0
+offset_right = 1264.0
+offset_bottom = 632.0
+theme_override_fonts/font = ExtResource("3_aaxsh")
+theme_override_font_sizes/font_size = 40
+text = "Start
+(CΔ)"
+script = ExtResource("7_h535r")
+chord = "100010010000"
+
+[node name="BackButton" type="Button" parent="."]
+offset_left = 16.0
+offset_top = 496.0
+offset_right = 272.0
+offset_bottom = 632.0
+theme_override_fonts/font = ExtResource("3_aaxsh")
+theme_override_font_sizes/font_size = 40
+text = "Back
+(C-)"
+script = ExtResource("8_acwt4")
+chord = "100100010000"
+
 [connection signal="Press" from="." to="LeftButton" method="_on_screen_press"]
 [connection signal="Press" from="." to="RightButton" method="_on_screen_press"]
+[connection signal="Press" from="." to="StartButton" method="_on_screen_press"]
+[connection signal="Press" from="." to="BackButton" method="_on_screen_press"]

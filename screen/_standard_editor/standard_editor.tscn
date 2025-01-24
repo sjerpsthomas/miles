@@ -32,9 +32,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 16.0
+offset_left = 187.0
 offset_top = 16.0
-offset_right = 269.0
+offset_right = 440.0
 offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -50,9 +50,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 285.0
+offset_left = 16.0
 offset_top = 16.0
-offset_right = 440.0
+offset_right = 171.0
 offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -100,7 +100,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_top = 16.0
 offset_right = 424.0
-offset_bottom = 192.0
+offset_bottom = 272.0
 grow_vertical = 0
 
 [node name="UserFolderButton" type="Button" parent="Panel/ExtraOptions"]
@@ -113,21 +113,43 @@ theme_override_fonts/font = ExtResource("3_wcr5e")
 theme_override_font_sizes/font_size = 30
 text = "Open user:// folder"
 
-[node name="RhythmTypeLabel" type="Label" parent="Panel/ExtraOptions"]
+[node name="BPMLabel" type="Label" parent="Panel/ExtraOptions"]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 112.0
-offset_right = 129.0
+offset_right = 163.0
 offset_bottom = 148.0
+theme_override_fonts/font = ExtResource("3_wcr5e")
+theme_override_font_sizes/font_size = 30
+text = "Beats per minute"
+
+[node name="BPMTextEdit" type="LineEdit" parent="Panel/ExtraOptions"]
+layout_mode = 0
+offset_left = 228.0
+offset_top = 96.0
+offset_right = 408.0
+offset_bottom = 160.0
+theme_override_fonts/font = ExtResource("3_wcr5e")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "120"
+alignment = 1
+
+[node name="RhythmTypeLabel" type="Label" parent="Panel/ExtraOptions"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 192.0
+offset_right = 129.0
+offset_bottom = 228.0
 theme_override_fonts/font = ExtResource("3_wcr5e")
 theme_override_font_sizes/font_size = 30
 text = "Rhythm type"
 
 [node name="RhythmTypeOptionButton" type="OptionButton" parent="Panel/ExtraOptions"]
+layout_mode = 0
 offset_left = 228.0
-offset_top = 96.0
+offset_top = 176.0
 offset_right = 408.0
-offset_bottom = 160.0
+offset_bottom = 240.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_wcr5e")
 theme_override_font_sizes/font_size = 30
@@ -143,4 +165,5 @@ popup/item_1/id = 1
 [connection signal="pressed" from="DiscardChangesButton" to="." method="_on_discard_changes_button_pressed"]
 [connection signal="pressed" from="Panel/AddChordButton" to="Panel" method="_on_add_chord_button_pressed"]
 [connection signal="pressed" from="Panel/ExtraOptions/UserFolderButton" to="Panel" method="_on_user_folder_button_pressed"]
+[connection signal="text_changed" from="Panel/ExtraOptions/BPMTextEdit" to="Panel" method="_on_bpm_text_edit_text_changed"]
 [connection signal="item_selected" from="Panel/ExtraOptions/RhythmTypeOptionButton" to="Panel" method="_on_rhythm_type_option_button_item_selected"]
