@@ -15,6 +15,9 @@ bg_color = Color(1, 1, 1, 1)
 [node name="SongSelectScreen" type="Node2D"]
 script = ExtResource("1_juavs")
 
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(640, 320)
+
 [node name="Standards" type="ScrollContainer" parent="."]
 offset_left = 252.0
 offset_top = 16.0
@@ -26,27 +29,27 @@ vertical_scroll_mode = 2
 script = ExtResource("3_4udxo")
 
 [node name="LeftButton" type="Button" parent="."]
-offset_left = 220.0
+offset_left = 74.0
 offset_top = 292.0
-offset_right = 284.0
+offset_right = 244.0
 offset_bottom = 356.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_aaxsh")
 theme_override_font_sizes/font_size = 30
-text = "<"
+text = "(Csus2)  <"
 script = ExtResource("3_0rf8i")
 direction = -1
 chord = "101000010000"
 
 [node name="RightButton" type="Button" parent="."]
-offset_left = 996.0
+offset_left = 1036.0
 offset_top = 292.0
-offset_right = 1060.0
+offset_right = 1206.0
 offset_bottom = 356.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_aaxsh")
 theme_override_font_sizes/font_size = 30
-text = ">"
+text = ">  (Csus4)"
 script = ExtResource("3_0rf8i")
 direction = 1
 chord = "100001010000"

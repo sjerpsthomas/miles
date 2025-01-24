@@ -13,6 +13,9 @@ bg_color = Color(1, 1, 1, 1)
 script = ExtResource("1_f2q36")
 standard_view = NodePath("ScrollContainer/StandardView")
 
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(640, 320)
+
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 offset_left = 468.0
 offset_top = 16.0

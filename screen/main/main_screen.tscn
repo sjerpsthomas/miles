@@ -8,14 +8,17 @@
 [node name="MainScreen" type="Node2D"]
 script = ExtResource("1_kew78")
 
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(640, 320)
+
 [node name="Logic" type="Node" parent="."]
 unique_name_in_owner = true
 
 [node name="StartButton" type="Button" parent="."]
-offset_left = 325.0
-offset_top = 201.0
-offset_right = 831.0
-offset_bottom = 297.0
+offset_left = 400.0
+offset_top = 208.0
+offset_right = 880.0
+offset_bottom = 304.0
 theme_override_fonts/font = ExtResource("2_7jmhx")
 theme_override_font_sizes/font_size = 40
 text = "Start (CΔ)"
@@ -23,10 +26,10 @@ script = ExtResource("3_ovtu3")
 chord = "100010010000"
 
 [node name="QuitButton" type="Button" parent="."]
-offset_left = 325.0
-offset_top = 329.0
-offset_right = 831.0
-offset_bottom = 425.0
+offset_left = 400.0
+offset_top = 336.0
+offset_right = 880.0
+offset_bottom = 432.0
 theme_override_fonts/font = ExtResource("2_7jmhx")
 theme_override_font_sizes/font_size = 40
 text = "Quit (C-)"

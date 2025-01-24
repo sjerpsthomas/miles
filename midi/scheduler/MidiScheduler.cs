@@ -57,6 +57,18 @@ public partial class MidiScheduler : Node
 			Scheduler = this,
 			Recorder = Recorder,
 		});
+
+		AddMeasure(-2, new MidiMeasure([
+			new MidiNote(MidiServer.OutputName.Metronome, 0.0, 0.2, 22, 48),
+			new MidiNote(MidiServer.OutputName.Metronome, 0.5, 0.2, 22, 48),
+		]));
+		
+		AddMeasure(-1, new MidiMeasure([
+			new MidiNote(MidiServer.OutputName.Metronome, 0.00, 0.2, 22, 48),
+			new MidiNote(MidiServer.OutputName.Metronome, 0.25, 0.2, 22, 48),
+			new MidiNote(MidiServer.OutputName.Metronome, 0.50, 0.2, 22, 48),
+			new MidiNote(MidiServer.OutputName.Metronome, 0.75, 0.2, 22, 48),
+		]));
 		
 		// Start
 		Start();
@@ -92,7 +104,9 @@ public partial class MidiScheduler : Node
 	{
 		var elapsed = dateTime - StartDateTime;
 		double currentTimeMs = elapsed.TotalMilliseconds;
-		return currentTimeMs / 1000.0 / (60.0 / BPM) / 4.0;
+		var currentMeasure = currentTimeMs / 1000.0 / (60.0 / BPM) / 4.0;
+		
+		return currentMeasure - 2;
 	}
     
 	public void Tick(double newCurrentTime)

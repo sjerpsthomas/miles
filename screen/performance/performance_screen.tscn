@@ -8,6 +8,9 @@
 [node name="PerformanceScreen" type="Node2D"]
 script = ExtResource("1_wg3x3")
 
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(640, 320)
+
 [node name="Logic" type="Node" parent="."]
 
 [node name="MidiRecorder" type="Node" parent="Logic"]
@@ -20,13 +23,13 @@ script = ExtResource("3_3ekko")
 Recorder = NodePath("../MidiRecorder")
 
 [node name="PianoOctave" parent="." instance=ExtResource("4_6udha")]
-position = Vector2(486, 24)
+position = Vector2(549, 280)
 key_offset = 24
 
 [node name="PianoOctave2" parent="." instance=ExtResource("4_6udha")]
-position = Vector2(304, 24)
+position = Vector2(367, 280)
 key_offset = 12
 
 [node name="PianoOctave3" parent="." instance=ExtResource("4_6udha")]
-position = Vector2(668, 24)
+position = Vector2(731, 280)
 key_offset = 36
