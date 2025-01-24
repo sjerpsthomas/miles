@@ -77,4 +77,10 @@ public class FactorOracle
         newNode.Supply = k == -1 ? 0 : Nodes[k][note];
         Nodes.Add(newNode);
     }
+
+    public void AddMelody(MidiMelody melody)
+    {
+        foreach (var note in melody.Melody)
+            AddNote(note);
+    }
 }

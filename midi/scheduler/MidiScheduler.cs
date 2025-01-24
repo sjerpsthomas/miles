@@ -69,7 +69,8 @@ public partial class MidiScheduler : Node
 		};
 
 		Components.Add(
-			new SoloMidiSchedulerComponent(leadSheet, MidiSong.FromFile("res://midi/files/anotheryou_SOLO.mid"))
+			new SoloMidiSchedulerComponent(MidiSong.FromFile("res://midi/files/anotheryou_SOLO.mid"), leadSheet,
+				new FactorOracleSoloist())
 			{
 				Scheduler = this,
 				Recorder = Recorder,

@@ -91,7 +91,43 @@ theme_override_fonts/font = ExtResource("3_wcr5e")
 theme_override_font_sizes/font_size = 30
 text = "Add chord to measure"
 
+[node name="ExtraOptions" type="Panel" parent="Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = 16.0
+offset_right = 424.0
+offset_bottom = 112.0
+grow_vertical = 0
+
+[node name="RhythmTypeOptionButton" type="OptionButton" parent="Panel/ExtraOptions"]
+offset_left = 228.0
+offset_top = 16.0
+offset_right = 408.0
+offset_bottom = 80.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("3_wcr5e")
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+item_count = 2
+popup/item_0/text = "Straight"
+popup/item_1/text = "Swing"
+popup/item_1/id = 1
+
+[node name="Label" type="Label" parent="Panel/ExtraOptions"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 32.0
+offset_right = 66.0
+offset_bottom = 68.0
+theme_override_fonts/font = ExtResource("3_wcr5e")
+theme_override_font_sizes/font_size = 30
+text = "Rhythm type"
+
 [connection signal="measure_clicked" from="ScrollContainer/StandardView" to="Panel" method="_on_standard_view_measure_clicked"]
 [connection signal="pressed" from="SaveAndReturnButton" to="." method="_on_save_and_return_button_pressed"]
 [connection signal="pressed" from="DiscardChangesButton" to="." method="_on_discard_changes_button_pressed"]
 [connection signal="pressed" from="Panel/AddChordButton" to="Panel" method="_on_add_chord_button_pressed"]
+[connection signal="item_selected" from="Panel/ExtraOptions/RhythmTypeOptionButton" to="Panel" method="_on_rhythm_type_option_button_item_selected"]

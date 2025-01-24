@@ -9,18 +9,14 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
 {
     public LeadSheet LeadSheet;
 
-    public FactorOracle FactorOracle = new();
-
-    private MidiMelody _melody;
+    public Soloist Soloist;
     
-    public SoloMidiSchedulerComponent(LeadSheet leadSheet, MidiSong solo)
+    public SoloMidiSchedulerComponent(MidiSong solo, LeadSheet leadSheet, Soloist soloist)
     {
         LeadSheet = leadSheet;
+        Soloist = soloist;
         
-        _melody = new MidiMelody(solo, leadSheet);
-
-        foreach (var note in _melody.Melody)
-            FactorOracle.AddNote(note);
+        Soloist.Initialize(solo, LeadSheet);
     }
     
     public override void HandleMeasure(int currentMeasure)
@@ -28,53 +24,21 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
         if (currentMeasure == 0) return;
         if ((currentMeasure + 4) % 8 != 0) return;
         if (currentMeasure >= LeadSheet.Chords.Count) return;
+
+        var recordMeasureCount = 4;
+        var generateMeasureCount = 4;
         
         // Flush recording
         Recorder.Flush(currentMeasure);
         
-        // Add notes to melody
-        var recordedMeasures = Recorder.Song.Measures.TakeLast(4).ToList();
-        var newNotes = _melody.GetNotes(recordedMeasures, LeadSheet, currentMeasure);
-        _melody.Melody.AddRange(newNotes);
-        
-        // Train factor oracle
-        foreach (var note in newNotes)
-            FactorOracle.AddNote(note);
-        
-        // Create 4 new measures
-        var measures = new List<MidiMeasure>();
-        for (var i = 0; i < 4; i++)
-            measures.Add(new MidiMeasure());
-        
-        // Traverse factor oracle until time runs out
-        var rng = new Random();
-        var time = 0.0;
-        var index = FactorOracle.Nodes.Count - 10;
-        
-        while (time < 4.0)
-        {
-            // Traverse
-            var (note, newIndex) = FactorOracle.Nodes[index].Traverse(index, rng);
+        // Get recorded measures, ingest
+        var recordedMeasures = Recorder.Song.Measures.TakeLast(recordMeasureCount).ToList();
+        Soloist.IngestMeasures(recordedMeasures, currentMeasure - recordMeasureCount);
 
-            // Go back to start if finished
-            if (note == null || newIndex >= FactorOracle.Nodes.Count)
-                (note, newIndex) = FactorOracle.Nodes[0].Traverse(0, rng);
-            
-            // Add note to measure
-            var measureNum = (int)Math.Truncate(time);
-            var measure = measures[measureNum];
-
-            var absoluteNote = LeadSheet.ChordAtTime(currentMeasure + time).GetAbsoluteNote(note.Note);
-            var newNote = new MidiNote(MidiServer.OutputName.Algorithm, time - measureNum, note.Length, absoluteNote, note.Velocity);
-            measure.Notes.Add(newNote);
-            
-            // Iterate
-            index = newIndex;
-            time += note.Length + note.RestLength;
-        }
+        var measures = Soloist.Generate(generateMeasureCount, currentMeasure);
         
         // Schedule measures
-        for (var i = 0; i < 4; i++)
+        for (var i = 0; i < generateMeasureCount; i++)
             Scheduler.AddMeasure(currentMeasure + i, measures[i]);
     }
 }

@@ -9,7 +9,9 @@ public class LeadSheet
 {
     public enum SoloType { Learner, Algorithm }
 
-    public string PickupMeasureCount;
+    public enum StyleEnum { Straight, Swing }
+    
+    public StyleEnum Style;
     
     public List<List<Chord>> Chords;
     

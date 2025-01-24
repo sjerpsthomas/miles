@@ -5,6 +5,13 @@ extends Panel
 
 var measure_num: int = -1
 
+
+func _ready() -> void:
+	init.call_deferred()
+
+func init() -> void:
+	$ExtraOptions/RhythmTypeOptionButton.select(standard_view.data["Style"])
+
 func _on_standard_view_measure_clicked(new_measure_num: int) -> void:
 	for chord_edit in $Chords.get_children():
 		chord_edit.queue_free()
@@ -64,10 +71,17 @@ func apply_to_standard_view() -> void:
 		new_measure_data.push_back({ "Key": chord_edit.key, "Type": chord_edit.type })
 	
 	standard_view.data["Chords"][measure_num] = new_measure_data
+	
+	standard_view.data["Style"] = $ExtraOptions/RhythmTypeOptionButton.selected
+	
 	standard_view.refresh()
 
 
 func _on_add_chord_button_pressed() -> void:
 	add_chord(StandardEditorMeasure.KeyEnum.C, StandardEditorMeasure.TypeEnum.Major)
 	refresh()
+	apply_to_standard_view()
+
+
+func _on_rhythm_type_option_button_item_selected(_index: int) -> void:
 	apply_to_standard_view()

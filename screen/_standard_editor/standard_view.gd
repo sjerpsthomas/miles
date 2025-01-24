@@ -26,7 +26,7 @@ func save_sheet() -> void:
 	var file_name := "user://saves/" + standard_name + "/sheet.json"
 	var file := FileAccess.open(file_name, FileAccess.WRITE)
 	
-	var text = JSON.stringify(data)
+	var text = JSON.stringify(data, "  ")
 	
 	file.store_string(text)
 	
