@@ -48,7 +48,8 @@ public partial class MidiRecorder : Node
 	public void OnMidiServerNoteSent(OutputName outputName, MidiNote midiNote)
 	{
 		if (outputName != OutputName.Loopback) return;
-		
+		if (midiNote.Time < 0) return;
+        
 		if (midiNote.Velocity > 0)
 		{
 			// Assert no similar pending notes exist

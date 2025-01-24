@@ -33,7 +33,8 @@ public partial class MidiScheduler : Node
 	public override void _Ready()
 	{
 		// Get path of standard
-		var standardName = (string)GetNode("/root/PerformanceScreenInit").Get("standard_name");
+		var init = GetNode("/root/PerformanceScreenInit");
+		var standardName = (string)init.Get("standard_name");
 		var standardPath = $"user://saves/{standardName}/";
 
 		// Load necessary files
@@ -52,7 +53,15 @@ public partial class MidiScheduler : Node
 			Song = backingTrack
 		});
 
-		Components.Add(new SoloMidiSchedulerComponent(soloTrack, leadSheet, new FactorOracleSoloist())
+		Soloist soloist = (int)init.Get("soloist") switch
+		{
+			0 => new FactorOracleSoloist(),
+			1 => new RandomSoloist(),
+			2 => new RetrievalSoloist(),
+			_ => throw new ArgumentOutOfRangeException()
+		};
+        
+		Components.Add(new SoloMidiSchedulerComponent(soloTrack, leadSheet, soloist)
 		{
 			Scheduler = this,
 			Recorder = Recorder,

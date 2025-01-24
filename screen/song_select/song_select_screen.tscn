@@ -73,6 +73,23 @@ theme_override_font_sizes/font_size = 30
 text = "Edit"
 script = ExtResource("5_v337t")
 
+[node name="SoloistOptionButton" type="OptionButton" parent="."]
+offset_left = 1008.0
+offset_top = 416.0
+offset_right = 1264.0
+offset_bottom = 480.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+item_count = 3
+popup/item_0/text = "Factor Oracle"
+popup/item_1/text = "Random"
+popup/item_1/id = 1
+popup/item_2/text = "Retrieval"
+popup/item_2/id = 2
+
 [node name="StartButton" type="Button" parent="."]
 offset_left = 1008.0
 offset_top = 496.0

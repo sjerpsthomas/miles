@@ -45,7 +45,6 @@ public class MidiSong
                 song.Fill(measureNum + 1);
 
                 // Create new note
-                // TODO: implement multiple tracks
                 var note = new MidiNote(outputName, time - measureNum, length, noteOnEvent.NoteNumber, noteOnEvent.Velocity);
                 
                 // Add note to measure

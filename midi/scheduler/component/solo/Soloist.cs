@@ -9,5 +9,5 @@ public abstract class Soloist
 
     public abstract void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum);
 
-    public abstract List<MidiMeasure> Generate(int generateMeasureCount, int measureNum);
+    public abstract List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum);
 }
