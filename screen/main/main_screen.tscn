@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://tdx5lmucxnnw"]
+[gd_scene load_steps=5 format=3 uid="uid://tdx5lmucxnnw"]
 
 [ext_resource type="Script" path="res://screen/main/MainScreen.cs" id="1_kew78"]
+[ext_resource type="FontFile" uid="uid://dcfa6hmqj0pyx" path="res://font/Mansalva-Regular.ttf" id="2_7jmhx"]
 [ext_resource type="Script" path="res://screen/main/start_button.gd" id="3_ovtu3"]
 [ext_resource type="Script" path="res://screen/main/quit_button.gd" id="4_tdv8w"]
 
@@ -15,7 +16,9 @@ offset_left = 325.0
 offset_top = 201.0
 offset_right = 831.0
 offset_bottom = 297.0
-text = "Start (CMaj)"
+theme_override_fonts/font = ExtResource("2_7jmhx")
+theme_override_font_sizes/font_size = 40
+text = "Start (CΔ)"
 script = ExtResource("3_ovtu3")
 chord = "100010010000"
 
@@ -24,7 +27,9 @@ offset_left = 325.0
 offset_top = 329.0
 offset_right = 831.0
 offset_bottom = 425.0
-text = "Quit (Cmin)"
+theme_override_fonts/font = ExtResource("2_7jmhx")
+theme_override_font_sizes/font_size = 40
+text = "Quit (C-)"
 script = ExtResource("4_tdv8w")
 chord = "100100010000"
 

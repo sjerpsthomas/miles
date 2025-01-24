@@ -76,12 +76,13 @@ func apply_to_standard_view() -> void:
 	
 	standard_view.refresh()
 
-
 func _on_add_chord_button_pressed() -> void:
 	add_chord(StandardEditorMeasure.KeyEnum.C, StandardEditorMeasure.TypeEnum.Major)
 	refresh()
 	apply_to_standard_view()
 
-
 func _on_rhythm_type_option_button_item_selected(_index: int) -> void:
 	apply_to_standard_view()
+
+func _on_user_folder_button_pressed() -> void:
+	OS.shell_open(OS.get_user_data_dir() + "/saves/" + standard_view.standard_name)
