@@ -2,9 +2,12 @@ class_name StandardView
 extends Panel
 
 
+@export var height := 64.0
+
 var standard_name: String
 
 var data
+
 
 signal measure_clicked(measure_num: int)
 
@@ -54,11 +57,12 @@ func refresh() -> void:
 			
 			chords.push_back(new_chord)
 		
-		var measure = preload("res://screen/_standard_editor/measure.tscn").instantiate()
+		var measure: NinePatchRect = preload("res://standard_view/measure.tscn").instantiate()
 		$Measures.add_child(measure)
 		
 		measure.position.x = 192 * (position_index % 4)
-		measure.position.y = 64 * (position_index / 4) + 64
+		measure.position.y = height * (position_index / 4) + height
+		measure.size.y = height
 		
 		measure.is_pickup_measure = i < pickup_measure_count
 		measure.initialize(chords)
@@ -67,7 +71,7 @@ func refresh() -> void:
 		
 		position_index += 1
 	
-	size.y = 64 * (position_index / 4) + 64
+	size.y = height * (position_index / 4) + height
 	custom_minimum_size.y = size.y
 
 

@@ -23,10 +23,15 @@ public partial class PerformanceScreen : Node2D
 		Keys.Fill(false);
 
 		MidiServer.Instance.NoteSent += OnMidiServerNoteSent;
+
+		var standardName = (string)GetNode("/root/PerformanceScreenInit").Get("standard_name");
+		GetNode("StandardView").Call("load_sheet", standardName);
 	}
 
-	public void OnMidiServerNoteSent(OutputName outputName, MidiNote noteData)
+	public void OnMidiServerNoteSent(MidiNote noteData)
 	{
+		if (noteData.OutputName is not (OutputName.Loopback or OutputName.Algorithm)) return;
+		
 		var note = noteData.Note;
 		var pressed = noteData.Velocity > 0;
 
@@ -35,7 +40,7 @@ public partial class PerformanceScreen : Node2D
 
 		if (note is < 0 or > 60)
 			return;
-        
+
 		Keys[note] = pressed;
 	}
 

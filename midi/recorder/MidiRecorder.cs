@@ -45,9 +45,9 @@ public partial class MidiRecorder : Node
 		Song.Fill(newMeasureCount);
 	}
 
-	public void OnMidiServerNoteSent(OutputName outputName, MidiNote midiNote)
+	public void OnMidiServerNoteSent(MidiNote midiNote)
 	{
-		if (outputName != OutputName.Loopback) return;
+		if (midiNote.OutputName != OutputName.Loopback) return;
 		if (midiNote.Time < 0) return;
         
 		if (midiNote.Velocity > 0)

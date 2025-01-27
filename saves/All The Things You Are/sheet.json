@@ -227,7 +227,16 @@
         "Type": 0
       }
     ],
-    []
+    [
+      {
+        "Key": 7,
+        "Type": 3
+      },
+      {
+        "Key": 0,
+        "Type": 1
+      }
+    ]
   ],
   "PickupMeasureCount": 0,
   "SoloDivision": [

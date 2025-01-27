@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://dem8e1kcd3vo3"]
 
 [ext_resource type="Script" path="res://screen/_standard_editor/standard_editor.gd" id="1_f2q36"]
-[ext_resource type="PackedScene" uid="uid://bk265yvb0xqjm" path="res://screen/_standard_editor/standard_view.tscn" id="1_nper8"]
+[ext_resource type="PackedScene" uid="uid://bk265yvb0xqjm" path="res://standard_view/standard_view.tscn" id="1_nper8"]
 [ext_resource type="Script" path="res://screen/_standard_editor/panel.gd" id="2_05bg8"]
 [ext_resource type="Script" path="res://screen/_standard_editor/scroll_container.gd" id="2_5d0qb"]
 [ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="3_wcr5e"]

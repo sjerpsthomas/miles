@@ -41,7 +41,7 @@ func initialize(new_chords: Array[Chord]) -> void:
 	for i in range(new_chords.size()):
 		var chord := new_chords[i]
 		
-		var chord_instance := preload("res://screen/_standard_editor/chord.tscn").instantiate()
+		var chord_instance := preload("res://standard_view/chord.tscn").instantiate()
 		add_child(chord_instance)
 		chord_instance.size.x = chord_width
 		chord_instance.position.x = i * chord_width

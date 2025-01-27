@@ -18,8 +18,6 @@ public class RandomSoloist : Soloist
 
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
-        GD.Print("random random random");
-        
         // Create new measures
         var measures = new List<MidiMeasure>();
         for (var i = 0; i < generateMeasureCount; i++)

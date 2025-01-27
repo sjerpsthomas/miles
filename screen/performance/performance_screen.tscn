@@ -1,15 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://8fqvos4og1fa"]
+[gd_scene load_steps=6 format=3 uid="uid://8fqvos4og1fa"]
 
 [ext_resource type="Script" path="res://screen/performance/PerformanceScreen.cs" id="1_wg3x3"]
 [ext_resource type="Script" path="res://midi/recorder/MidiRecorder.cs" id="2_c7q52"]
 [ext_resource type="Script" path="res://midi/scheduler/MidiScheduler.cs" id="3_3ekko"]
-[ext_resource type="PackedScene" uid="uid://bbdqe6y8lqrnr" path="res://visualisation/piano/pattern/piano_pattern.tscn" id="4_6udha"]
+[ext_resource type="PackedScene" uid="uid://bk265yvb0xqjm" path="res://standard_view/standard_view.tscn" id="5_vlfb7"]
+[ext_resource type="PackedScene" uid="uid://ciletavbhl37" path="res://piano/piano.tscn" id="6_sd6b3"]
 
 [node name="PerformanceScreen" type="Node2D"]
 script = ExtResource("1_wg3x3")
-
-[node name="Camera" type="Camera2D" parent="."]
-position = Vector2(640, 320)
 
 [node name="Logic" type="Node" parent="."]
 
@@ -22,14 +20,21 @@ unique_name_in_owner = true
 script = ExtResource("3_3ekko")
 Recorder = NodePath("../MidiRecorder")
 
-[node name="PianoOctave" parent="." instance=ExtResource("4_6udha")]
-position = Vector2(549, 280)
-key_offset = 24
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(640, 324)
 
-[node name="PianoOctave2" parent="." instance=ExtResource("4_6udha")]
-position = Vector2(367, 280)
-key_offset = 12
+[node name="StandardView" parent="." instance=ExtResource("5_vlfb7")]
+offset_left = 256.0
+offset_top = 16.0
+offset_right = 1024.0
+offset_bottom = 536.0
+height = 52.0
 
-[node name="PianoOctave3" parent="." instance=ExtResource("4_6udha")]
-position = Vector2(731, 280)
-key_offset = 36
+[node name="TextureRect" type="ColorRect" parent="."]
+offset_top = 552.0
+offset_right = 1280.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 1)
+
+[node name="Piano" parent="." instance=ExtResource("6_sd6b3")]
+position = Vector2(173, 560)

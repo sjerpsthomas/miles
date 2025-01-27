@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://ck5k24lvwxhxq"]
 
-[ext_resource type="Script" path="res://screen/_standard_editor/measure.gd" id="1_7tgc7"]
-[ext_resource type="Texture2D" uid="uid://bokw2dwk2p8ya" path="res://screen/_standard_editor/measure_frame.png" id="1_rfdfq"]
+[ext_resource type="Script" path="res://standard_view/measure.gd" id="1_7tgc7"]
+[ext_resource type="Texture2D" uid="uid://bokw2dwk2p8ya" path="res://standard_view/measure_frame.png" id="1_rfdfq"]
 
 [node name="Measure" type="NinePatchRect"]
 offset_right = 192.0

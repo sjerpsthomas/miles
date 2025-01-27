@@ -2,17 +2,13 @@ class_name PianoKey
 extends ColorRect
 
 
+@onready var index := get_index()
+
 var entered := false
 var clicked := false
 
-@export var index: int
-@export var output := "Algorithm"
-
 
 func _ready() -> void:
-	var parent := get_parent() as Piano
-	index += parent.key_offset
-	
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 

@@ -1,4 +1,3 @@
-class_name Piano
 extends Node2D
 
 @export var key_offset := 60

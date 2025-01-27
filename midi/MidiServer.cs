@@ -28,7 +28,7 @@ public partial class MidiServer : Node
 
     public Dictionary<OutputName, MidiOut> Outputs;
 
-    public delegate void NoteSentHandler(OutputName outputName, MidiNote note);
+    public delegate void NoteSentHandler(MidiNote note);
 
     public event NoteSentHandler NoteSent;
     
@@ -62,13 +62,10 @@ public partial class MidiServer : Node
 
     public void Send(MidiNote note)
     {
-        if (note.OutputName == OutputName.Algorithm)
-            GD.Print(note.Velocity);
-        
         var noteEvent = new NoteOnEvent(0, 1, note.Note, note.Velocity, 0);
         Outputs[note.OutputName].Send(noteEvent.GetAsShortMessage());
 
-        NoteSent!(note.OutputName, note);
+        NoteSent!(note);
     }
     
     public void Send(OutputName outputName, int note, int velocity) =>

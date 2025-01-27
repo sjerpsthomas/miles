@@ -1,12 +1,14 @@
 [gd_scene load_steps=2 format=3 uid="uid://cw3blf5wlbnvi"]
 
-[ext_resource type="FontFile" uid="uid://nt15vehj6iot" path="res://font/LXGWWenKaiMonoTC-Bold.ttf" id="1_ni508"]
+[ext_resource type="FontFile" uid="uid://nt15vehj6iot" path="res://font/LXGWWenKaiMonoTC-Bold.ttf" id="1_8o5tb"]
 
 [node name="Panel" type="Control"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 192.0
-offset_bottom = 64.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 1
 
 [node name="Label" type="Label" parent="."]
@@ -17,7 +19,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("1_ni508")
+theme_override_fonts/font = ExtResource("1_8o5tb")
 theme_override_font_sizes/font_size = 31
 text = "Am7"
 horizontal_alignment = 1

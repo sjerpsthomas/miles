@@ -18,7 +18,7 @@ public partial class InputScreen : Node
 		MidiServer.Instance.NoteSent += _on_MidiServer_NoteSent;
 	}
 
-	public void _on_MidiServer_NoteSent(MidiServer.OutputName outputName, MidiNote note)
+	public void _on_MidiServer_NoteSent(MidiNote note)
 	{
 		var index = note.Note % 12;
 		
