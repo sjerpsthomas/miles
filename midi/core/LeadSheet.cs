@@ -22,15 +22,14 @@ public class LeadSheet
     
     public Chord ChordAtTime(double time)
     {
-        if (time > Chords.Count)
-            return null;
+        time %= Chords.Count;
         
         var measure = (int)Math.Truncate(time);
         var measureTime = time - measure;
         var measureChords = Chords[measure];
 
         if (measureChords is [])
-            return null;
+            throw new ArgumentException("No chords found!");
         
         return measureChords[(int)Math.Truncate(measureTime * measureChords.Count)];
     }

@@ -26,7 +26,7 @@ public class MidiSong
                 0 => MidiServer.OutputName.Algorithm,
                 1 => MidiServer.OutputName.Backing1Bass,
                 2 => MidiServer.OutputName.Backing2Piano,
-                3 => MidiServer.OutputName.Backing3Guitar,
+                3 => MidiServer.OutputName.Backing3Keyboard,
                 4 => MidiServer.OutputName.Backing4Drums,
                 _ => throw new ArgumentOutOfRangeException()
             };

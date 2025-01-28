@@ -22,7 +22,7 @@ public partial class MidiServer : Node
         Metronome,
         Backing1Bass,
         Backing2Piano,
-        Backing3Guitar,
+        Backing3Keyboard,
         Backing4Drums,
     }
 
@@ -46,7 +46,7 @@ public partial class MidiServer : Node
             [OutputName.Metronome] = FindMidiOut("Metronome"),
             [OutputName.Backing1Bass] = FindMidiOut("Backing 1 - Bass"),
             [OutputName.Backing2Piano] = FindMidiOut("Backing 2 - Piano"),
-            [OutputName.Backing3Guitar] = FindMidiOut("Backing 3 - Guitar"),
+            [OutputName.Backing3Keyboard] = FindMidiOut("Backing 3 - Keyboard"),
             [OutputName.Backing4Drums] = FindMidiOut("Backing 4 - Drums"),
         };
 

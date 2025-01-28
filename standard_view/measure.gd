@@ -43,7 +43,7 @@ func initialize(new_chords: Array[Chord]) -> void:
 		
 		var chord_instance := preload("res://standard_view/chord.tscn").instantiate()
 		add_child(chord_instance)
-		chord_instance.size.x = chord_width
+		chord_instance.set_deferred("size", Vector2(chord_width, chord_instance.size.y))
 		chord_instance.position.x = i * chord_width
 		
 		var chord_text := str(chord)

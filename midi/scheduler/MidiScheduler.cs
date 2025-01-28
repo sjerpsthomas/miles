@@ -21,7 +21,7 @@ public partial class MidiScheduler : Node
 
 	// Integer part: measure
 	// Fractional part: part within measure
-	public double CurrentTime = -1.0;
+	public double CurrentTime = -2.0;
 	
 	public PriorityQueue<MidiNote, double> NoteQueue = new();
 

@@ -3,6 +3,7 @@ extends Panel
 
 
 @export var height := 64.0
+@export var fade_chords := false
 
 var standard_name: String
 
@@ -47,6 +48,7 @@ func refresh() -> void:
 	
 	for i in range(data["Chords"].size()):
 		var measure_data = data["Chords"][i]
+		var solo_division: int = data["SoloDivision"][i]
 		
 		var chords: Array[StandardEditorMeasure.Chord]
 		
@@ -66,6 +68,9 @@ func refresh() -> void:
 		
 		measure.is_pickup_measure = i < pickup_measure_count
 		measure.initialize(chords)
+		
+		if solo_division == 1:
+			measure.modulate.a = 0.6
 		
 		measure.clicked.connect(_on_measure_clicked.bind(i))
 		
