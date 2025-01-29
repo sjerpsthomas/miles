@@ -16,15 +16,22 @@ class Chord:
 	var key: KeyEnum
 	var type: TypeEnum
 	
-	func _to_string() -> String:
+	func get_type_string() -> String:
 		var type_str: String
+		
 		match type:
 			TypeEnum.Major: type_str = "Δ7"
 			TypeEnum.Dominant: type_str = "7"
 			TypeEnum.Minor: type_str = "m7"
 			TypeEnum.HalfDim7: type_str = "m7b5"
 		
-		return KeyEnum.find_key(key) + type_str
+		return type_str
+	
+	func _to_string() -> String:
+		return KeyEnum.find_key(key) + get_type_string()
+	
+	func to_bbcode() -> String:
+		return "[center]" + KeyEnum.find_key(key) + "[font_size=20]" + get_type_string()
 
 
 var is_pickup_measure := false
@@ -32,7 +39,9 @@ var is_pickup_measure := false
 signal clicked
 
 
-func initialize(new_chords: Array[Chord]) -> void:
+func initialize(new_chords: Array[Chord], section_label: String) -> void:
+	$SectionLabel.text = section_label
+	
 	var chord_width := size.x / new_chords.size()
 	
 	if is_pickup_measure:
@@ -46,7 +55,7 @@ func initialize(new_chords: Array[Chord]) -> void:
 		chord_instance.set_deferred("size", Vector2(chord_width, chord_instance.size.y))
 		chord_instance.position.x = i * chord_width
 		
-		var chord_text := str(chord)
+		var chord_text := chord.to_bbcode()
 		if is_pickup_measure: chord_text = "(" + chord_text + ")"
 		
 		chord_instance.get_node("Label").text = chord_text

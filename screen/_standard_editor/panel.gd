@@ -23,7 +23,12 @@ func _on_standard_view_measure_clicked(new_measure_num: int) -> void:
 	for chord in measure_data:
 		add_chord(chord["Key"], chord["Type"])
 	
-	$AddChordButton.visible = measure_num != -1
+	$SectionLabelTextEdit.text = standard_view.data["SectionLabels"][measure_num]
+	
+	var measure_options_visible := measure_num != -1
+	$SectionLabelLabel.visible = measure_options_visible
+	$SectionLabelTextEdit.visible = measure_options_visible
+	$AddChordButton.visible = measure_options_visible
 	
 	refresh()
 
@@ -57,11 +62,11 @@ func refresh() -> void:
 		i += 1
 	
 	if i == 0:
-		size.y = 140
+		size.y = 140 + 80
 	elif i == 1:
-		size.y = 188
+		size.y = 188 + 80
 	else:
-		size.y = 188 + 112 * (i - 1)
+		size.y = 188 + 80 + 112 * (i - 1)
 
 func apply_to_standard_view() -> void:
 	var new_measure_data := []
@@ -72,6 +77,10 @@ func apply_to_standard_view() -> void:
 		new_measure_data.push_back({ "Key": chord_edit.key, "Type": chord_edit.type })
 	
 	standard_view.data["Chords"][measure_num] = new_measure_data
+	
+	var new_section_label: String = $SectionLabelTextEdit.text
+	standard_view.data["SectionLabels"][measure_num] = new_section_label
+	$SectionLabelTextEdit.flat = new_section_label != ""
 	
 	standard_view.data["Style"] = $ExtraOptions/RhythmTypeOptionButton.selected
 	
@@ -93,6 +102,9 @@ func _on_rhythm_type_option_button_item_selected(_index: int) -> void:
 	apply_to_standard_view()
 
 func _on_bpm_text_edit_text_changed(new_text: String) -> void:
+	apply_to_standard_view()
+
+func _on_section_label_text_edit_text_changed(new_text: String) -> void:
 	apply_to_standard_view()
 
 func _on_user_folder_button_pressed() -> void:

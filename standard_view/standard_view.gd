@@ -46,9 +46,12 @@ func refresh() -> void:
 	var pickup_measure_count: int = data["PickupMeasureCount"]
 	if pickup_measure_count != 0: position_index = 4 - pickup_measure_count
 	
+	var section_num := 0
+	
 	for i in range(data["Chords"].size()):
 		var measure_data = data["Chords"][i]
 		var solo_division: int = data["SoloDivision"][i]
+		var section_label: String = data["SectionLabels"][i]
 		
 		var chords: Array[StandardEditorMeasure.Chord]
 		
@@ -67,7 +70,7 @@ func refresh() -> void:
 		measure.size.y = height
 		
 		measure.is_pickup_measure = i < pickup_measure_count
-		measure.initialize(chords)
+		measure.initialize(chords, section_label)
 		
 		if solo_division == 1:
 			measure.modulate = Color.GAINSBORO
