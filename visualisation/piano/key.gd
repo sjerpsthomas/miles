@@ -2,6 +2,8 @@ class_name PianoKey
 extends ColorRect
 
 
+@onready var start_color := color
+
 @onready var index := get_index()
 
 var entered := false
@@ -24,7 +26,7 @@ func _process(_delta: float) -> void:
 	clicked = new_clicked
 
 func update_pressed(pressed: bool) -> void:
-	modulate = Color.GRAY if pressed else Color.WHITE
+	color = start_color.blend(Color(Color.DEEP_PINK, 0.5)) if pressed else start_color
 
 func _on_mouse_entered() -> void: entered = true
 

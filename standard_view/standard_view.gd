@@ -2,7 +2,7 @@ class_name StandardView
 extends Panel
 
 
-@export var height := 64.0
+@export var height := 60.0
 @export var fade_chords := false
 
 var standard_name: String
@@ -70,6 +70,7 @@ func refresh() -> void:
 		measure.initialize(chords)
 		
 		if solo_division == 1:
+			measure.modulate = Color.GAINSBORO
 			measure.modulate.a = 0.6
 		
 		measure.clicked.connect(_on_measure_clicked.bind(i))

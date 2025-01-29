@@ -9,8 +9,12 @@ public partial class Piano : Node2D
 		
 	public override void _Ready()
 	{
-		MidiServer.Instance.NoteSent += note =>
-			CallDeferred("_on_MidiServer_NoteSent", (int)note.OutputName, note.Note, note.Velocity);
+		MidiServer.Instance.DeferredNoteSent += _on_MidiServer_NoteSent;
+	}
+	
+	public override void _ExitTree()
+	{
+		MidiServer.Instance.DeferredNoteSent -= _on_MidiServer_NoteSent;
 	}
 	
 	public void _on_MidiServer_NoteSent(int outputName, int note, int velocity)

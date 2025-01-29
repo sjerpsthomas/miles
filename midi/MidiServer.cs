@@ -29,8 +29,11 @@ public partial class MidiServer : Node
     public Dictionary<OutputName, MidiOut> Outputs;
 
     public delegate void NoteSentHandler(MidiNote note);
-
+    
     public event NoteSentHandler NoteSent;
+
+    [Signal]
+    public delegate void DeferredNoteSentEventHandler(int outputName, int note, int velocity);
     
     public override void _Ready()
     {
@@ -66,6 +69,12 @@ public partial class MidiServer : Node
         Outputs[note.OutputName].Send(noteEvent.GetAsShortMessage());
 
         NoteSent!(note);
+        CallDeferred("SendDeferred", (int)note.OutputName, note.Note, note.Velocity);
+    }
+
+    public void SendDeferred(int outputName, int note, int velocity)
+    {
+        EmitSignal(SignalName.DeferredNoteSent, outputName, note, velocity);
     }
     
     public void Send(OutputName outputName, int note, int velocity) =>

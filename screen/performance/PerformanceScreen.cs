@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using thesis.midi;
 using thesis.midi.core;
+using thesis.midi.scheduler;
 
 namespace thesis.screen.performance;
 
@@ -54,5 +55,15 @@ public partial class PerformanceScreen : Node2D
 			if (Keys[i]) chars[i % 12] = '1';
 
 		return string.Concat(chars);
+	}
+
+	public override void _Input(InputEvent @event)
+	{
+		if (@event.IsActionPressed("ui_cancel"))
+		{
+			GetNode<MidiScheduler>("%MidiScheduler").Stop();
+			
+			GetTree().ChangeSceneToFile("res://screen/song_select/song_select_screen.tscn");
+		}
 	}
 }

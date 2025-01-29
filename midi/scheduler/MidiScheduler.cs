@@ -96,6 +96,10 @@ public partial class MidiScheduler : Node
 	{
 		MidiServer.Instance.Scheduler = null;
 		Enabled = false;
+
+		lock (NoteQueue)
+			while (NoteQueue.TryDequeue(out var note, out _))
+				if (note.Velocity == 0) MidiServer.Instance.Send(note);
 	}
 	
 	public void Run()
