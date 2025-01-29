@@ -7,7 +7,7 @@ extends Node2D
 func _process(delta: float) -> void:
 	# get time, with lookahead
 	var current_time: float = %MidiScheduler.CurrentTime
-	current_time += 0.1
+	current_time += 0.25
 	
 	if current_time < 0: return
 	current_chord.visible = true

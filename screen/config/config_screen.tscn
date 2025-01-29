@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://t3avkfxx4ovs"]
+
+[ext_resource type="PackedScene" uid="uid://ciletavbhl37" path="res://util/piano/piano.tscn" id="1_llot4"]
+[ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="2_7jatf"]
+[ext_resource type="Script" path="res://screen/config/OutputNameOptionButton.cs" id="2_oxtwq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3mgkv"]
+
+[node name="ConfigScreen" type="Node2D"]
+texture_filter = 1
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 1216.0
+offset_bottom = 576.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_3mgkv")
+
+[node name="OutputNameOptionButton" type="OptionButton" parent="Panel"]
+layout_mode = 0
+offset_left = 144.0
+offset_top = 16.0
+offset_right = 400.0
+offset_bottom = 80.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("2_7jatf")
+theme_override_font_sizes/font_size = 30
+alignment = 1
+script = ExtResource("2_oxtwq")
+
+[node name="Piano" parent="Panel" instance=ExtResource("1_llot4")]
+unique_name_in_owner = true
+position = Vector2(16, 96)
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 144.0
+offset_bottom = 80.0
+theme_override_fonts/font = ExtResource("2_7jatf")
+theme_override_font_sizes/font_size = 30
+text = "Output name"
+vertical_alignment = 1
+
+[connection signal="item_selected" from="Panel/OutputNameOptionButton" to="Panel/OutputNameOptionButton" method="_on_item_selected"]

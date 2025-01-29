@@ -4,7 +4,7 @@ extends ColorRect
 
 @onready var start_color := color
 
-@onready var index := get_index()
+@onready var index := int(name.substr(3, 2))
 
 var entered := false
 var clicked := false
@@ -18,10 +18,12 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	var new_clicked := Input.is_action_pressed("click") and entered
 	
+	var output_name: int = get_parent().OutputName
+	
 	if not clicked and new_clicked:
-		MidiServer.Send(0, index + 36, 100)
+		MidiServer.Send(output_name, index + 36, 100)
 	elif clicked and not new_clicked:
-		MidiServer.Send(0, index + 36, 0)
+		MidiServer.Send(output_name, index + 36, 0)
 	
 	clicked = new_clicked
 

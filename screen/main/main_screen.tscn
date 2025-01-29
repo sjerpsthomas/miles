@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://tdx5lmucxnnw"]
+[gd_scene load_steps=6 format=3 uid="uid://tdx5lmucxnnw"]
 
 [ext_resource type="Script" path="res://screen/main/MainScreen.cs" id="1_kew78"]
 [ext_resource type="FontFile" uid="uid://dcfa6hmqj0pyx" path="res://font/Mansalva-Regular.ttf" id="2_7jmhx"]
 [ext_resource type="Script" path="res://screen/main/start_button.gd" id="3_ovtu3"]
 [ext_resource type="Script" path="res://screen/main/quit_button.gd" id="4_tdv8w"]
+[ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="5_ku68l"]
 
 [node name="MainScreen" type="Node2D"]
 script = ExtResource("1_kew78")
@@ -36,5 +37,24 @@ text = "Quit (C-)"
 script = ExtResource("4_tdv8w")
 chord = "100100010000"
 
+[node name="ConfigurationButton" type="Button" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 575.0
+offset_top = 576.0
+offset_right = 705.0
+offset_bottom = 624.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.25, 1, 0.25, 1)
+theme_override_fonts/font = ExtResource("5_ku68l")
+theme_override_font_sizes/font_size = 30
+text = "Configuration"
+
 [connection signal="Press" from="." to="StartButton" method="_on_screen_press"]
 [connection signal="Press" from="." to="QuitButton" method="_on_screen_press"]
+[connection signal="pressed" from="ConfigurationButton" to="." method="_on_configuration_button_pressed"]

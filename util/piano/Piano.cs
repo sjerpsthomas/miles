@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using thesis.midi;
 
@@ -22,7 +23,7 @@ public partial class Piano : Node2D
 		if ((MidiServer.OutputName)outputName != OutputName) return;
 
 		var index = note - 36;
-		var key = GetChild(index);
+		var key = GetChildren().First(it => (int)it.Get("index") == index);
         
 		key.Call("update_pressed", velocity > 0);
 	}
