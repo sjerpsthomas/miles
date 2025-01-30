@@ -48,10 +48,12 @@ func refresh() -> void:
 	
 	var section_num := 0
 	
-	for i in range(data["Chords"].size()):
+	var num_chords: int = data["Chords"].size()
+	for i in range(num_chords):
 		var measure_data = data["Chords"][i]
 		var solo_division: int = data["SoloDivision"][i]
 		var section_label: String = data["SectionLabels"][i]
+		var double_barline: bool = i == num_chords - 1 or data["SectionLabels"][i + 1] != ""
 		
 		var chords: Array[StandardEditorMeasure.Chord]
 		
@@ -65,12 +67,11 @@ func refresh() -> void:
 		var measure: NinePatchRect = preload("res://standard_view/measure.tscn").instantiate()
 		$Measures.add_child(measure)
 		
-		measure.position.x = 192 * (position_index % 4)
-		measure.position.y = height * (position_index / 4) + height
+		measure.position = get_measure_position(position_index)
 		measure.size.y = height
 		
 		measure.is_pickup_measure = i < pickup_measure_count
-		measure.initialize(chords, section_label)
+		measure.initialize(chords, section_label, double_barline)
 		
 		if solo_division == 1:
 			measure.modulate = Color.GAINSBORO
@@ -82,6 +83,10 @@ func refresh() -> void:
 	
 	size.y = height * (position_index / 4) + height
 	custom_minimum_size.y = size.y
+
+
+func get_measure_position(position_index: int) -> Vector2:
+	return Vector2(192 * (position_index % 4), height * (position_index / 4) + 48)
 
 
 func _on_measure_clicked(measure_num: int) -> void:

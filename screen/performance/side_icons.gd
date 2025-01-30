@@ -8,4 +8,5 @@ func _process(delta: float) -> void:
 	for i in range(4):
 		var icon: Sprite2D = get_child(i)
 		
-		icon.position.x = 224 + ((current_time / 4) - (2 * i + 1)) * 816
+		icon.position.x = 224 + ((current_time / 4) - (2 * i + 1)) * 832
+		icon.position.x = clampf(icon.position.x, 224, 224 + 832)

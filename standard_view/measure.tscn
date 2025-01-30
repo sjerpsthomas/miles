@@ -1,10 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://ck5k24lvwxhxq"]
+[gd_scene load_steps=5 format=3 uid="uid://ck5k24lvwxhxq"]
 
 [ext_resource type="Script" path="res://standard_view/measure.gd" id="1_7tgc7"]
 [ext_resource type="Texture2D" uid="uid://bokw2dwk2p8ya" path="res://standard_view/measure_frame.png" id="1_rfdfq"]
 [ext_resource type="FontFile" uid="uid://cdhcgagl3uiam" path="res://font/SofiaSansExtraCondensed-Bold.ttf" id="3_7ialq"]
+[ext_resource type="Texture2D" uid="uid://bklxbd7jbs5er" path="res://standard_view/measure_frame_double.png" id="4_qdsup"]
 
 [node name="Measure" type="NinePatchRect"]
+texture_filter = 1
 offset_right = 192.0
 offset_bottom = 64.0
 mouse_filter = 0
@@ -24,5 +26,18 @@ offset_bottom = 46.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_7ialq")
 theme_override_font_sizes/font_size = 23
+
+[node name="DoubleBarline" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_qdsup")
+patch_margin_left = 5
+patch_margin_top = 3
+patch_margin_right = 5
+patch_margin_bottom = 3
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]

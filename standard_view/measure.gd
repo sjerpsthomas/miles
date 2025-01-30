@@ -39,8 +39,9 @@ var is_pickup_measure := false
 signal clicked
 
 
-func initialize(new_chords: Array[Chord], section_label: String) -> void:
+func initialize(new_chords: Array[Chord], section_label: String, double_barline: bool) -> void:
 	$SectionLabel.text = section_label
+	$DoubleBarline.visible = double_barline
 	
 	var chord_width := size.x / new_chords.size()
 	
