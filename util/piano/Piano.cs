@@ -8,6 +8,8 @@ namespace thesis.util.piano;
 public partial class Piano : Node2D
 {
 	[Export] public Array<MidiServer.OutputName> OutputNames;
+
+	[Export] public Color PressedColor = Colors.DeepPink;
 	
 	public override void _Ready()
 	{

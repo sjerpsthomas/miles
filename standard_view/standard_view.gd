@@ -74,7 +74,8 @@ func refresh() -> void:
 		measure.initialize(chords, section_label, double_barline)
 		
 		if solo_division == 1:
-			measure.modulate = Color.GAINSBORO
+			#measure.modulate = Color.GAINSBORO
+			measure.modulate = Color.CORNFLOWER_BLUE.lightened(0.7)
 			measure.modulate.a = 0.6
 		
 		measure.clicked.connect(_on_measure_clicked.bind(i))
