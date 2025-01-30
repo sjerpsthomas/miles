@@ -34,6 +34,7 @@ Recorder = NodePath("../MidiRecorder")
 position = Vector2(640, 320)
 
 [node name="StandardView" parent="." instance=ExtResource("5_vlfb7")]
+unique_name_in_owner = true
 offset_left = 256.0
 offset_right = 1024.0
 offset_bottom = 520.0
@@ -54,22 +55,22 @@ color = Color(1, 0.833333, 0, 0.501961)
 script = ExtResource("6_71nrc")
 
 [node name="Icon" type="Sprite2D" parent="Visualisation/SideIcons"]
-position = Vector2(224, 150)
+position = Vector2(224, 138)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("6_gd6g2")
 
 [node name="Icon2" type="Sprite2D" parent="Visualisation/SideIcons"]
-position = Vector2(224, 270)
+position = Vector2(224, 258)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("6_gd6g2")
 
 [node name="Icon3" type="Sprite2D" parent="Visualisation/SideIcons"]
-position = Vector2(224, 390)
+position = Vector2(224, 378)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("6_gd6g2")
 
 [node name="Icon4" type="Sprite2D" parent="Visualisation/SideIcons"]
-position = Vector2(224, 510)
+position = Vector2(224, 498)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("6_gd6g2")
 
@@ -90,3 +91,4 @@ color = Color(0.254496, 0.254496, 0.254496, 1)
 
 [node name="Piano" parent="." instance=ExtResource("6_sd6b3")]
 position = Vector2(173, 552)
+OutputNames = Array[int]([0, 1])

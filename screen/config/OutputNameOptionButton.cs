@@ -1,7 +1,7 @@
 using Godot;
 using System;
-using thesis.piano;
 using static thesis.midi.MidiServer;
+using Piano = thesis.util.piano.Piano;
 
 public partial class OutputNameOptionButton : OptionButton
 {
@@ -17,6 +17,6 @@ public partial class OutputNameOptionButton : OptionButton
 
 	public void _on_item_selected(int selected)
 	{
-		Piano.OutputName = Enum.Parse<OutputName>(GetItemText(selected));
+		Piano.OutputNames = [Enum.Parse<OutputName>(GetItemText(selected))];
 	}
 }

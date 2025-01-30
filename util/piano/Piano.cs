@@ -1,13 +1,14 @@
 using System.Linq;
 using Godot;
+using Godot.Collections;
 using thesis.midi;
 
-namespace thesis.piano;
+namespace thesis.util.piano;
 
 public partial class Piano : Node2D
 {
-	[Export] public MidiServer.OutputName OutputName;
-		
+	[Export] public Array<MidiServer.OutputName> OutputNames;
+	
 	public override void _Ready()
 	{
 		MidiServer.Instance.DeferredNoteSent += _on_MidiServer_NoteSent;
@@ -20,7 +21,7 @@ public partial class Piano : Node2D
 	
 	public void _on_MidiServer_NoteSent(int outputName, int note, int velocity)
 	{
-		if ((MidiServer.OutputName)outputName != OutputName) return;
+		if (!OutputNames.Contains((MidiServer.OutputName)outputName)) return;
 
 		var index = note - 36;
 		var key = GetChildren().First(it => (int)it.Get("index") == index);
