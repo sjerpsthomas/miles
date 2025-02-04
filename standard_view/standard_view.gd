@@ -67,7 +67,7 @@ func refresh() -> void:
 		var measure: NinePatchRect = preload("res://standard_view/measure.tscn").instantiate()
 		$Measures.add_child(measure)
 		
-		measure.position = get_measure_position(position_index)
+		measure.global_position = get_measure_global_position(position_index)
 		measure.size.y = height
 		
 		measure.is_pickup_measure = i < pickup_measure_count
@@ -86,8 +86,8 @@ func refresh() -> void:
 	custom_minimum_size.y = size.y
 
 
-func get_measure_position(position_index: int) -> Vector2:
-	return Vector2(192 * (position_index % 4), height * (position_index / 4) + 48)
+func get_measure_global_position(position_index: int) -> Vector2:
+	return global_position + Vector2(192 * (position_index % 4), height * (position_index / 4) + 48)
 
 
 func _on_measure_clicked(measure_num: int) -> void:

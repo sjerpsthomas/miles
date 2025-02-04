@@ -29,6 +29,14 @@ script = ExtResource("2_5d0qb")
 [node name="StandardView" parent="ScrollContainer" instance=ExtResource("1_nper8")]
 layout_mode = 2
 
+[node name="CurrentChord" type="ColorRect" parent="."]
+visible = false
+offset_left = 267.0
+offset_top = -104.0
+offset_right = 459.0
+offset_bottom = -44.0
+color = Color(1, 0.831373, 0, 0.501961)
+
 [node name="SaveAndReturnButton" type="Button" parent="."]
 anchors_preset = 8
 anchor_left = 0.5

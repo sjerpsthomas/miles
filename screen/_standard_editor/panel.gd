@@ -19,6 +19,10 @@ func _on_standard_view_measure_clicked(new_measure_num: int) -> void:
 	
 	measure_num = new_measure_num
 	
+	var current_chord := $"../CurrentChord" as ColorRect
+	current_chord.visible = true
+	current_chord.global_position = standard_view.get_measure_global_position(measure_num)
+	
 	var measure_data = standard_view.data["Chords"][measure_num]
 	for chord in measure_data:
 		add_chord(chord["Key"], chord["Type"])
