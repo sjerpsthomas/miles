@@ -6,6 +6,7 @@ using thesis.midi.core;
 using thesis.midi.recorder;
 using thesis.midi.scheduler.component;
 using thesis.midi.scheduler.component.solo;
+using thesis.screen.performance;
 using static thesis.midi.core.Chord.KeyEnum;
 using static thesis.midi.core.Chord.TypeEnum;
 using static thesis.midi.core.LeadSheet.SoloType;
@@ -21,11 +22,14 @@ public partial class MidiScheduler : Node
 
 	// Integer part: measure
 	// Fractional part: part within measure
-	public double CurrentTime = -2.0;
+	public double Time = -2.0;
 	
 	public PriorityQueue<MidiNote, double> NoteQueue = new();
 
 	public DateTime StartDateTime;
+	public int SongLength;
+	public int Repetitions;
+	
 	public bool Enabled;
 
 	public List<MidiSchedulerComponent> Components = new();
@@ -37,6 +41,9 @@ public partial class MidiScheduler : Node
 		var standardName = (string)init.Get("standard_name");
 		var standardPath = $"user://saves/{standardName}/";
 
+		var soloistIndex = (int)init.Get("soloist");
+		
+		
 		// Load necessary files
 		var backingTrack = MidiSong.FromFile(standardPath + "back.mid");
 		var soloTrack = MidiSong.FromFile(standardPath + "solo.mid");
@@ -46,14 +53,17 @@ public partial class MidiScheduler : Node
 		BPM = leadSheet.BPM;
 		
 		// Add components
+		SongLength = backingTrack.Measures.Count;
+		Repetitions = (int)init.Get("repetition_count");
 		Components.Add(new SongMidiSchedulerComponent
 		{
 			Scheduler = this,
 			Recorder = Recorder,
-			Song = backingTrack
+			Song = backingTrack,
+			Repetitions = Repetitions,
 		});
 
-		Soloist soloist = (int)init.Get("soloist") switch
+		Soloist soloist = soloistIndex switch
 		{
 			0 => new FactorOracleSoloist(),
 			1 => new RandomSoloist(),
@@ -65,6 +75,7 @@ public partial class MidiScheduler : Node
 		{
 			Scheduler = this,
 			Recorder = Recorder,
+			Repetitions = Repetitions
 		});
 
 		AddMeasure(-2, new MidiMeasure([
@@ -122,22 +133,29 @@ public partial class MidiScheduler : Node
 		return currentMeasure - 2;
 	}
     
-	public void Tick(double newCurrentTime)
+	public void Tick(double currentTime)
 	{
 		// Call components every measure
-		var currentMeasure = (int)Math.Truncate(newCurrentTime);
-		if ((int)Math.Truncate(CurrentTime) != currentMeasure)
+		var currentMeasure = (int)Math.Truncate(currentTime);
+		if ((int)Math.Truncate(Time) != currentMeasure)
 		{
+			if (currentMeasure == 1 + SongLength * Repetitions)
+			{
+				((PerformanceScreen)GetTree().CurrentScene).CallDeferred("Quit");
+				Enabled = false;
+				return;
+			}
+			
 			foreach (var component in Components)
 				component.HandleMeasure(currentMeasure);
 		}
 		
 		// Update current time
-		CurrentTime = newCurrentTime;
+		Time = currentTime;
 		
 		// Play notes when needed
 		lock (NoteQueue)
-			while (NoteQueue.TryPeek(out _, out var time) && time < CurrentTime)
+			while (NoteQueue.TryPeek(out _, out var time) && time < Time)
 				MidiServer.Instance.Send(NoteQueue.Dequeue());
 	}
 

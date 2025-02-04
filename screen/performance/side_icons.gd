@@ -3,7 +3,9 @@ extends Node2D
 
 # -
 func _process(delta: float) -> void:
-	var current_time: float = %MidiScheduler.CurrentTime
+	var current_time: float = %MidiScheduler.Time
+	if current_time < 0: return
+	current_time = fposmod(current_time, %MidiScheduler.SongLength)
 	
 	for i in range(4):
 		var icon: Sprite2D = get_child(i)

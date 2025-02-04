@@ -10,6 +10,8 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
     public LeadSheet LeadSheet;
 
     public Soloist Soloist;
+
+    public int Repetitions;
     
     public SoloMidiSchedulerComponent(MidiSong solo, LeadSheet leadSheet, Soloist soloist)
     {
@@ -23,7 +25,7 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
     {
         if (currentMeasure == 0) return;
         if ((currentMeasure + 4) % 8 != 0) return;
-        if (currentMeasure >= LeadSheet.Chords.Count) return;
+        if (currentMeasure >= LeadSheet.Chords.Count * Repetitions) return;
 
         var recordMeasureCount = 4;
         var generateMeasureCount = 4;

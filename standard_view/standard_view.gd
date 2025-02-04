@@ -9,8 +9,8 @@ var standard_name: String
 
 var data
 
-
 signal measure_clicked(measure_num: int)
+
 
 # loads the given standard name
 func load_sheet(new_standard_name: String) -> void:

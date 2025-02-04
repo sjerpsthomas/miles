@@ -8,13 +8,14 @@ extends Node2D
 
 func _process(delta: float) -> void:
 	# get time, with lookahead
-	var current_time: float = %MidiScheduler.CurrentTime
+	var current_time: float = %MidiScheduler.Time
 	current_time += 0.15
 	
 	if current_time < 0: return
 	current_chord.visible = true
 	
 	var current_measure := floori(current_time)
+	current_measure = current_measure % %MidiScheduler.SongLength
 	
 	var is_human_playing := current_measure % 8 < 4
 	

@@ -78,7 +78,7 @@ public partial class MidiServer : Node
     }
     
     public void Send(OutputName outputName, int note, int velocity) =>
-        Send(new MidiNote(outputName, Scheduler?.CurrentTime ?? 0.0, 0.0, note, velocity));
+        Send(new MidiNote(outputName, Scheduler?.Time ?? 0.0, 0.0, note, velocity));
     
     private MidiOut FindMidiOut(string name)
     {

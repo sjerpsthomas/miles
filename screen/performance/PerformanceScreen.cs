@@ -59,11 +59,15 @@ public partial class PerformanceScreen : Node2D
 
 	public override void _Input(InputEvent @event)
 	{
-		if (@event.IsActionPressed("ui_cancel"))
-		{
-			GetNode<MidiScheduler>("%MidiScheduler").Stop();
-			
-			GetTree().ChangeSceneToFile("res://screen/song_select/song_select_screen.tscn");
-		}
+		if (@event.IsActionPressed("ui_cancel")) Quit();
+	}
+
+	public void Quit()
+	{
+		// Stop scheduler
+		GetNode<MidiScheduler>("%MidiScheduler").Stop();
+		
+		// Change scene
+		GetTree().ChangeSceneToFile("res://screen/song_select/song_select_screen.tscn");
 	}
 }

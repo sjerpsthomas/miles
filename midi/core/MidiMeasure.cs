@@ -11,4 +11,9 @@ public class MidiMeasure
     {
         Notes = notes.ToList();
     }
+
+    public MidiMeasure(IEnumerable<MidiNote> notes)
+    {
+        Notes = notes.ToList();
+    }
 }
