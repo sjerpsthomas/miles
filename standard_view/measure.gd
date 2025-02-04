@@ -34,34 +34,34 @@ class Chord:
 		return "[center]" + KeyEnum.find_key(key) + "[font_size=20]" + get_type_string()
 
 
-var is_pickup_measure := false
-
 signal clicked
 
 
+# initializes the measure
 func initialize(new_chords: Array[Chord], section_label: String, double_barline: bool) -> void:
+	# initialize section label and barline
 	$SectionLabel.text = section_label
 	$DoubleBarline.visible = double_barline
 	
+	# get width of chord
 	var chord_width := size.x / new_chords.size()
 	
-	if is_pickup_measure:
-		modulate.a = 0.5
-	
+	# add chords
 	for i in range(new_chords.size()):
 		var chord := new_chords[i]
 		
+		# instantiate chord
 		var chord_instance := preload("res://standard_view/chord.tscn").instantiate()
 		add_child(chord_instance)
+		
+		# set chord size and position
 		chord_instance.set_deferred("size", Vector2(chord_width, chord_instance.size.y))
 		chord_instance.position.x = i * chord_width
 		
-		var chord_text := chord.to_bbcode()
-		if is_pickup_measure: chord_text = "(" + chord_text + ")"
-		
-		chord_instance.get_node("Label").text = chord_text
+		# set chord text
+		chord_instance.get_node("Label").text = chord.to_bbcode()
 
-
+# passes signal @ self gui_input
 func _on_gui_input(event: InputEvent) -> void:
 	if event.is_action_pressed("click"):
 		clicked.emit()
