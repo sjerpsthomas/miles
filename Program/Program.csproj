@@ -9,4 +9,7 @@
   <ItemGroup>
     <PackageReference Include="NAudio.Midi" Version="2.2.1" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
 </Project>
