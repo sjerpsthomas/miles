@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 MidiServer="*res://midi/MidiServer.cs"
 PerformanceScreenInit="*res://screen/performance/PerformanceScreenInit.gd"
 
+[debug]
+
+gdscript/warnings/integer_division=0
+
 [display]
 
 window/size/viewport_width=1280

@@ -6,7 +6,7 @@ extends Node2D
 @onready var standard_view := %StandardView as StandardView
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	# get time, with lookahead
 	var current_time: float = %MidiScheduler.Time
 	current_time += 0.15

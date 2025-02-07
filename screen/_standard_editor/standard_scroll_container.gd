@@ -11,6 +11,6 @@ func _ready() -> void:
 	position.x = 252
 
 # -
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	# interpolate to start position
 	position.x = lerpf(position.x, pos_x, 0.15)

@@ -29,9 +29,9 @@ func _on_user_folder_button_pressed() -> void:
 	OS.shell_open(OS.get_user_data_dir() + "/saves/" + standard_view.standard_name)
 
 # applies data @ BPMTextEdit text_changed
-func _on_bpm_text_edit_text_changed(new_text: String) -> void:
+func _on_bpm_text_edit_text_changed(_new_text: String) -> void:
 	%UI.apply_all_to_standard()
 
 # applies data @ RhythmTypeOptionButton item_selected
-func _on_rhythm_type_option_button_item_selected(index: int) -> void:
+func _on_rhythm_type_option_button_item_selected(_index: int) -> void:
 	%UI.apply_all_to_standard()

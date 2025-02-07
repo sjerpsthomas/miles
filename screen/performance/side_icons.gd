@@ -2,7 +2,7 @@ extends Node2D
 
 
 # -
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var current_time: float = %MidiScheduler.Time
 	if current_time < 0: return
 	current_time = fposmod(current_time, %MidiScheduler.SongLength)

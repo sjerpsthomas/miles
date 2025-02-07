@@ -4,4 +4,4 @@ extends Node
 var standard_name: String
 
 var soloist: int
-var repetition_count: int = 2
+var repetition_count: int

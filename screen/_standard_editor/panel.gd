@@ -115,5 +115,5 @@ func _on_chord_edit_value_changed() -> void:
 	%UI.apply_all_to_standard()
 
 # apply data @ SectionLabelTextEdit text_changed
-func _on_section_label_text_edit_text_changed(new_text: String) -> void:
+func _on_section_label_text_edit_text_changed(_new_text: String) -> void:
 	%UI.apply_all_to_standard()

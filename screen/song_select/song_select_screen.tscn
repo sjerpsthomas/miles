@@ -30,9 +30,9 @@ script = ExtResource("3_4udxo")
 
 [node name="LeftButton" type="Button" parent="."]
 offset_left = 74.0
-offset_top = 292.0
+offset_top = 24.0
 offset_right = 244.0
-offset_bottom = 356.0
+offset_bottom = 88.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_aaxsh")
 theme_override_font_sizes/font_size = 30
@@ -43,9 +43,9 @@ chord = "101000010000"
 
 [node name="RightButton" type="Button" parent="."]
 offset_left = 1036.0
-offset_top = 292.0
+offset_top = 24.0
 offset_right = 1206.0
-offset_bottom = 356.0
+offset_bottom = 88.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_aaxsh")
 theme_override_font_sizes/font_size = 30
@@ -73,11 +73,75 @@ theme_override_font_sizes/font_size = 30
 text = "Edit"
 script = ExtResource("5_v337t")
 
-[node name="SoloistOptionButton" type="OptionButton" parent="."]
+[node name="OptionsPanel" type="Panel" parent="."]
 offset_left = 1008.0
-offset_top = 416.0
+offset_top = 271.0
 offset_right = 1264.0
 offset_bottom = 480.0
+
+[node name="RepetitionsLabel" type="Label" parent="OptionsPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -201.0
+offset_right = 128.0
+offset_bottom = -165.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 30
+text = "Repetition Count"
+horizontal_alignment = 1
+
+[node name="RepetitionsTextEdit" type="LineEdit" parent="OptionsPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -112.0
+offset_top = -165.0
+offset_right = 112.0
+offset_bottom = -117.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 30
+text = "2"
+placeholder_text = "-"
+alignment = 1
+
+[node name="SoloistLabel" type="Label" parent="OptionsPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -109.0
+offset_right = 128.0
+offset_bottom = -73.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 30
+text = "Soloist"
+horizontal_alignment = 1
+
+[node name="SoloistOptionButton" type="OptionButton" parent="OptionsPanel"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 16.0
+offset_top = 145.0
+offset_right = 240.0
+offset_bottom = 193.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("4_a108o")
 theme_override_font_sizes/font_size = 30
