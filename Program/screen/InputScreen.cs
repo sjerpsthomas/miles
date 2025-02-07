@@ -1,8 +1,9 @@
-using Godot;
-using System;
 using System.Linq;
-using thesis.midi;
-using thesis.midi.core;
+using Core.midi;
+using Godot;
+using Program.midi;
+
+namespace Program.screen;
 
 public partial class InputScreen : Node
 {
@@ -25,7 +26,7 @@ public partial class InputScreen : Node
 		if (note.Velocity > 0)
 			Counts[index]++;
 		else
-			if (--Counts[index] < 0) Counts[index] = 0;
+		if (--Counts[index] < 0) Counts[index] = 0;
 
 		if (IsInstanceValid(this))
 			CallDeferred("DoPress");

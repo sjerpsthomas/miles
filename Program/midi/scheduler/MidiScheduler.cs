@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Core.midi;
 using Godot;
-using thesis.midi.core;
-using thesis.midi.recorder;
-using thesis.midi.scheduler.component;
-using thesis.midi.scheduler.component.solo;
-using thesis.screen.performance;
-using static thesis.midi.core.Chord.KeyEnum;
-using static thesis.midi.core.Chord.TypeEnum;
-using static thesis.midi.core.LeadSheet.SoloType;
+using Program.midi.recorder;
+using Program.midi.scheduler.component;
+using Program.midi.scheduler.component.solo;
+using Program.screen.performance;
+using Program.util;
+using static Godot.FileAccess.ModeFlags;
 
-namespace thesis.midi.scheduler;
+namespace Program.midi.scheduler;
 
 public partial class MidiScheduler : Node
 {
@@ -43,11 +42,10 @@ public partial class MidiScheduler : Node
 
 		var soloistIndex = (int)init.Get("soloist");
 		
-		
 		// Load necessary files
-		var backingTrack = MidiSong.FromFile(standardPath + "back.mid");
-		var soloTrack = MidiSong.FromFile(standardPath + "solo.mid");
-		var leadSheet = LeadSheet.FromFile(standardPath + "sheet.json");
+		var backingTrack = MidiSong.FromFile(new FileAccessStream(standardPath + "back.mid", Read));
+		var soloTrack = MidiSong.FromFile(new FileAccessStream(standardPath + "solo.mid", Read));
+		var leadSheet = LeadSheet.FromFile(new FileAccessStream(standardPath + "sheet.json", Read));
 		
 		// Get BPM
 		BPM = leadSheet.BPM;
@@ -79,15 +77,15 @@ public partial class MidiScheduler : Node
 		});
 
 		AddMeasure(-2, new MidiMeasure([
-			new MidiNote(MidiServer.OutputName.Metronome, 0.0, 0.2, 22, 48),
-			new MidiNote(MidiServer.OutputName.Metronome, 0.5, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.0, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.5, 0.2, 22, 48),
 		]));
 		
 		AddMeasure(-1, new MidiMeasure([
-			new MidiNote(MidiServer.OutputName.Metronome, 0.00, 0.2, 22, 48),
-			new MidiNote(MidiServer.OutputName.Metronome, 0.25, 0.2, 22, 48),
-			new MidiNote(MidiServer.OutputName.Metronome, 0.50, 0.2, 22, 48),
-			new MidiNote(MidiServer.OutputName.Metronome, 0.75, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.00, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.25, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.50, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.75, 0.2, 22, 48),
 		]));
 		
 		// Start

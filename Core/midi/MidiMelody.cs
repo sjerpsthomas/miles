@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using Godot;
-
-namespace thesis.midi.core;
+﻿namespace Core.midi;
 
 public class MidiMelody
 {

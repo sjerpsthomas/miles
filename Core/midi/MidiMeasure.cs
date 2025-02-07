@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace thesis.midi.core;
+﻿namespace Core.midi;
 
 public class MidiMeasure
 {

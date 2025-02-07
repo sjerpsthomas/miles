@@ -1,6 +1,7 @@
 ﻿using System.Linq;
-using thesis.midi.core;
-namespace thesis.midi.scheduler.component;
+using Core.midi;
+
+namespace Program.midi.scheduler.component;
 
 public class SongMidiSchedulerComponent : MidiSchedulerComponent
 {

@@ -1,7 +1,7 @@
-﻿using thesis.midi.core;
-using static thesis.midi.MidiServer.OutputName;
+﻿using Core.midi;
+using static Core.midi.OutputName;
 
-namespace thesis.midi.scheduler.component;
+namespace Program.midi.scheduler.component;
 
 public class MetronomeMidiSchedulerComponent : MidiSchedulerComponent
 {

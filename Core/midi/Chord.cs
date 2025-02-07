@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Godot;
-
-namespace thesis.midi.core;
+﻿namespace Core.midi;
 
 public class Chord
 {

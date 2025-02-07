@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.midi;
 using Godot;
 using NAudio.Midi;
-using thesis.midi.core;
-using thesis.midi.scheduler;
+using Program.midi.scheduler;
 
-namespace thesis.midi;
+namespace Program.midi;
 
 public partial class MidiServer : Node
 {
@@ -14,17 +14,6 @@ public partial class MidiServer : Node
     public MidiScheduler Scheduler;
     
     public MidiIn LearnerIn;
-
-    public enum OutputName
-    {
-        Loopback = 0,
-        Algorithm,
-        Metronome,
-        Backing1Bass,
-        Backing2Piano,
-        Backing3Keyboard,
-        Backing4Drums,
-    }
 
     public Dictionary<OutputName, MidiOut> Outputs;
 

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Godot;
-using thesis.midi.core;
+using Core.midi;
 
-namespace thesis.midi.scheduler.component.solo;
+namespace Program.midi.scheduler.component.solo;
 
 public class RetrievalSoloist : Soloist
 {
@@ -17,7 +16,7 @@ public class RetrievalSoloist : Soloist
         {
             for (var index = 0; index < measure.Notes.Count; index++)
             {
-                measure.Notes[index] = measure.Notes[index] with { OutputName = MidiServer.OutputName.Algorithm };
+                measure.Notes[index] = measure.Notes[index] with { OutputName = OutputName.Algorithm };
             }
         }
     }

@@ -1,7 +1,9 @@
-using Godot;
 using System;
-using static thesis.midi.MidiServer;
-using Piano = thesis.util.piano.Piano;
+using Core.midi;
+using Godot;
+using Piano = Program.util.Piano;
+
+namespace Program.screen.config;
 
 public partial class OutputNameOptionButton : OptionButton
 {

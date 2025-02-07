@@ -1,4 +1,4 @@
-﻿namespace thesis.midi.scheduler.component;
+﻿namespace Program.midi.scheduler.component;
 
 public class RepeaterMidiSchedulerComponent : MidiSchedulerComponent
 {

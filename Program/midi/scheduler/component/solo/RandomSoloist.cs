@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Godot;
-using thesis.midi.core;
+using Core.midi;
 
-namespace thesis.midi.scheduler.component.solo;
+namespace Program.midi.scheduler.component.solo;
 
 public class RandomSoloist : Soloist
 {
@@ -40,7 +39,7 @@ public class RandomSoloist : Soloist
             var measure = measures[measureNum];
 
             var absoluteNote = _leadSheet.ChordAtTime(startMeasureNum + time).GetAbsoluteNote(note);
-            var newNote = new MidiNote(MidiServer.OutputName.Algorithm, time - measureNum, length, absoluteNote, velocity);
+            var newNote = new MidiNote(OutputName.Algorithm, time - measureNum, length, absoluteNote, velocity);
             measure.Notes.Add(newNote);
             
             // Increase time, quantize

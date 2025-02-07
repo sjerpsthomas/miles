@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using thesis.midi.core;
+using Core.midi;
 
-namespace thesis.midi.scheduler.component.solo;
+namespace Program.midi.scheduler.component.solo;
 
 public abstract class Soloist
 {

@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using Godot;
-using NAudio.Midi;
-using thesis.util;
+﻿using NAudio.Midi;
 
-namespace thesis.midi.core;
+namespace Core.midi;
 
 public class MidiSong
 {
     public List<MidiMeasure> Measures = [];
 
-    public static MidiSong FromFile(string fileName)
+    public static MidiSong FromFile(Stream stream)
     {
         var song = new MidiSong();
         
         var mf = new MidiFile(
-            new FileAccessStream(fileName, FileAccess.ModeFlags.Read),
+            stream,
             false
         );
         
@@ -23,11 +19,11 @@ public class MidiSong
         {
             var outputName = i switch
             {
-                0 => MidiServer.OutputName.Algorithm,
-                1 => MidiServer.OutputName.Backing1Bass,
-                2 => MidiServer.OutputName.Backing2Piano,
-                3 => MidiServer.OutputName.Backing3Keyboard,
-                4 => MidiServer.OutputName.Backing4Drums,
+                0 => OutputName.Algorithm,
+                1 => OutputName.Backing1Bass,
+                2 => OutputName.Backing2Piano,
+                3 => OutputName.Backing3Keyboard,
+                4 => OutputName.Backing4Drums,
                 _ => throw new ArgumentOutOfRangeException()
             };
             

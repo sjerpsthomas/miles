@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using thesis.midi.core;
+using Core.midi;
 
-namespace thesis.midi.scheduler.component.solo;
+namespace Program.midi.scheduler.component.solo;
 
 public class FactorOracleSoloist : Soloist
 {
@@ -56,7 +56,7 @@ public class FactorOracleSoloist : Soloist
             var measure = measures[measureNum];
 
             var absoluteNote = _leadSheet.ChordAtTime(startMeasureNum + time).GetAbsoluteNote(note.Note);
-            var newNote = new MidiNote(MidiServer.OutputName.Algorithm, time - measureNum, note.Length, absoluteNote, note.Velocity);
+            var newNote = new MidiNote(OutputName.Algorithm, time - measureNum, note.Length, absoluteNote, note.Velocity);
             measure.Notes.Add(newNote);
             
             // Iterate

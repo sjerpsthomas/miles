@@ -1,9 +1,11 @@
 ﻿// ReSharper disable BitwiseOperatorOnEnumWithoutFlags
-namespace thesis.util;
 
-using FileAccess = Godot.FileAccess;
 using System;
 using System.IO;
+
+namespace Program.util;
+
+using FileAccess = Godot.FileAccess;
 
 // Original by u/Novaleaf:
 // https://www.reddit.com/r/GodotCSharp/comments/1e49pcm/

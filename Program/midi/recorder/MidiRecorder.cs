@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Core.midi;
 using Godot;
-using thesis.midi.core;
-using OutputName = thesis.midi.MidiServer.OutputName;
 
-namespace thesis.midi.recorder;
+namespace Program.midi.recorder;
 
 public partial class MidiRecorder : Node
 {

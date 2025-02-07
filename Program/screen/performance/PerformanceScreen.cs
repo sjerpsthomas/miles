@@ -1,12 +1,10 @@
+using Core.midi;
 using Godot;
 using Godot.Collections;
-using thesis.midi;
-using thesis.midi.core;
-using thesis.midi.scheduler;
+using Program.midi;
+using Program.midi.scheduler;
 
-namespace thesis.screen.performance;
-
-using OutputName = MidiServer.OutputName;
+namespace Program.screen.performance;
 
 public partial class PerformanceScreen : Node2D
 {

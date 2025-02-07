@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using thesis.midi.core;
+﻿using System.Linq;
+using Core.midi;
 
-namespace thesis.midi.scheduler.component.solo;
+namespace Program.midi.scheduler.component.solo;
 
 public class SoloMidiSchedulerComponent : MidiSchedulerComponent
 {

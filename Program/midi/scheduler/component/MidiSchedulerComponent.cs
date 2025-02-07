@@ -1,6 +1,6 @@
-﻿using thesis.midi.recorder;
+﻿using MidiRecorder = Program.midi.recorder.MidiRecorder;
 
-namespace thesis.midi.scheduler.component;
+namespace Program.midi.scheduler.component;
 
 public abstract class MidiSchedulerComponent
 {

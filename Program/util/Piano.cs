@@ -1,13 +1,14 @@
 using System.Linq;
+using Core.midi;
 using Godot;
 using Godot.Collections;
-using thesis.midi;
+using Program.midi;
 
-namespace thesis.util.piano;
+namespace Program.util;
 
 public partial class Piano : Node2D
 {
-	[Export] public Array<MidiServer.OutputName> OutputNames;
+	[Export] public Array<OutputName> OutputNames;
 
 	[Export] public Color PressedColor = Colors.DeepPink;
 	
@@ -23,7 +24,7 @@ public partial class Piano : Node2D
 	
 	public void _on_MidiServer_NoteSent(int outputName, int note, int velocity)
 	{
-		if (!OutputNames.Contains((MidiServer.OutputName)outputName)) return;
+		if (!OutputNames.Contains((OutputName)outputName)) return;
 
 		var index = note - 36;
 		var key = GetChildren().First(it => (int)it.Get("index") == index);
