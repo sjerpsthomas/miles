@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Core.midi;
+using Core.midi.token;
 using Godot;
 using Program.midi.recorder;
 using Program.midi.scheduler.component;
@@ -43,9 +44,9 @@ public partial class MidiScheduler : Node
 		var soloistIndex = (int)init.Get("soloist");
 		
 		// Load necessary files
-		var backingTrack = MidiSong.FromFile(new FileAccessStream(standardPath + "back.mid", Read));
-		var soloTrack = MidiSong.FromFile(new FileAccessStream(standardPath + "solo.mid", Read));
-		var leadSheet = LeadSheet.FromFile(new FileAccessStream(standardPath + "sheet.json", Read));
+		var backingTrack = MidiSong.FromStream(new FileAccessStream(standardPath + "back.mid", Read));
+		var soloTrack = MidiSong.FromStream(new FileAccessStream(standardPath + "solo.mid", Read));
+		var leadSheet = LeadSheet.FromStream(new FileAccessStream(standardPath + "sheet.json", Read));
 		
 		// Get BPM
 		BPM = leadSheet.BPM;
@@ -87,6 +88,18 @@ public partial class MidiScheduler : Node
 			new MidiNote(OutputName.Metronome, 0.50, 0.2, 22, 48),
 			new MidiNote(OutputName.Metronome, 0.75, 0.2, 22, 48),
 		]));
+		
+		Components.Clear();
+		
+		var tokenMelody = TokenMelody.FromString("2ppppp5...7ppppppp1...");
+		var song = new MidiSong { Measures = tokenMelody.ToMeasures(4, leadSheet, 0, 4) };
+		Console.WriteLine(song.Measures.Count);
+		Components.Add(new SongMidiSchedulerComponent
+		{
+			Scheduler = this,
+			Recorder = Recorder,
+			Song = song,
+		});
 		
 		// Start
 		Start();

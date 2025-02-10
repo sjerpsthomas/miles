@@ -6,7 +6,7 @@ public class MidiSong
 {
     public List<MidiMeasure> Measures = [];
 
-    public static MidiSong FromFile(Stream stream)
+    public static MidiSong FromStream(Stream stream)
     {
         var song = new MidiSong();
         
@@ -51,11 +51,11 @@ public class MidiSong
 
         return song;
     }
+
+    
     
     public void Fill(int newMeasureCount)
     {
         while (Measures.Count < newMeasureCount) Measures.Add(new MidiMeasure([]));
     }
-    
-    
 }

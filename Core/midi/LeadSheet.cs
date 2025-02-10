@@ -35,7 +35,7 @@ public class LeadSheet
     private static JsonSerializerOptions _jsonOptions = new() { IncludeFields = true, WriteIndented = true };
     public string Serialize() => JsonSerializer.Serialize(this, _jsonOptions);
 
-    public static LeadSheet FromFile(Stream stream)
+    public static LeadSheet FromStream(Stream stream)
     {
         string text;
         using (var reader = new StreamReader(stream)) text = reader.ReadToEnd();
