@@ -74,7 +74,7 @@ public static class OctaveStage
                     if (octaveEvent.Index == index)
                     {
                         currentOctave += octaveEvent.Direction == OctaveDirection.Up ? 1 : -1;
-                        currentOctave = Math.Clamp(currentOctave, 0, 4);
+                        currentOctave = Math.Clamp(currentOctave, 0, 3);
                         octaveEventIndex++;
                     }
                 }

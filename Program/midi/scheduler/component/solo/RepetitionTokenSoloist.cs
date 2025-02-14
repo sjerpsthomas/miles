@@ -7,7 +7,7 @@ using Godot;
 
 namespace Program.midi.scheduler.component.solo;
 
-public class TokenSoloist: Soloist
+public class RepetitionTokenSoloist: Soloist
 {
     public List<MidiNote> Notes;
     public LeadSheet LeadSheet;

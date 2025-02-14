@@ -27,8 +27,8 @@ public partial class Piano : Node2D
 		if (!OutputNames.Contains((OutputName)outputName)) return;
 
 		var index = note - 36;
-		var key = GetChildren().First(it => (int)it.Get("index") == index);
+		var key = GetChildren().FirstOrDefault(it => (int)it.Get("index") == index);
         
-		key.Call("update_pressed", velocity > 0);
+		key?.Call("update_pressed", velocity > 0);
 	}
 }

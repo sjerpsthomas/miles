@@ -81,7 +81,10 @@ public static class PassingToneStage
             }
         }
 
-        var res = resArr.Select(it => (MidiNote)it!).ToList();
+        var res = resArr
+            .Where(it => it is not null)
+            .Select(it => (MidiNote)it!)
+            .ToList();
         return res;
     }
 
@@ -99,7 +102,7 @@ public static class PassingToneStage
             var delta = midiNotes[i + 1].Note - note;
 
             // Add passing tone if delta is same as previous
-            if (false && prevDelta == delta)
+            if (prevDelta == delta)
             {
                 resArr[i] = new OctaveMelodyPassingTone(time, length, velocity);
             }
