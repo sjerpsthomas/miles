@@ -47,7 +47,7 @@ public static class VelocityStage
                     currentVelocity = 96;
                     break;
                 case Quiet:
-                    currentVelocity = 128;
+                    currentVelocity = 127;
                     break;
     
                 case Measure:
@@ -67,7 +67,7 @@ public static class VelocityStage
         var currentVelocity = 96;
         void HandleVelocity(int velocity)
         {
-            var newVelocity = velocity <= 96 ? 96 : 128;
+            var newVelocity = velocity <= 96 ? 96 : 127;
             if (newVelocity != currentVelocity)
             {
                 res.Add(newVelocity == 96 ? Quiet : Loud);

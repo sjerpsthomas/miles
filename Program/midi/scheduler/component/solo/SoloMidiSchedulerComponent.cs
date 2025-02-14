@@ -38,7 +38,7 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
         var measures = Soloist.Generate(generateMeasureCount, currentMeasure);
         
         // Schedule measures
-        for (var i = 0; i < generateMeasureCount; i++)
+        for (var i = 0; i < measures.Count; i++)
             Scheduler.AddMeasure(currentMeasure + i, measures[i]);
     }
 }

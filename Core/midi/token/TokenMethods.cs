@@ -125,6 +125,8 @@ public static class TokenMethods
         'L' => Loud,
         'Q' => Quiet,
         
+        'M' => Measure,
+        
         _ => throw new ArgumentOutOfRangeException(nameof(c), c, null)
     };
     
@@ -148,6 +150,8 @@ public static class TokenMethods
         
         Loud => 'L',
         Quiet => 'Q',
+        
+        Measure => 'M',
 
         _ => throw new ArgumentOutOfRangeException(nameof(token), token, null)
     };

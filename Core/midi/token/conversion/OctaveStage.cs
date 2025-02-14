@@ -1,4 +1,6 @@
-﻿namespace Core.midi.token.conversion;
+﻿using System.Threading.Tasks.Dataflow;
+
+namespace Core.midi.token.conversion;
 
 public static class OctaveStage
 {
@@ -24,7 +26,7 @@ public static class OctaveStage
             do secondIndex++;
             while (secondIndex < tokens.Count - 1 && tokens[secondIndex] is not TokenMelody.TokenMelodyNote);
 
-            if (tokens[secondIndex] is not TokenMelody.TokenMelodyNote(var scaleNote2, _, _, _))
+            if (secondIndex >= tokens.Count || tokens[secondIndex] is not TokenMelody.TokenMelodyNote(var scaleNote2, _, _, _))
                 continue;
 
             // Skip when note not leading to octave break
@@ -60,7 +62,7 @@ public static class OctaveStage
         // Create tokens
         var res = new OctaveMelody();
         {
-            var currentOctave = -(totalOctave / octaveEvents.Count) + 2;
+            var currentOctave = 2 + (octaveEvents.Count == 0 ? 0 : -(totalOctave / octaveEvents.Count));
             var octaveEventIndex = 0;
 
             for (var index = 0; index < tokens.Count; index++)
@@ -72,6 +74,7 @@ public static class OctaveStage
                     if (octaveEvent.Index == index)
                     {
                         currentOctave += octaveEvent.Direction == OctaveDirection.Up ? 1 : -1;
+                        currentOctave = Math.Clamp(currentOctave, 0, 4);
                         octaveEventIndex++;
                     }
                 }

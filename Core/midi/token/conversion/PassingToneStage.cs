@@ -39,11 +39,11 @@ public static class PassingToneStage
                     var passingCount = secondIndex - firstIndex - 1;
                     
                     // Get notes from lead sheet
-                    int? firstMaybe = index != 0 && tokens[firstIndex] is OctaveMelodyNote(var octaveScaleNote1, var t1, _, _)
-                        ? leadSheet.ChordAtTime(t1 + startMeasureNum).GetAbsoluteNote(octaveScaleNote1)
+                    int? firstMaybe = index > 0 && tokens[firstIndex] is OctaveMelodyNote(var octaveScaleNote1, var t1, _, _)
+                        ? leadSheet.ChordAtTime(t1 + startMeasureNum).GetAbsoluteNote(octaveScaleNote1) + 36
                         : null;
-                    int? secondMaybe = tokens[secondIndex] is OctaveMelodyNote(var octaveScaleNote2, var t2, _, _)
-                        ? leadSheet.ChordAtTime(t2 + startMeasureNum).GetAbsoluteNote(octaveScaleNote2)
+                    int? secondMaybe = secondIndex < tokens.Count && tokens[secondIndex] is OctaveMelodyNote(var octaveScaleNote2, var t2, _, _)
+                        ? leadSheet.ChordAtTime(t2 + startMeasureNum).GetAbsoluteNote(octaveScaleNote2) + 36
                         : null;
 
                     // Create runs if not known
@@ -75,7 +75,7 @@ public static class PassingToneStage
                 
                 // Simply convert notes
                 case OctaveMelodyNote(var octaveScaleNote, var time, var length, var velocity):
-                    var note = leadSheet.ChordAtTime(time + startMeasureNum).GetAbsoluteNote(octaveScaleNote);
+                    var note = leadSheet.ChordAtTime(time + startMeasureNum).GetAbsoluteNote(octaveScaleNote) + 36;
                     resArr[index] = new MidiNote(outputName, time, length, note, velocity);
                     break;
             }
@@ -105,7 +105,7 @@ public static class PassingToneStage
             }
             else
             {
-                var octaveScaleNote = AbsoluteToRelative[TypeEnum.Major][note];
+                var octaveScaleNote = CMajor.GetRelativeNote(note - 36);
                 resArr[i] = new OctaveMelodyNote(octaveScaleNote, time, length, velocity);
             }
             
@@ -115,7 +115,7 @@ public static class PassingToneStage
         // Add last note
         {
             var (_, time, length, note, velocity) = midiNotes[^1];
-            var octaveScaleNote = AbsoluteToRelative[TypeEnum.Major][note];
+            var octaveScaleNote = CMajor.GetRelativeNote(note - 36);
             resArr[^1] = new OctaveMelodyNote(octaveScaleNote, time, length, velocity);
         }
         

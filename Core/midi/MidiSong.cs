@@ -59,6 +59,12 @@ public class MidiSong
     
     public static MidiSong FromNotes(List<MidiNote> notes)
     {
+        if (notes.Count == 0)
+        {
+            Console.WriteLine("No notes");
+            return new MidiSong();
+        }
+        
         var measureCount = (int)Math.Truncate(notes[^1].Time) + 1;
         var measures = Enumerable.Range(0, measureCount)
             .Select(i => new MidiMeasure())
@@ -67,7 +73,7 @@ public class MidiSong
         foreach (var note in notes)
         {
             var measureNum = (int)Math.Truncate(note.Time);
-            measures[measureNum].Notes.Add(note with { Time = measureNum });
+            measures[measureNum].Notes.Add(note with { Time = note.Time - measureNum });
         }
 
         return new MidiSong { Measures = measures };

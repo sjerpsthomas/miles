@@ -62,13 +62,15 @@ public partial class MidiScheduler : Node
 			Repetitions = Repetitions,
 		});
 
-		Soloist soloist = soloistIndex switch
-		{
-			0 => new FactorOracleSoloist(),
-			1 => new RandomSoloist(),
-			2 => new RetrievalSoloist(),
-			_ => throw new ArgumentOutOfRangeException()
-		};
+		var soloist = new TokenSoloist();
+
+		// Soloist soloist = soloistIndex switch
+		// {
+		// 	0 => new FactorOracleSoloist(),
+		// 	1 => new RandomSoloist(),
+		// 	2 => new RetrievalSoloist(),
+		// 	_ => throw new ArgumentOutOfRangeException()
+		// };
         
 		Components.Add(new SoloMidiSchedulerComponent(soloTrack, leadSheet, soloist)
 		{
@@ -88,18 +90,6 @@ public partial class MidiScheduler : Node
 			new MidiNote(OutputName.Metronome, 0.50, 0.2, 22, 48),
 			new MidiNote(OutputName.Metronome, 0.75, 0.2, 22, 48),
 		]));
-		
-		Components.Clear();
-		
-		var tokenMelody = TokenMelody.FromString("2ppppp5...7ppppppp1...");
-		var song = new MidiSong { Measures = tokenMelody.ToMeasures(4, leadSheet, 0, 4) };
-		Console.WriteLine(song.Measures.Count);
-		Components.Add(new SongMidiSchedulerComponent
-		{
-			Scheduler = this,
-			Recorder = Recorder,
-			Song = song,
-		});
 		
 		// Start
 		Start();

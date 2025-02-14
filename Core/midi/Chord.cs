@@ -11,6 +11,8 @@ public class Chord
         Minor,
         HalfDim7,
     }
+    
+    public static Chord CMajor = new Chord(KeyEnum.C, TypeEnum.Major);
 
     public KeyEnum Key;
     public TypeEnum Type;

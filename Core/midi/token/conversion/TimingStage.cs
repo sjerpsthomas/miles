@@ -53,20 +53,23 @@ public static class TimingStage
         TokenMelody res = new();
         
         // Go over every measure
-        foreach (var (measure, measureLength) in measures)
+        for (var index = 0; index < measures.Count; index++)
         {
+            var (measure, measureLength) = measures[index];
+            Console.WriteLine($"Original measure length: {measureLength}");
+
             // Put length in range of [0.6,1.2]
             var speedFactor = 1.0;
             while (speedFactor * measureLength < 1.2)
                 speedFactor *= 2;
             while (speedFactor * measureLength > 1.2)
                 speedFactor /= 2;
-            
+
             // Turn into TokenMelodyTokens
             List<TokenMelodyToken> tokenMelodyTokens = [];
-            var time = 0.0;
+            var time = (double)index;
             var currentSpeed = TokenSpeed.Fast;
-            
+
             foreach (var token in measure)
             {
                 var tokenLength = currentSpeed switch
@@ -77,7 +80,7 @@ public static class TimingStage
                     TokenSpeed.SuperSlow => 0.5,
                     _ => throw new ArgumentOutOfRangeException()
                 } * speedFactor;
-                
+
                 switch (token)
                 {
                     case VelocityTokenMelodyRest:
@@ -97,14 +100,14 @@ public static class TimingStage
                     case VelocityTokenMelodySpeed(var speed):
                         currentSpeed = speed;
                         break;
-                    
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            
+
             // TODO: fit to length
-            
+
             res.Tokens.AddRange(tokenMelodyTokens);
         }
 
@@ -118,14 +121,10 @@ public static class TimingStage
         var res = new VelocityTokenMelody();
         
         // Get measures
-        var measures = tokens.GroupBy(it => it switch
-        {
-            TokenMelodyNote(_, var time, _, _) => time,
-            TokenMelodyPassingTone(var time, _, _) => time,
-            _ => 0.0
-        })
+        // TODO: fix notes that have time *.99
+        var measures = tokens.GroupBy(it => (int)Math.Truncate(it.Time))
             .OrderBy(it => it.Key)
-            .Select(it => it.ToList());
+            .Select(it => it.ToList()).ToList();
 
         // Keep track of speed later on
         var currentSpeed = TokenSpeed.Fast;
@@ -256,6 +255,9 @@ public static class TimingStage
                     else Console.WriteLine("Skipped note");
                 }
             }
+            
+            // Add measure token
+            res.Tokens.Add(new VelocityTokenMelodyMeasure());
         }
 
         return res;
