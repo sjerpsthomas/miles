@@ -51,11 +51,25 @@ public class MidiSong
 
         return song;
     }
-
-    
     
     public void Fill(int newMeasureCount)
     {
         while (Measures.Count < newMeasureCount) Measures.Add(new MidiMeasure([]));
+    }
+    
+    public static MidiSong FromNotes(List<MidiNote> notes)
+    {
+        var measureCount = (int)Math.Truncate(notes[^1].Time) + 1;
+        var measures = Enumerable.Range(0, measureCount)
+            .Select(i => new MidiMeasure())
+            .ToList();
+
+        foreach (var note in notes)
+        {
+            var measureNum = (int)Math.Truncate(note.Time);
+            measures[measureNum].Notes.Add(note with { Time = measureNum });
+        }
+
+        return new MidiSong { Measures = measures };
     }
 }

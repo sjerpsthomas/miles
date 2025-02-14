@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
+using System.Diagnostics;
 using Core.midi;
 using Core.midi.token;
 
@@ -23,7 +24,24 @@ var leadSheet = new LeadSheet
     ]
 };
 
-var tokenMelody = TokenMelody.FromString("2..FF3p4.56US2.1D762F.U453DSS5pp2.3FD76p65U23");
-var song = new MidiSong { Measures = tokenMelody.ToMeasures(4, leadSheet, 0, 4) };
+var sw = new Stopwatch();
+sw.Start();
+
+var n = 1000;
+
+var tokens = TokenMethods.TokensFromString("2..F3p4.56S2.1762f.453s5pp2.3F76p423");
+var moreTokens = Enumerable.Repeat(tokens, 100).SelectMany(it => it).ToList();
+
+for (var i = 0; i < n; i++)
+{
+    var res = TokenMethods.ResolveMelody(moreTokens, leadSheet, 0);
+    Console.WriteLine(tokens);
+} 
+
+sw.Stop();
+Console.WriteLine($"{(double)sw.ElapsedMilliseconds / n} ms elapsed");
+
+
+// var song = MidiSong.FromNotes(TokenMethods.ResolveMelody(tokens, leadSheet, 0));
 
 Console.WriteLine("asdf!");

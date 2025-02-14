@@ -1,9 +1,62 @@
 ﻿using System.Diagnostics;
+using Core.midi.token.conversion;
+using NAudio.Wave;
+using static Core.midi.token.Token;
 
 namespace Core.midi.token;
 
 public static class TokenMethods
 {
+    public enum TokenVelocity
+    {
+        Loud,
+        Quiet,
+    }
+    public enum TokenSpeed
+    {
+        SuperFast,
+        Fast,
+        Slow,
+        SuperSlow,
+    }
+    
+    public static List<Token> TokensFromString(string str) => str.Select(FromChar).ToList();
+    public static string TokensToString(List<Token> tokens) => string.Concat(tokens.Select(ToChar));
+    
+    public static List<MidiNote> ResolveMelody(List<Token> tokens, LeadSheet leadSheet, int startMeasureNum)
+    {
+        Console.WriteLine("Resolving velocity...");
+        var velocityTokenMelody = VelocityStage.ResolveVelocity(tokens);
+
+        Console.WriteLine("Resolving timing...");
+        var tokenMelody = TimingStage.ResolveTiming(velocityTokenMelody);
+
+        Console.WriteLine("Resolving octaves...");
+        var octaveMelody = OctaveStage.ResolveOctaves(tokenMelody);
+
+        Console.WriteLine("Resolving passing tones...");
+        var midiNotes = PassingToneStage.ResolvePassingTones(octaveMelody, leadSheet, startMeasureNum);
+
+        return midiNotes;
+    }
+
+    public static List<Token> DeduceMelody(List<MidiNote> midiNotes)
+    {
+        Console.WriteLine("Deducing passing tones...");
+        var octaveMelody = PassingToneStage.DeducePassingTones(midiNotes);
+
+        Console.WriteLine("Deducing octaves...");
+        var tokenMelody = OctaveStage.DeduceOctaves(octaveMelody);
+        
+        Console.WriteLine("Deducing timing...");
+        var velocityTokenMelody = TimingStage.DeduceTiming(tokenMelody);
+
+        Console.WriteLine("Deducing velocity...");
+        var tokens = VelocityStage.DeduceVelocity(velocityTokenMelody);
+
+        return tokens;
+    }
+    
     public static int ToNote(this Token token, Chord currentChord)
     {
         if (!token.IsNote(out var intToken))
@@ -19,53 +72,82 @@ public static class TokenMethods
         return intToken is >= 1 and <= 7;
     }
 
+    public static bool HasSpeed(this Token token, out TokenSpeed speed)
+    {
+        speed = TokenSpeed.SuperSlow;
+        
+        switch (token)
+        {
+            case SuperFast:
+                speed = TokenSpeed.SuperFast;
+                break;
+            case Fast:
+                speed = TokenSpeed.Fast;
+                break;
+            case Slow:
+                speed = TokenSpeed.Slow;
+                break;
+            case SuperSlow:
+                speed = TokenSpeed.SuperSlow;
+                break;
+            
+            default:
+                return false;
+        }
+
+        return true;
+    }
+
     public static bool HasDuration(this Token token)
     {
-        return token.IsNote(out _) || token is Token.Rest or Token.PassingTone;
+        return token.IsNote(out _) || token is Rest or PassingTone;
     }
 
     public static Token FromChar(char c) => c switch
     {
-        '.' => Token.Rest,
-        '1' => Token.Note1,
-        '2' => Token.Note2,
-        '3' => Token.Note3,
-        '4' => Token.Note4,
-        '5' => Token.Note5,
-        '6' => Token.Note6,
-        '7' => Token.Note7,
+        '.' => Rest,
+        
+        '1' => Note1,
+        '2' => Note2,
+        '3' => Note3,
+        '4' => Note4,
+        '5' => Note5,
+        '6' => Note6,
+        '7' => Note7,
 
-        'p' => Token.PassingTone,
+        'p' => PassingTone,
 
-        'F' => Token.Faster,
-        'S' => Token.Slower,
-        'L' => Token.Louder,
-        'Q' => Token.Quieter,
-        'U' => Token.OctaveUp,
-        'D' => Token.OctaveDown,
-
+        'F' => SuperFast,
+        'f' => Fast,
+        's' => Slow,
+        'S' => SuperSlow,
+        
+        'L' => Loud,
+        'Q' => Quiet,
+        
         _ => throw new ArgumentOutOfRangeException(nameof(c), c, null)
     };
     
     public static char ToChar(Token token) => token switch
     {
-        Token.Rest => '.',
-        Token.Note1 => '1',
-        Token.Note2 => '2',
-        Token.Note3 => '3',
-        Token.Note4 => '4',
-        Token.Note5 => '5',
-        Token.Note6 => '6',
-        Token.Note7 => '7',
+        Rest => '.',
+        Note1 => '1',
+        Note2 => '2',
+        Note3 => '3',
+        Note4 => '4',
+        Note5 => '5',
+        Note6 => '6',
+        Note7 => '7',
 
-        Token.PassingTone => 'p',
+        PassingTone => 'p',
 
-        Token.Faster => 'F',
-        Token.Slower => 'S',
-        Token.Louder => 'L',
-        Token.Quieter => 'Q',
-        Token.OctaveUp => 'U',
-        Token.OctaveDown => 'D',
+        SuperFast => 'F',
+        Fast => 'f',
+        Slow => 's',
+        SuperSlow => 'S',
+        
+        Loud => 'L',
+        Quiet => 'Q',
 
         _ => throw new ArgumentOutOfRangeException(nameof(token), token, null)
     };

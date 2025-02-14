@@ -14,10 +14,13 @@ public enum Token
 
     PassingTone,
 
-    Faster,
-    Slower,
-    Louder,
-    Quieter,
-    OctaveUp,
-    OctaveDown,
+    SuperFast,
+    Fast,
+    Slow,
+    SuperSlow,
+    
+    Loud,
+    Quiet,
+    
+    Measure,
 }
