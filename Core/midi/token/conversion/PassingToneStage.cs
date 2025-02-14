@@ -99,7 +99,7 @@ public static class PassingToneStage
             var delta = midiNotes[i + 1].Note - note;
 
             // Add passing tone if delta is same as previous
-            if (prevDelta == delta)
+            if (false && prevDelta == delta)
             {
                 resArr[i] = new OctaveMelodyPassingTone(time, length, velocity);
             }

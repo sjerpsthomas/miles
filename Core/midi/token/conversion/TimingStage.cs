@@ -56,7 +56,6 @@ public static class TimingStage
         for (var index = 0; index < measures.Count; index++)
         {
             var (measure, measureLength) = measures[index];
-            Console.WriteLine($"Original measure length: {measureLength}");
 
             // Put length in range of [0.6,1.2]
             var speedFactor = 1.0;
@@ -121,8 +120,7 @@ public static class TimingStage
         var res = new VelocityTokenMelody();
         
         // Get measures
-        // TODO: fix notes that have time *.99
-        var measures = tokens.GroupBy(it => (int)Math.Truncate(it.Time))
+        var measures = tokens.GroupBy(it => (int)Math.Truncate(it.Time + 0.03))
             .OrderBy(it => it.Key)
             .Select(it => it.ToList()).ToList();
 
@@ -149,60 +147,90 @@ public static class TimingStage
                     measure[index - 1] = previousToken;
                     measure.RemoveAt(index);
                     index--;
+                    Console.WriteLine("Removed small note");
                 }
 
                 if (noteRestTime < 0.03)
                 {
                     // Give rest to token
                     measure[index] = token with { Length = token.Length + noteRestTime };
+                    Console.WriteLine("Removed small rest");
                 }
             }
             
             // Get the smallest note/rest
             var smallestSize = double.MaxValue;
-            for (var index = 0; index < measure.Count - 1; index++)
+            for (var index = 0; index < measure.Count; index++)
             {
                 var token = measure[index];
 
                 if (index == measure.Count - 1)
                     continue;
                 
+                // Get time of next token or end of measure
+                var nextTime = (index == measure.Count - 1) ? (double)index + 1 : measure[index + 1].Time;
+                
                 smallestSize = Math.Min(smallestSize, token.Length);
-                smallestSize = Math.Min(smallestSize, measure[index + 1].Time - token.Time);
+                smallestSize = Math.Min(smallestSize, nextTime - token.Time);
             }
 
             // Scale measures so smallest note/rest is SuperFast (or slower)
             var scale = smallestSize > 0.0625 ? 1.0 : 0.0625 / smallestSize;
             
+            void AddSpeed(double timeDiff)
+            {
+                var f = (int)Math.Round(Math.Log2(timeDiff));
+
+                var speed = f switch
+                {
+                    <= -4 => TokenSpeed.SuperFast,
+                    -3 => TokenSpeed.Fast,
+                    -2 => TokenSpeed.Slow,
+                    _ => TokenSpeed.SuperSlow,
+                };
+
+                if (currentSpeed == speed) return;
+                    
+                res.Tokens.Add(new VelocityTokenMelodySpeed(speed));
+                currentSpeed = speed;
+            }
+            
             // Go through every note in the measure
             var time = 0.0;
+            
+            // Get rest at start of measure
+            {
+                var targetTime = measure[0].Time * scale;
+                var timeDiff = targetTime - time;
+                if (timeDiff > 0.05)
+                {
+                    AddSpeed(timeDiff);
+                    
+                    // Add rest token
+                    res.Tokens.Add(new VelocityTokenMelodyRest());
+                    
+                    // Increment time
+                    time += currentSpeed switch
+                    {
+                        TokenSpeed.SuperFast => 0.6125,
+                        TokenSpeed.Fast => 0.125,
+                        TokenSpeed.Slow => 0.25,
+                        TokenSpeed.SuperSlow => 0.5,
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                }
+                else Console.WriteLine("Skipped rest");
+            }
+            
             for (var index = 0; index < measure.Count; index++)
             {
                 var token = measure[index];
 
-                void AddSpeed(double timeDiff)
-                {
-                    var f = (int)Math.Round(Math.Log2(timeDiff));
-
-                    var speed = f switch
-                    {
-                        <= -4 => TokenSpeed.SuperFast,
-                        -3 => TokenSpeed.Fast,
-                        -2 => TokenSpeed.Slow,
-                        _ => TokenSpeed.SuperSlow,
-                    };
-
-                    if (currentSpeed == speed) return;
-                    
-                    res.Tokens.Add(new VelocityTokenMelodySpeed(speed));
-                    currentSpeed = speed;
-                }
-                
                 // Determine speed of note
                 {
                     var targetTime = (token.Time + token.Length) * scale;
                     var timeDiff = targetTime - time;
-                    if (timeDiff > 0)
+                    if (timeDiff > 0.05)
                     {
                         AddSpeed(timeDiff);
                     
@@ -229,13 +257,12 @@ public static class TimingStage
                 }
                 
                 // Determine speed of rest
-                if (index != measure.Count - 1)
                 {
-                    var nextToken = measure[index + 1];
+                    var nextTime = index == measure.Count - 1 ? (double)index + 1 : measure[index + 1].Time * scale;
                     
-                    var targetTime = (nextToken.Time) * scale;
+                    var targetTime = nextTime;
                     var timeDiff = targetTime - time;
-                    if (timeDiff > 0)
+                    if (timeDiff > 0.05)
                     {
                         AddSpeed(timeDiff);
                     
@@ -252,7 +279,7 @@ public static class TimingStage
                             _ => throw new ArgumentOutOfRangeException()
                         };
                     }
-                    else Console.WriteLine("Skipped note");
+                    else Console.WriteLine("Skipped rest");
                 }
             }
             

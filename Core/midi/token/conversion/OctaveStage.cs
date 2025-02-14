@@ -99,8 +99,8 @@ public static class OctaveStage
             Tokens = octaveMelody.Tokens.Select(token =>
                 (TokenMelody.TokenMelodyToken)(token switch
                     {
-                        OctaveMelody.OctaveMelodyNote(var absoluteNote, var time, var length, var velocity) =>
-                            new TokenMelody.TokenMelodyNote(absoluteNote % 12, time, length, velocity),
+                        OctaveMelody.OctaveMelodyNote(var octaveScaleNote, var time, var length, var velocity) =>
+                            new TokenMelody.TokenMelodyNote(octaveScaleNote % 7, time, length, velocity),
                         OctaveMelody.OctaveMelodyPassingTone(var time, var length, var velocity) =>
                             new TokenMelody.TokenMelodyPassingTone(time, length, velocity),
                         _ => throw new ArgumentOutOfRangeException()
