@@ -48,7 +48,11 @@ public partial class MidiServer : Node
         {
             if (args.MidiEvent is not NoteEvent noteEvent) return;
 
-            Send(OutputName.Loopback, noteEvent.NoteNumber, noteEvent.Velocity);
+            // Workaround for keyboards with different note off velocity
+            var velocity = noteEvent.Velocity;
+            if (MidiEvent.IsNoteOff(noteEvent)) velocity = 0;
+            
+            Send(OutputName.Loopback, noteEvent.NoteNumber, velocity);
         };
     }
 
