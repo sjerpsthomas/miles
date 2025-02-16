@@ -1,47 +1,109 @@
-[gd_scene load_steps=5 format=3 uid="uid://t3avkfxx4ovs"]
+[gd_scene load_steps=6 format=3 uid="uid://t3avkfxx4ovs"]
 
 [ext_resource type="PackedScene" uid="uid://ciletavbhl37" path="res://util/piano/piano.tscn" id="1_llot4"]
 [ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="2_7jatf"]
 [ext_resource type="Script" path="res://screen/config/OutputNameOptionButton.cs" id="2_oxtwq"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3mgkv"]
+[ext_resource type="Script" path="res://screen/config/KeyboardMidiNameOptionButton.cs" id="3_3ngxk"]
+[ext_resource type="FontFile" uid="uid://dcfa6hmqj0pyx" path="res://font/Mansalva-Regular.ttf" id="4_oxe1x"]
 
 [node name="ConfigScreen" type="Node2D"]
 texture_filter = 1
 
 [node name="Panel" type="Panel" parent="."]
-offset_left = 64.0
-offset_top = 64.0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 1248.0
+offset_bottom = 608.0
+
+[node name="TitleLabel" type="Label" parent="Panel"]
 offset_right = 1216.0
-offset_bottom = 576.0
-theme_override_styles/panel = SubResource("StyleBoxEmpty_3mgkv")
+offset_bottom = 64.0
+theme_override_fonts/font = ExtResource("4_oxe1x")
+theme_override_font_sizes/font_size = 40
+text = "Config"
+horizontal_alignment = 1
+
+[node name="MIDILabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 64.0
+offset_right = 336.0
+offset_bottom = 128.0
+theme_override_fonts/font = ExtResource("2_7jatf")
+theme_override_font_sizes/font_size = 36
+text = "MIDI"
+vertical_alignment = 1
+
+[node name="KeyboardMIDINameLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 128.0
+offset_right = 208.0
+offset_bottom = 192.0
+theme_override_fonts/font = ExtResource("2_7jatf")
+theme_override_font_sizes/font_size = 30
+text = "Keyboard MIDI name"
+vertical_alignment = 1
+
+[node name="KeyboardMIDINameOptionButton" type="OptionButton" parent="Panel"]
+layout_mode = 0
+offset_left = 208.0
+offset_top = 128.0
+offset_right = 464.0
+offset_bottom = 192.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("2_7jatf")
+theme_override_font_sizes/font_size = 30
+alignment = 1
+script = ExtResource("3_3ngxk")
+
+[node name="Piano" parent="Panel" instance=ExtResource("1_llot4")]
+unique_name_in_owner = true
+position = Vector2(16, 208)
+OutputNames = Array[int]([0])
+
+[node name="OutputNameLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 304.0
+offset_right = 208.0
+offset_bottom = 368.0
+theme_override_fonts/font = ExtResource("2_7jatf")
+theme_override_font_sizes/font_size = 30
+text = "Test output name"
+vertical_alignment = 1
 
 [node name="OutputNameOptionButton" type="OptionButton" parent="Panel"]
 layout_mode = 0
-offset_left = 144.0
-offset_top = 16.0
-offset_right = 400.0
-offset_bottom = 80.0
+offset_left = 208.0
+offset_top = 304.0
+offset_right = 464.0
+offset_bottom = 368.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("2_7jatf")
 theme_override_font_sizes/font_size = 30
 alignment = 1
 script = ExtResource("2_oxtwq")
 
-[node name="Piano" parent="Panel" instance=ExtResource("1_llot4")]
+[node name="RestartLabel" type="Label" parent="Panel"]
 unique_name_in_owner = true
-position = Vector2(16, 96)
-OutputNames = Array[int]([0])
-
-[node name="Label" type="Label" parent="Panel"]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 144.0
-offset_bottom = 80.0
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
 theme_override_fonts/font = ExtResource("2_7jatf")
 theme_override_font_sizes/font_size = 30
-text = "Output name"
+text = "Restart the program to apply changes."
+horizontal_alignment = 1
 vertical_alignment = 1
 
+[connection signal="item_selected" from="Panel/KeyboardMIDINameOptionButton" to="Panel/KeyboardMIDINameOptionButton" method="_on_item_selected"]
 [connection signal="item_selected" from="Panel/OutputNameOptionButton" to="Panel/OutputNameOptionButton" method="_on_item_selected"]

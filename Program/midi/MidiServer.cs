@@ -27,8 +27,9 @@ public partial class MidiServer : Node
     public override void _Ready()
     {
         Instance = this;
-        
-        LearnerIn = FindMidiIn("LKMK3 MIDI");
+
+        var keyboardMidiName = (string)GetNode("/root/Config").Get("keyboard_midi_name");
+        LearnerIn = FindMidiIn(keyboardMidiName);
         LearnerIn.Start();
         
         Outputs = new()
@@ -42,7 +43,7 @@ public partial class MidiServer : Node
             [OutputName.Backing4Drums] = FindMidiOut("Backing 4 - Drums"),
         };
 
-        GD.Print("[MIDI] Setup successful!");
+        GD.Print($"[MIDI] Setup successful (using keyboard '{keyboardMidiName}')!");
 
         LearnerIn.MessageReceived += (_, args) =>
         {

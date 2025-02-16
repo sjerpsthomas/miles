@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bk265yvb0xqjm" path="res://standard_view/standard_view.tscn" id="5_vlfb7"]
 [ext_resource type="Script" path="res://screen/performance/side_icons.gd" id="6_71nrc"]
 [ext_resource type="Script" path="res://screen/performance/visualisation.gd" id="6_0858b"]
-[ext_resource type="Texture2D" uid="uid://6jim56wqbajh" path="res://icon.svg" id="6_gd6g2"]
+[ext_resource type="Texture2D" uid="uid://6jim56wqbajh" path="res://util/icon.svg" id="6_gd6g2"]
 [ext_resource type="PackedScene" uid="uid://ciletavbhl37" path="res://util/piano/piano.tscn" id="6_sd6b3"]
 
 [node name="PerformanceScreen" type="Node2D"]

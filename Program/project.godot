@@ -13,10 +13,11 @@ config_version=5
 config/name="Program"
 run/main_scene="res://screen/main/main_screen.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://util/icon.svg"
 
 [autoload]
 
+Config="*res://util/config.gd"
 MidiServer="*res://midi/MidiServer.cs"
 PerformanceScreenInit="*res://screen/performance/PerformanceScreenInit.gd"
 
