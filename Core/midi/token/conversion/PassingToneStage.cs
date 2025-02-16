@@ -28,6 +28,7 @@ public static class PassingToneStage
                 // Handle passing tones
                 case OctaveMelodyPassingTone:
                 {
+                    break;
                     // First note is previous token
                     var firstIndex = index - 1;
                     
@@ -68,7 +69,7 @@ public static class PassingToneStage
                         var f = (k + 1) / ((double)passingCount + 1);
                         var newNote = (int)((1 - f) * first + f * second);
 
-                        resArr[k] = new MidiNote(outputName, ptTime, ptLength, newNote, ptVelocity);
+                        resArr[k] = new MidiNote(outputName, ptTime, ptLength, newNote, ptVelocity / 3);
                     }
                     break;
                 }

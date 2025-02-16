@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks.Dataflow;
+﻿using System.Runtime.InteropServices;
+using System.Threading.Tasks.Dataflow;
 
 namespace Core.midi.token.conversion;
 
@@ -26,17 +27,22 @@ public static class OctaveStage
             do secondIndex++;
             while (secondIndex < tokens.Count - 1 && tokens[secondIndex] is not TokenMelody.TokenMelodyNote);
 
-            if (secondIndex >= tokens.Count || tokens[secondIndex] is not TokenMelody.TokenMelodyNote(var scaleNote2, _, _, _))
+            if (secondIndex >= tokens.Count)
+                continue;
+            if (tokens[secondIndex] is not TokenMelody.TokenMelodyNote(var scaleNote2, _, _, _))
                 continue;
 
             // Skip when note not leading to octave break
             if (scaleNote2 is > 2 and < 6) continue;
             if (scaleNote2 <= 2 && scaleNote <= 2) continue;
             if (scaleNote2 >= 6 && scaleNote >= 6) continue;
-                    
+
+            var direction = scaleNote < scaleNote2 ? OctaveDirection.Down : OctaveDirection.Up;
+            Console.WriteLine($"scaleNote: {scaleNote}, scaleNote2: {scaleNote2}, direction: {direction}");
+            
             // Create octave event
             octaveEvents.Add(
-                new OctaveEvent(scaleNote < scaleNote2 ? OctaveDirection.Down : OctaveDirection.Up, index)
+                new OctaveEvent(direction, index)
             );
         }
 
@@ -49,6 +55,7 @@ public static class OctaveStage
         // TODO?
 
         // Get average octave
+        Console.WriteLine($"octaveEvents.Count: {octaveEvents.Count}");
         var totalOctave = 0;
         {
             var currentOctave = 0;
@@ -65,6 +72,8 @@ public static class OctaveStage
             var currentOctave = 2 + (octaveEvents.Count == 0 ? 0 : -(totalOctave / octaveEvents.Count));
             var octaveEventIndex = 0;
 
+            Console.WriteLine($"scale notes ({tokens.Count}): {string.Join(',',tokens.OfType<TokenMelody.TokenMelodyNote>().Select(it => it.ScaleNote.ToString()))}");
+            
             for (var index = 0; index < tokens.Count; index++)
             {
                 // Apply octave event if possible
@@ -88,6 +97,8 @@ public static class OctaveStage
                 });
             }
         }
+        
+        Console.WriteLine($"result count: {res.Tokens.Count}");
 
         return res;
     }
