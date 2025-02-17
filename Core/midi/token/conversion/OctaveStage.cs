@@ -69,6 +69,7 @@ public static class OctaveStage
         var res = new OctaveMelody { Tokens = new(tokens.Count) };
         {
             var currentOctave = 2 + (octaveEvents.Count == 0 ? 0 : -(totalOctave / octaveEvents.Count));
+            currentOctave = Math.Clamp(currentOctave, 0, 3);
             var octaveEventIndex = 0;
 
             for (var index = 0; index < tokens.Count; index++)

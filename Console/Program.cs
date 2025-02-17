@@ -29,12 +29,14 @@ sw.Start();
 
 var n = 450;
 
-var tokens = TokenMethods.TokensFromString("556fSppLp6");
+var tokens = TokenMethods.TokensFromString("2..F3p4.56S2M.1762f.453Ms5pp2.3F76p4M23");
 var moreTokens = Enumerable.Repeat(tokens, 1000).SelectMany(it => it).ToList();
+
+var notes = TokenMethods.ResolveMelody(moreTokens, leadSheet, 0);
 
 for (var i = 0; i < n; i++)
 {
-    _ = TokenMethods.ResolveMelody(moreTokens, leadSheet, 0);
+    _ = TokenMethods.DeduceMelody(notes);
 }
 
 sw.Stop();
