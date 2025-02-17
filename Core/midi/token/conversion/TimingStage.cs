@@ -50,7 +50,7 @@ public static class TimingStage
         }
         #endregion
 
-        TokenMelody res = new();
+        var res = new TokenMelody { Tokens = new(tokens.Count) };
         
         // Go over every measure
         for (var index = 0; index < measures.Count; index++)
@@ -117,7 +117,7 @@ public static class TimingStage
     {
         var tokens = tokenMelody.Tokens;
 
-        var res = new VelocityTokenMelody();
+        var res = new VelocityTokenMelody { Tokens = new(tokens.Count) };
         
         // Get measures
         var measures = tokens.GroupBy(it => (int)Math.Truncate(it.Time + 0.03))

@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using NAudio.Midi;
 using static Core.midi.Chord;
 using static Core.midi.token.conversion.OctaveMelody;
@@ -14,71 +16,73 @@ public static class PassingToneStage
         
         var tokens = octaveMelody.Tokens;
         var resArr = new MidiNote?[tokens.Count];
-        
+
+        // First convert all note tokens
         for (var index = 0; index < tokens.Count; index++)
         {
-            // Ignore already handled passing tones
-            if (resArr[index] != null)
-                continue;
-            
             var token = tokens[index];
+            if (token is not OctaveMelodyNote(var octaveScaleNote, var time, var length, var velocity)) continue;
+
+            var note = leadSheet.ChordAtTime(time + startMeasureNum).GetAbsoluteNote(octaveScaleNote) + 36;
+            resArr[index] = new MidiNote(outputName, time, length, note, velocity);
+        }
+        
+        // Then convert all passing note tokens
+        for (var index = 0; index < tokens.Count; index++)
+        {
+            if (resArr[index] != null) continue;
             
-            switch (token)
+            var firstIndex = index - 1;
+            var firstMidiNote = firstIndex >= 0 && tokens[firstIndex] is OctaveMelodyNote
+                ? resArr[firstIndex]
+                : null;
+
+            var secondIndex = index + 1;
+            while (secondIndex < tokens.Count && tokens[secondIndex] is not OctaveMelodyNote)
+                secondIndex++;
+            
+            var secondMidiNote = secondIndex < tokens.Count && tokens[secondIndex] is OctaveMelodyNote
+                ? resArr[secondIndex]
+                : null;
+
+            var passingCount = secondIndex - firstIndex - 1;
+
+            // Create runs
+            int first, second;
+            switch (firstMidiNote, secondMidiNote)
             {
-                // Handle passing tones
-                case OctaveMelodyPassingTone:
-                {
+                // Both notes are valid
+                case var ((_, _, _, n1, _), (_, _, _, n2, _)):
+                    first = n1;
+                    second = n2;
                     break;
-                    // First note is previous token
-                    var firstIndex = index - 1;
-                    
-                    // Get second note index
-                    var secondIndex = index;
-                    do secondIndex++;
-                    while (secondIndex < tokens.Count - 1 && tokens[secondIndex] is not OctaveMelodyNote);
-
-                    var passingCount = secondIndex - firstIndex - 1;
-                    
-                    // Get notes from lead sheet
-                    int? firstMaybe = index > 0 && tokens[firstIndex] is OctaveMelodyNote(var octaveScaleNote1, var t1, _, _)
-                        ? leadSheet.ChordAtTime(t1 + startMeasureNum).GetAbsoluteNote(octaveScaleNote1) + 36
-                        : null;
-                    int? secondMaybe = secondIndex < tokens.Count && tokens[secondIndex] is OctaveMelodyNote(var octaveScaleNote2, var t2, _, _)
-                        ? leadSheet.ChordAtTime(t2 + startMeasureNum).GetAbsoluteNote(octaveScaleNote2) + 36
-                        : null;
-
-                    // Create runs if not known
-                    var (first, second) = (firstMaybe, secondMaybe) switch
-                    {
-                        (int v1, int v2) => (v1, v2),
-                        (int v1, null) => (v1, v1 + passingCount + 1),
-                        (null, int v2) => (v2 - passingCount - 1, v2),
-                        _ => (-1, -1)
-                    };
-
-                    // Continue if no notes found
-                    if (first == -1)
-                        continue;
-                    
-                    // Set all passing tones
-                    for (var k = index; k < secondIndex; k++)
-                    {
-                        if (tokens[k] is not OctaveMelodyPassingTone(var ptTime, var ptLength, var ptVelocity))
-                            continue;
-                        
-                        var f = (k + 1) / ((double)passingCount + 1);
-                        var newNote = (int)((1 - f) * first + f * second);
-
-                        resArr[k] = new MidiNote(outputName, ptTime, ptLength, newNote, ptVelocity / 3);
-                    }
-                    break;
-                }
                 
-                // Simply convert notes
-                case OctaveMelodyNote(var octaveScaleNote, var time, var length, var velocity):
-                    var note = leadSheet.ChordAtTime(time + startMeasureNum).GetAbsoluteNote(octaveScaleNote) + 36;
-                    resArr[index] = new MidiNote(outputName, time, length, note, velocity);
+                // One note is valid
+                case var ((_, _, _, n1, _), _):
+                    first = n1;
+                    second = n1 + passingCount + 1;
                     break;
+                case var (_, (_, _, _, n2, _)):
+                    first = n2 - passingCount - 1;
+                    second = n2;
+                    break;
+                
+                // No notes are valid
+                default:
+                    continue;
+            }
+
+            for (var k = 0; k < passingCount; k++)
+            {
+                var ptIndex = index + k;
+                    
+                if (tokens[ptIndex] is not OctaveMelodyPassingTone(var ptTime, var ptLength, var ptVelocity))
+                    continue;
+                    
+                var f = (k + 1) / ((double)passingCount + 1);
+                var newNote = (int)((1 - f) * first + f * second);
+                    
+                resArr[ptIndex] = new MidiNote(outputName, ptTime, ptLength, newNote, ptVelocity / 3);
             }
         }
 
@@ -122,7 +126,6 @@ public static class PassingToneStage
             var octaveScaleNote = CMajor.GetRelativeNote(note - 36);
             resArr[^1] = new OctaveMelodyNote(octaveScaleNote, time, length, velocity);
         }
-        
 
         return new OctaveMelody { Tokens = resArr.Select(it => it!).ToList() };
     }

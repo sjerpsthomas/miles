@@ -27,15 +27,14 @@ var leadSheet = new LeadSheet
 var sw = new Stopwatch();
 sw.Start();
 
-var n = 400;
+var n = 450;
 
-var tokens = TokenMethods.TokensFromString("2..F3p4.56S2M.1762f.453Ms5pp2.3F76p4M23");
+var tokens = TokenMethods.TokensFromString("556fSppLp6");
 var moreTokens = Enumerable.Repeat(tokens, 1000).SelectMany(it => it).ToList();
 
 for (var i = 0; i < n; i++)
 {
-    var res = TokenMethods.ResolveMelody(moreTokens, leadSheet, 0);
-    Console.WriteLine(tokens);
+    _ = TokenMethods.ResolveMelody(moreTokens, leadSheet, 0);
 }
 
 sw.Stop();

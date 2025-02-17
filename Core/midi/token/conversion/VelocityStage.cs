@@ -8,7 +8,7 @@ public static class VelocityStage
 {
     public static VelocityTokenMelody ResolveVelocity(List<Token> tokens)
     {
-        List<VelocityTokenMelodyToken> resTokens = [];
+        List<VelocityTokenMelodyToken> resTokens = new(tokens.Count);
 
         int currentVelocity = 96;
         
@@ -61,8 +61,8 @@ public static class VelocityStage
 
     public static List<Token> DeduceVelocity(VelocityTokenMelody velocityTokenMelody)
     {
-        List<Token> res = [];
         var tokens = velocityTokenMelody.Tokens;
+        List<Token> res = new(tokens.Count);
 
         var currentVelocity = 96;
         void HandleVelocity(int velocity)

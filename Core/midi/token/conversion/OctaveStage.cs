@@ -55,7 +55,6 @@ public static class OctaveStage
         // TODO?
 
         // Get average octave
-        Console.WriteLine($"octaveEvents.Count: {octaveEvents.Count}");
         var totalOctave = 0;
         {
             var currentOctave = 0;
@@ -67,13 +66,11 @@ public static class OctaveStage
         }
 
         // Create tokens
-        var res = new OctaveMelody();
+        var res = new OctaveMelody { Tokens = new(tokens.Count) };
         {
             var currentOctave = 2 + (octaveEvents.Count == 0 ? 0 : -(totalOctave / octaveEvents.Count));
             var octaveEventIndex = 0;
 
-            Console.WriteLine($"scale notes ({tokens.Count}): {string.Join(',',tokens.OfType<TokenMelody.TokenMelodyNote>().Select(it => it.ScaleNote.ToString()))}");
-            
             for (var index = 0; index < tokens.Count; index++)
             {
                 // Apply octave event if possible
@@ -98,8 +95,6 @@ public static class OctaveStage
             }
         }
         
-        Console.WriteLine($"result count: {res.Tokens.Count}");
-
         return res;
     }
     
