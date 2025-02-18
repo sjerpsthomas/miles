@@ -25,16 +25,16 @@ public static class TokenMethods
     
     public static List<MidiNote> ResolveMelody(List<Token> tokens, LeadSheet leadSheet, int startMeasureNum)
     {
-        Console.WriteLine("Resolving velocity...");
+        // Console.WriteLine("Resolving velocity...");
         var velocityTokenMelody = VelocityStage.ResolveVelocity(tokens);
 
-        Console.WriteLine("Resolving timing...");
+        // Console.WriteLine("Resolving timing...");
         var tokenMelody = TimingStage.ResolveTiming(velocityTokenMelody);
 
-        Console.WriteLine("Resolving octaves...");
+        // Console.WriteLine("Resolving octaves...");
         var octaveMelody = OctaveStage.ResolveOctaves(tokenMelody);
 
-        Console.WriteLine("Resolving passing tones...");
+        // Console.WriteLine("Resolving passing tones...");
         var midiNotes = PassingToneStage.ResolvePassingTones(octaveMelody, leadSheet, startMeasureNum);
 
         return midiNotes;
@@ -42,16 +42,16 @@ public static class TokenMethods
 
     public static List<Token> DeduceMelody(List<MidiNote> midiNotes)
     {
-        Console.WriteLine("Deducing passing tones...");
+        // Console.WriteLine("Deducing passing tones...");
         var octaveMelody = PassingToneStage.DeducePassingTones(midiNotes);
 
-        Console.WriteLine("Deducing octaves...");
+        // Console.WriteLine("Deducing octaves...");
         var tokenMelody = OctaveStage.DeduceOctaves(octaveMelody);
         
-        Console.WriteLine("Deducing timing...");
+        // Console.WriteLine("Deducing timing...");
         var velocityTokenMelody = TimingStage.DeduceTiming(tokenMelody);
 
-        Console.WriteLine("Deducing velocity...");
+        // Console.WriteLine("Deducing velocity...");
         var tokens = VelocityStage.DeduceVelocity(velocityTokenMelody);
 
         return tokens;

@@ -113,7 +113,8 @@ public static class PassingToneStage
             }
             else
             {
-                var octaveScaleNote = CMajor.GetRelativeNote(note - 36);
+                // note - 36 omitted; octaves are removed during DeduceOctaves anyway
+                var octaveScaleNote = CMajor.GetRelativeNote(note);
                 resArr[i] = new OctaveMelodyNote(octaveScaleNote, time, length, velocity);
             }
             
@@ -123,7 +124,8 @@ public static class PassingToneStage
         // Add last note
         {
             var (_, time, length, note, velocity) = midiNotes[^1];
-            var octaveScaleNote = CMajor.GetRelativeNote(note - 36);
+            // note - 36 omitted; octaves are removed during DeduceOctaves anyway
+            var octaveScaleNote = CMajor.GetRelativeNote(note);
             resArr[^1] = new OctaveMelodyNote(octaveScaleNote, time, length, velocity);
         }
 

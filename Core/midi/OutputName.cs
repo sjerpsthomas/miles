@@ -9,4 +9,5 @@ public enum OutputName
     Backing2Piano,
     Backing3Keyboard,
     Backing4Drums,
+    Unknown,
 }
