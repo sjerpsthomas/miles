@@ -1,5 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://t3avkfxx4ovs"]
+[gd_scene load_steps=7 format=3 uid="uid://t3avkfxx4ovs"]
 
+[ext_resource type="Script" path="res://screen/config/config_screen.gd" id="1_6n0ji"]
 [ext_resource type="PackedScene" uid="uid://ciletavbhl37" path="res://util/piano/piano.tscn" id="1_llot4"]
 [ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="2_7jatf"]
 [ext_resource type="Script" path="res://screen/config/OutputNameOptionButton.cs" id="2_oxtwq"]
@@ -8,6 +9,7 @@
 
 [node name="ConfigScreen" type="Node2D"]
 texture_filter = 1
+script = ExtResource("1_6n0ji")
 
 [node name="Panel" type="Panel" parent="."]
 offset_left = 32.0
@@ -16,6 +18,7 @@ offset_right = 1248.0
 offset_bottom = 608.0
 
 [node name="TitleLabel" type="Label" parent="Panel"]
+layout_mode = 0
 offset_right = 1216.0
 offset_bottom = 64.0
 theme_override_fonts/font = ExtResource("4_oxe1x")
@@ -105,5 +108,25 @@ text = "Restart the program to apply changes."
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="TokenTestScreenButton" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -592.0
+offset_top = 96.0
+offset_right = -428.0
+offset_bottom = 144.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.25, 1, 0.25, 1)
+theme_override_fonts/font = ExtResource("2_7jatf")
+theme_override_font_sizes/font_size = 30
+text = "Token test screen"
+
 [connection signal="item_selected" from="Panel/KeyboardMIDINameOptionButton" to="Panel/KeyboardMIDINameOptionButton" method="_on_item_selected"]
 [connection signal="item_selected" from="Panel/OutputNameOptionButton" to="Panel/OutputNameOptionButton" method="_on_item_selected"]
+[connection signal="pressed" from="Panel/TokenTestScreenButton" to="." method="_on_token_test_screen_button_pressed"]

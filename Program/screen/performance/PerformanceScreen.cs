@@ -25,6 +25,10 @@ public partial class PerformanceScreen : Node2D
 
 		var standardName = (string)GetNode("/root/PerformanceScreenInit").Get("standard_name");
 		GetNode("StandardView").Call("load_sheet", standardName);
+
+		var scheduler = (MidiScheduler)GetNode("%MidiScheduler");
+		scheduler.InitializePerformance();
+		scheduler.Start();
 	}
 
 	public void OnMidiServerNoteSent(MidiNote noteData)

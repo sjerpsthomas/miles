@@ -34,7 +34,7 @@ public partial class MidiScheduler : Node
 
 	public List<MidiSchedulerComponent> Components = new();
 	
-	public override void _Ready()
+	public void InitializePerformance()
 	{
 		// Get path of standard
 		var init = GetNode("/root/PerformanceScreenInit");
@@ -90,9 +90,6 @@ public partial class MidiScheduler : Node
 			new MidiNote(OutputName.Metronome, 0.50, 0.2, 22, 48),
 			new MidiNote(OutputName.Metronome, 0.75, 0.2, 22, 48),
 		]));
-		
-		// Start
-		Start();
 	}
 
 	public void Start()
