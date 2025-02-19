@@ -1,4 +1,5 @@
-﻿using static Core.midi.token.conversion.TokenMelody;
+﻿using NAudio.Dsp;
+using static Core.midi.token.conversion.TokenMelody;
 using static Core.midi.token.conversion.VelocityTokenMelody;
 using static Core.midi.token.TokenMethods;
 
@@ -6,110 +7,139 @@ namespace Core.midi.token.conversion;
 
 public static class TimingStage
 {
+    private record Phrase(List<TokenMelodyToken> Tokens, double Start, double End, TokenSpeed FinalSpeed);
     public static TokenMelody ResolveTiming(VelocityTokenMelody velocityTokenMelody)
     {
         var tokens = velocityTokenMelody.Tokens;
+
+        var res = new TokenMelody();
         
-        List<(List<VelocityTokenMelodyToken>, double)> measures = [];
-        #region Get measures
+        List<Phrase> currentMeasure = [];
+        var currentPhrase = new Phrase([], 0.0, -1, TokenSpeed.Fast);
+        var currentSpeed = TokenSpeed.Fast;
+        var currentMeasureTime = 0.0;
+        var currentMeasureNum = 0;
+        foreach (var token in tokens)
         {
-            List<VelocityTokenMelodyToken> currentMeasure = [];
-            var currentLength = 0.0;
-            var currentSpeed = TokenSpeed.Fast;
-
-            tokens.Add(new VelocityTokenMelodyMeasure());
-            foreach (var token in tokens)
+            // Handle ending of phrase
+            if (token is VelocityTokenMelodyMeasure or VelocityTokenMelodySpeed)
             {
-                // Early return when handling measure token
-                if (token is VelocityTokenMelodyMeasure)
-                {
-                    measures.Add((currentMeasure, currentLength));
+                currentMeasure.Add(currentPhrase with { End = currentMeasureTime });
+                currentPhrase = new Phrase([], currentMeasureTime, -1, currentSpeed);
+            }
 
-                    currentLength = 0.0;
+            var tokenTime = currentSpeed.ToDouble();
+            
+            // Handle measure
+            if (token is VelocityTokenMelodyMeasure)
+            {
+                // Handle empty measure
+                if (currentMeasure is [{ Tokens: [] }])
+                {
+                    currentMeasureNum++;
+                    currentMeasureTime = 0.0;
                     currentMeasure = [];
                     continue;
                 }
 
-                // Add token
-                currentMeasure.Add(token);
-
-                // Handle speed
-                if (token is VelocityTokenMelodyRest or VelocityTokenMelodyNote or VelocityTokenMelodyPassingTone)
-                    currentLength += currentSpeed switch
-                    {
-                        TokenSpeed.SuperFast => 0.0625,
-                        TokenSpeed.Fast => 0.125,
-                        TokenSpeed.Slow => 0.25,
-                        TokenSpeed.SuperSlow => 0.5,
-                        _ => throw new ArgumentOutOfRangeException()
-                    };
+                // Get length of all measures
+                var measureLength = currentMeasure[^1].End;
                 
-                else if (token is VelocityTokenMelodySpeed(var speed))
-                    currentSpeed = speed;
-            }
-        }
-        #endregion
-
-        var res = new TokenMelody { Tokens = new(tokens.Count) };
-        
-        // Go over every measure
-        for (var index = 0; index < measures.Count; index++)
-        {
-            var (measure, measureLength) = measures[index];
-
-            // Put length in range of [0.6,1.2]
-            var speedFactor = 1.0;
-            while (speedFactor * measureLength < 1.2)
-                speedFactor *= 2;
-            while (speedFactor * measureLength > 1.2)
-                speedFactor /= 2;
-
-            // Turn into TokenMelodyTokens
-            List<TokenMelodyToken> tokenMelodyTokens = [];
-            var time = (double)index;
-            var currentSpeed = TokenSpeed.Fast;
-
-            foreach (var token in measure)
-            {
-                var tokenLength = currentSpeed switch
+                // Handle all phrases
+                for (var index = 0; index < currentMeasure.Count; index++)
                 {
-                    TokenSpeed.SuperFast => 0.0625,
-                    TokenSpeed.Fast => 0.125,
-                    TokenSpeed.Slow => 0.25,
-                    TokenSpeed.SuperSlow => 0.5,
-                    _ => throw new ArgumentOutOfRangeException()
-                } * speedFactor;
+                    var phrase = currentMeasure[index];
 
-                switch (token)
-                {
-                    case VelocityTokenMelodyRest:
-                        time += tokenLength;
-                        break;
+                    Console.WriteLine($"Start: {phrase.Start}, End: {phrase.End}");
+                    
+                    var finalSpeedDouble = phrase.FinalSpeed.ToDouble();
 
-                    case VelocityTokenMelodyNote(var scaleNote, var velocity):
-                        tokenMelodyTokens.Add(new TokenMelodyNote(scaleNote, time, tokenLength, velocity));
-                        time += tokenLength;
-                        break;
+                    // Scale phrases such that measure is of length 1,
+                    // Adjust start of phrase, snap end of phrase
+                    phrase = phrase with
+                    {
+                        Start = index == 0 ? phrase.Start / measureLength : currentMeasure[index - 1].End,
+                        End = phrase.End / measureLength
+                        // End = (int)Math.Ceiling(phrase.End / measureLength / finalSpeedDouble) * finalSpeedDouble,
+                    };
 
-                    case VelocityTokenMelodyPassingTone(var velocity):
-                        tokenMelodyTokens.Add(new TokenMelodyPassingTone(time, tokenLength, velocity));
-                        time += tokenLength;
-                        break;
+                    // Ignore notes when phrase does not snap correctly
+                    if (phrase.End <= phrase.Start)
+                    {
+                        Console.WriteLine($"Phrase ignored ({phrase.Tokens.Count} notes)");
+                        
+                        phrase = phrase with { End = phrase.Start };
+                        currentMeasure[index] = phrase;
+                        continue;
+                    }
+                    
+                    // Get time per token
+                    var newTokenTime = (phrase.End - phrase.Start) / phrase.Tokens.Count;
 
-                    case VelocityTokenMelodySpeed(var speed):
-                        currentSpeed = speed;
-                        break;
+                    // Add all time-shifted tokens
+                    for (var i = 0; i < phrase.Tokens.Count; i++)
+                    {
+                        var phraseToken = phrase.Tokens[i];
 
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                        // Ignore dummy notes, fix length
+                        if (phraseToken is not TokenMelodyNote(_, _, _, 0))
+                            res.Tokens.Add(
+                                phraseToken with
+                                {
+                                    Time = currentMeasureNum + phrase.Start + i * newTokenTime,
+                                    Length = newTokenTime
+                                }
+                            );
+                    }
+
+                    currentMeasure[index] = phrase;
                 }
+
+                // Increment time and measure
+                currentMeasureNum++;
+                currentMeasureTime = 0;
+                currentMeasure = [];
+                currentPhrase = new Phrase([], 0.0, -1, currentSpeed);
             }
+            
+            // Handle rest
+            else if (token is VelocityTokenMelodyRest)
+            {
+                // Add dummy note
+                var newToken = new TokenMelodyNote(0, currentMeasureTime, tokenTime, 0);
+                currentPhrase.Tokens.Add(newToken);
+                
+                currentMeasureTime += tokenTime;
+            }
+            
+            // Handle note
+            else if (token is VelocityTokenMelodyNote(var scaleNote, var nVelocity))
+            {
+                // Add TokenMelody token to phrase
+                var newToken = new TokenMelodyNote(scaleNote, currentMeasureTime, tokenTime, nVelocity);
+                currentPhrase.Tokens.Add(newToken);
 
-            // TODO: fit to length
-
-            res.Tokens.AddRange(tokenMelodyTokens);
+                currentMeasureTime += tokenTime;
+            }
+            
+            // Handle passing tone
+            else if (token is VelocityTokenMelodyPassingTone(var ptVelocity))
+            {
+                // Add TokenMelody token to phrase
+                var newToken = new TokenMelodyPassingTone(currentMeasureTime, tokenTime, ptVelocity);
+                currentPhrase.Tokens.Add(newToken);
+                
+                currentMeasureTime += tokenTime;
+            }
+            
+            // Handle speed
+            else if (token is VelocityTokenMelodySpeed(var speed))
+            {
+                currentSpeed = speed;
+            }
         }
-
+        
+        // Return
         return res;
     }
 

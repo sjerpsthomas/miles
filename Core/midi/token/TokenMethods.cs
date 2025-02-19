@@ -97,6 +97,15 @@ public static class TokenMethods
 
         return true;
     }
+    
+    public static double ToDouble(this TokenSpeed tokenSpeed) => tokenSpeed switch
+    {
+        TokenSpeed.SuperFast => 0.0625,
+        TokenSpeed.Fast => 0.125,
+        TokenSpeed.Slow => 0.25,
+        TokenSpeed.SuperSlow => 0.5,
+        _ => throw new ArgumentOutOfRangeException()
+    };
 
     public static bool HasDuration(this Token token)
     {
