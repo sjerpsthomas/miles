@@ -82,7 +82,7 @@ public static class PassingToneStage
                 var f = (k + 1) / ((double)passingCount + 1);
                 var newNote = (int)((1 - f) * first + f * second);
                     
-                resArr[ptIndex] = new MidiNote(outputName, ptTime, ptLength, newNote, ptVelocity / 3);
+                resArr[ptIndex] = new MidiNote(outputName, ptTime, ptLength, newNote, ptVelocity);
             }
         }
 

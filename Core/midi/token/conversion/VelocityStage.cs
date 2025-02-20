@@ -27,8 +27,7 @@ public static class VelocityStage
                 case Note5:
                 case Note6:
                 case Note7:
-                    token.IsNote(out var intToken);
-                    resTokens.Add(new VelocityTokenMelodyNote(intToken, currentVelocity));
+                    resTokens.Add(new VelocityTokenMelodyNote((int)token - 1, currentVelocity));
                     break;
 
                 case PassingTone:
@@ -84,7 +83,7 @@ public static class VelocityStage
                     break;
                 case VelocityTokenMelodyNote(var scaleNote, var velocity):
                     HandleVelocity(velocity);
-                    res.Add((Token)scaleNote);
+                    res.Add((Token)scaleNote + 1);
                     break;
 
                 case VelocityTokenMelodyPassingTone(var velocity):

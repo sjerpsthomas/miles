@@ -1,4 +1,4 @@
-﻿using NAudio.Dsp;
+﻿using NAudio.Wave.SampleProviders;
 using static Core.midi.token.conversion.TokenMelody;
 using static Core.midi.token.conversion.VelocityTokenMelody;
 using static Core.midi.token.TokenMethods;
@@ -50,8 +50,6 @@ public static class TimingStage
                 {
                     var phrase = currentMeasure[index];
 
-                    Console.WriteLine($"Start: {phrase.Start}, End: {phrase.End}");
-                    
                     var finalSpeedDouble = phrase.FinalSpeed.ToDouble();
 
                     // Scale phrases such that measure is of length 1,
@@ -59,15 +57,13 @@ public static class TimingStage
                     phrase = phrase with
                     {
                         Start = index == 0 ? phrase.Start / measureLength : currentMeasure[index - 1].End,
-                        End = phrase.End / measureLength
-                        // End = (int)Math.Ceiling(phrase.End / measureLength / finalSpeedDouble) * finalSpeedDouble,
+                        // End = phrase.End / measureLength
+                        End = (int)Math.Ceiling(phrase.End / measureLength / finalSpeedDouble) * finalSpeedDouble,
                     };
 
                     // Ignore notes when phrase does not snap correctly
                     if (phrase.End <= phrase.Start)
                     {
-                        Console.WriteLine($"Phrase ignored ({phrase.Tokens.Count} notes)");
-                        
                         phrase = phrase with { End = phrase.Start };
                         currentMeasure[index] = phrase;
                         continue;
@@ -147,71 +143,108 @@ public static class TimingStage
     {
         var tokens = tokenMelody.Tokens;
 
-        var res = new VelocityTokenMelody { Tokens = new(tokens.Count) };
+        // Early return
+        if (tokens is [])
+            return new VelocityTokenMelody();
         
-        // Get measures
-        var measures = tokens.GroupBy(it => (int)Math.Truncate(it.Time + 0.03))
-            .OrderBy(it => it.Key)
-            .Select(it => it.ToList()).ToList();
-
-        // Keep track of speed later on
-        var currentSpeed = TokenSpeed.Fast;
-        
-        // Remove small notes, small rests
-        foreach (var measure in measures)
+        // Move notes that are close to barlines
+        for (var index = 0; index < tokens.Count; index++)
         {
-            for (var index = 0; index < measure.Count - 1; index++)
-            {
-                var token = measure[index];
-
-                var previousToken = index == 0 ? null : measure[index - 1];
-                var nextToken = index == measure.Count - 1 ? null : measure[index + 1];
-                
-                var noteLength = token.Length;
-                var noteRestTime = (nextToken ?? token).Time - token.Time;
-
-                if (noteLength < 0.03 && previousToken != null)
-                {
-                    // Remove note and give its length to previous token
-                    previousToken = previousToken with { Length = previousToken.Length + noteLength };
-                    measure[index - 1] = previousToken;
-                    measure.RemoveAt(index);
-                    index--;
-                    Console.WriteLine("Removed small note");
-                }
-
-                if (noteRestTime < 0.03)
-                {
-                    // Give rest to token
-                    measure[index] = token with { Length = token.Length + noteRestTime };
-                    Console.WriteLine("Removed small rest");
-                }
-            }
+            var token = tokens[index];
+            var tokenTime = token.Time;
+            var tokenSnapped = Math.Round(token.Time);
             
-            // Get the smallest note/rest
-            var smallestSize = double.MaxValue;
+            if (tokenTime - Math.Truncate(tokenTime) is > 0.997 or < 0.003)
+                tokens[index] = token with { Time = tokenSnapped };
+        }
+
+        // Delete small notes
+        for (var index = 0; index < tokens.Count; index++)
+        {
+            if (!(tokens[index].Length < 0.03)) continue;
+
+            // Console.WriteLine("Small note removed");
+            tokens.RemoveAt(index);
+            index -= 1;
+        }
+        
+        // Delete small rests, make monophonic
+        for (var index = 0; index < tokens.Count - 1; index++)
+        {
+            var token = tokens[index];
+            var nextToken = tokens[index + 1];
+
+            var restTime = nextToken.Time - (token.Time + token.Length);
+            if (restTime < 0)
+            {
+                // Console.WriteLine("Note made monophonic");
+                tokens[index] = token with { Length = nextToken.Time - token.Time };
+            }
+            else if (restTime < 0.8 * token.Time)
+            {
+                tokens[index] = token with { Length = nextToken.Time - token.Time };
+            }
+        }
+        
+        // Early return
+        if (tokens is [])
+            return new VelocityTokenMelody();
+        
+        // Create velocity token melody
+        var res = new VelocityTokenMelody();
+        
+        // Get initial speed
+        var currentSpeed = TokenSpeed.Fast;
+        var startTime = tokens[0].Time;
+        if (startTime > 0.03)
+        {
+            var f = (int)Math.Round(Math.Log2(startTime));
+            currentSpeed = f switch
+            {
+                <= -4 => TokenSpeed.SuperFast,
+                -3 => TokenSpeed.Fast,
+                -2 => TokenSpeed.Slow,
+                _ => TokenSpeed.SuperSlow,
+            };
+        }
+        
+        // (Creates a rest of specified length)
+        void HandleRest(double length)
+        {
+            if (length <= 0.03) return;
+            
+            var amount = (int)Math.Round(length / currentSpeed.ToDouble());
+            
+            for (var i = 0; i < amount; i++)
+                res.Tokens.Add(new VelocityTokenMelodyRest());
+        }
+        
+        // Create measures (horrible complexity)
+        var measureCount = (int)Math.Truncate(tokens[^1].Time) + 1;
+        var measureGroups = tokens.GroupBy(it => (int)Math.Truncate(it.Time)).ToList();
+        var measures = Enumerable.Range(0, measureCount)
+            .Select(it => 
+                measureGroups.FirstOrDefault(group => group.Key == it)?.ToList() ?? []
+            )
+            .ToList();
+
+        double measureStart = tokens[0].Time;
+        
+        for (var measureNum = 0; measureNum < measures.Count; measureNum++)
+        {
+            var measure = measures[measureNum];
+            
+            // Handle rest at start of measure
+            if (measure is not [])
+                HandleRest(measureStart);
+            
             for (var index = 0; index < measure.Count; index++)
             {
                 var token = measure[index];
 
-                if (index == measure.Count - 1)
-                    continue;
-                
-                // Get time of next token or end of measure
-                var nextTime = (index == measure.Count - 1) ? (double)index + 1 : measure[index + 1].Time;
-                
-                smallestSize = Math.Min(smallestSize, token.Length);
-                smallestSize = Math.Min(smallestSize, nextTime - token.Time);
-            }
-
-            // Scale measures so smallest note/rest is SuperFast (or slower)
-            var scale = smallestSize > 0.0625 ? 1.0 : 0.0625 / smallestSize;
-            
-            void AddSpeed(double timeDiff)
-            {
-                var f = (int)Math.Round(Math.Log2(timeDiff));
-
-                var speed = f switch
+                // Get speed of note length
+                var f = (int)Math.Round(Math.Log2(token.Length));
+                var newSpeed = f switch
                 {
                     <= -4 => TokenSpeed.SuperFast,
                     -3 => TokenSpeed.Fast,
@@ -219,104 +252,33 @@ public static class TimingStage
                     _ => TokenSpeed.SuperSlow,
                 };
 
-                if (currentSpeed == speed) return;
-                    
-                res.Tokens.Add(new VelocityTokenMelodySpeed(speed));
-                currentSpeed = speed;
-            }
-            
-            // Go through every note in the measure
-            var time = 0.0;
-            
-            // Get rest at start of measure
-            {
-                var targetTime = measure[0].Time * scale;
-                var timeDiff = targetTime - time;
-                if (timeDiff > 0.05)
+                // Add speed tokens
+                if (newSpeed != currentSpeed)
                 {
-                    AddSpeed(timeDiff);
-                    
-                    // Add rest token
-                    res.Tokens.Add(new VelocityTokenMelodyRest());
-                    
-                    // Increment time
-                    time += currentSpeed switch
-                    {
-                        TokenSpeed.SuperFast => 0.6125,
-                        TokenSpeed.Fast => 0.125,
-                        TokenSpeed.Slow => 0.25,
-                        TokenSpeed.SuperSlow => 0.5,
-                        _ => throw new ArgumentOutOfRangeException()
-                    };
+                    res.Tokens.Add(new VelocityTokenMelodySpeed(newSpeed));
+                    currentSpeed = newSpeed;
                 }
-                else Console.WriteLine("Skipped rest");
-            }
-            
-            for (var index = 0; index < measure.Count; index++)
-            {
-                var token = measure[index];
 
-                // Determine speed of note
-                {
-                    var targetTime = (token.Time + token.Length) * scale;
-                    var timeDiff = targetTime - time;
-                    if (timeDiff > 0.05)
-                    {
-                        AddSpeed(timeDiff);
-                    
-                        // Add note token
-                        res.Tokens.Add(token switch {
-                            TokenMelodyNote(var scaleNote, _, _, var nVelocity) =>
-                                new VelocityTokenMelodyNote(scaleNote, nVelocity),
-                            TokenMelodyPassingTone(_, _, var ptVelocity) =>
-                                new VelocityTokenMelodyPassingTone(ptVelocity),
-                            _ => throw new ArgumentOutOfRangeException()
-                        });
-                    
-                        // Increment time
-                        time += currentSpeed switch
-                        {
-                            TokenSpeed.SuperFast => 0.6125,
-                            TokenSpeed.Fast => 0.125,
-                            TokenSpeed.Slow => 0.25,
-                            TokenSpeed.SuperSlow => 0.5,
-                            _ => throw new ArgumentOutOfRangeException()
-                        };
-                    }
-                    else Console.WriteLine("Skipped note");
-                }
-                
-                // Determine speed of rest
-                {
-                    var nextTime = index == measure.Count - 1 ? (double)index + 1 : measure[index + 1].Time * scale;
-                    
-                    var targetTime = nextTime;
-                    var timeDiff = targetTime - time;
-                    if (timeDiff > 0.05)
-                    {
-                        AddSpeed(timeDiff);
-                    
-                        // Add rest token
-                        res.Tokens.Add(new VelocityTokenMelodyRest());
-                    
-                        // Increment time
-                        time += currentSpeed switch
-                        {
-                            TokenSpeed.SuperFast => 0.6125,
-                            TokenSpeed.Fast => 0.125,
-                            TokenSpeed.Slow => 0.25,
-                            TokenSpeed.SuperSlow => 0.5,
-                            _ => throw new ArgumentOutOfRangeException()
-                        };
-                    }
-                    else Console.WriteLine("Skipped rest");
-                }
+                // Add note and passing tone tokens
+                if (token is TokenMelodyNote(var scaleNote, _, _, var nVelocity))
+                    res.Tokens.Add(new VelocityTokenMelodyNote(scaleNote, nVelocity));
+                else if (token is TokenMelodyPassingTone(_, _, var ptVelocity))
+                    res.Tokens.Add(new VelocityTokenMelodyPassingTone(ptVelocity));
+
+                // Add rest tokens
+                var nextTime = index < measure.Count - 1 ? tokens[index + 1].Time : measureNum + 1;
+                HandleRest(nextTime - (token.Time + token.Length));
             }
-            
-            // Add measure token
+
+            if (measure is [])
+                measureStart = 0.0;
+            else
+                measureStart = (measure[^1].Time + measure[^1].Length) - measureNum - 1;
+
+            // Add measure token at the end
             res.Tokens.Add(new VelocityTokenMelodyMeasure());
         }
-
+        
         return res;
     }
 }

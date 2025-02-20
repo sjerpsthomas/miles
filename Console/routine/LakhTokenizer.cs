@@ -14,6 +14,9 @@ public class LakhTokenizer
     
     public void Run(string directory, string targetDirectory, bool printAllow = false)
     {
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+        
         var fileNames = Directory.GetFiles(directory, "*.mid", SearchOption.AllDirectories);
 
         Parallel.ForEach(fileNames, fileName =>
@@ -175,6 +178,8 @@ public class LakhTokenizer
             WriteLine($"DONE {fileName} ({numberOfUsableTracks} usable tracks)");
         });
 
-        WriteLine("Completed!");
+        stopWatch.Stop();
+        
+        WriteLine($"Completed in {stopWatch.ElapsedMilliseconds / 1000} seconds!");
     }
 }

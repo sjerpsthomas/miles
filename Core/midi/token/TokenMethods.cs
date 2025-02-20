@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Core.midi.token.conversion;
+﻿using Core.midi.token.conversion;
 using NAudio.Wave;
 using static Core.midi.token.Token;
 
@@ -56,19 +55,10 @@ public static class TokenMethods
 
         return tokens;
     }
-    
-    public static int ToNote(this Token token, Chord currentChord)
-    {
-        if (!token.IsNote(out var intToken))
-            Debug.Fail("Token is not a note");
 
-        return currentChord.GetAbsoluteNote(intToken);
-    }
-
-    public static bool IsNote(this Token token, out int intToken)
+    public static bool IsNote(this Token token)
     {
-        intToken = (int)token;
-        
+        var intToken = (int)token;
         return intToken is >= 1 and <= 7;
     }
 
@@ -106,11 +96,6 @@ public static class TokenMethods
         TokenSpeed.SuperSlow => 0.5,
         _ => throw new ArgumentOutOfRangeException()
     };
-
-    public static bool HasDuration(this Token token)
-    {
-        return token.IsNote(out _) || token is Rest or PassingTone;
-    }
 
     public static Token FromChar(char c) => c switch
     {
