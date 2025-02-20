@@ -161,6 +161,10 @@ public class LakhTokenizer
                 var tokens = TokenMethods.DeduceMelody(notes);
                 var tokensStr = TokenMethods.TokensToString(tokens);
                 
+                // Trim measure tokens
+                tokensStr = tokensStr.Trim('M');
+                tokensStr += 'M';
+                
                 // Get export folder name
                 int exportId;
                 lock (Lock) exportId = Lock.Value++;
