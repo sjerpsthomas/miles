@@ -62,7 +62,7 @@ public partial class MidiScheduler : Node
 			Repetitions = Repetitions,
 		});
 
-		var soloist = new RandomTokenSoloist();
+		var soloist = new TransformerSoloist();
 
 		// Soloist soloist = soloistIndex switch
 		// {
