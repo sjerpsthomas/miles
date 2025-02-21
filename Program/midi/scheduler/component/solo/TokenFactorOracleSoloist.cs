@@ -39,8 +39,8 @@ public class TokenFactorOracleSoloist : Soloist
         List<Token> res = [];
         
         // Traverse factor oracle
-        var index = TokenFactorOracle.Nodes.Count - 10;
         var rng = new Random();
+        var index = rng.Next(0, TokenFactorOracle.Nodes.Count - 1);
         
         var measureCount = 0;
         var tokenCount = 0;
@@ -56,7 +56,7 @@ public class TokenFactorOracleSoloist : Soloist
             res.Add(newToken);
             tokenCount++;
 
-            var measureTooLong = tokenCount > 10;
+            var measureTooLong = tokenCount > 10 && newToken != Token.Measure;
             
             if (measureTooLong)
             {

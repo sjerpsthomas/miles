@@ -40,7 +40,7 @@ public class NoteFactorOracleSoloist : Soloist
         // Traverse factor oracle until time runs out
         var rng = new Random();
         var time = 0.0;
-        var index = NoteFactorOracle.Nodes.Count - 10;
+        var index = rng.Next(0, NoteFactorOracle.Nodes.Count - 1);
         
         while (time < generateMeasureCount)
         {

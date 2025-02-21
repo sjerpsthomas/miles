@@ -45,7 +45,7 @@ public class TransformerSoloist: Soloist
             res.Add(newToken);
             tokenCount++;
 
-            var measureTooLong = tokenCount > 10;
+            var measureTooLong = tokenCount > 10 && newToken != Token.Measure;
             
             if (measureTooLong)
             {
