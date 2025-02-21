@@ -4,10 +4,10 @@ import torch.nn as nn
 # DEFINE MODEL PARAMETERS
 
 VOCAB_SIZE = 16
-D_MODEL = 64
-NUM_HEADS = 2
-NUM_LAYERS = 4
-FF_DIM = 128
+D_MODEL = 32
+NUM_HEADS = 4
+NUM_LAYERS = 3
+FF_DIM = 64
 SEQ_LEN = 10
 
 # DEFINE MODEL
@@ -22,7 +22,7 @@ class DecoderOnlyTransformer(nn.Module):
 
         # Create decoder layers
         self.layers = nn.ModuleList([
-            nn.TransformerDecoderLayer(D_MODEL, NUM_HEADS, FF_DIM, dropout=0.1, batch_first=True)
+            nn.TransformerEncoderLayer(D_MODEL, NUM_HEADS, FF_DIM, dropout=0.1, batch_first=True)
             for _ in range(NUM_LAYERS)
         ])
 
@@ -39,12 +39,12 @@ class DecoderOnlyTransformer(nn.Module):
         x = self.input_embedding(x) + self.positional_embedding(positions)
 
         # Generate causal mask (prevents future token access)
-        mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).to(x.device)
+        mask: torch.Tensor = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).to(x.device)
         mask = mask.masked_fill(mask == 1, float('-inf'))
 
         # Evaluate layers
         for layer in self.layers:
-            x = layer(x, memory=None, tgt_mask=mask)
+            x = layer(x, mask)
 
         # Get logits, return
         logits = self.linear(x) 
