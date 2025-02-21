@@ -4,19 +4,19 @@ using Core.midi;
 
 namespace Program.midi.scheduler.component.solo;
 
-public class FactorOracleSoloist : Soloist
+public class NoteFactorOracleSoloist : Soloist
 {
     private MidiMelody _melody;
 
     private LeadSheet _leadSheet;
     
-    public FactorOracle FactorOracle = new();
+    public NoteFactorOracle NoteFactorOracle = new();
     
     public override void Initialize(MidiSong solo, LeadSheet leadSheet)
     {
         _melody = MidiMelody.FromMeasures(solo.Measures, leadSheet);
 
-        FactorOracle.AddMelody(_melody);
+        NoteFactorOracle.AddMelody(_melody);
 
         _leadSheet = leadSheet;
     }
@@ -27,7 +27,7 @@ public class FactorOracleSoloist : Soloist
         
         // Add recorded melody to melody and factor oracle
         _melody += recordedMelody;
-        FactorOracle.AddMelody(recordedMelody);
+        NoteFactorOracle.AddMelody(recordedMelody);
     }
 
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
@@ -40,16 +40,16 @@ public class FactorOracleSoloist : Soloist
         // Traverse factor oracle until time runs out
         var rng = new Random();
         var time = 0.0;
-        var index = FactorOracle.Nodes.Count - 10;
+        var index = NoteFactorOracle.Nodes.Count - 10;
         
         while (time < generateMeasureCount)
         {
             // Traverse
-            var (note, newIndex) = FactorOracle.Nodes[index].Traverse(index, rng);
+            var (note, newIndex) = NoteFactorOracle.Nodes[index].Traverse(index, rng);
 
             // Go back to start if finished
-            if (note == null || newIndex >= FactorOracle.Nodes.Count)
-                (note, newIndex) = FactorOracle.Nodes[0].Traverse(0, rng);
+            if (note == null || newIndex >= NoteFactorOracle.Nodes.Count)
+                (note, newIndex) = NoteFactorOracle.Nodes[0].Traverse(0, rng);
             
             // Add note to measure
             var measureNum = (int)Math.Truncate(time);

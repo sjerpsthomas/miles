@@ -5,7 +5,7 @@ using Core.midi;
 
 namespace Program.midi.scheduler.component.solo;
 
-public class FactorOracle
+public class NoteFactorOracle
 {
     public class Node
     {
