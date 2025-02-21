@@ -147,12 +147,18 @@ theme_override_fonts/font = ExtResource("4_a108o")
 theme_override_font_sizes/font_size = 30
 alignment = 1
 selected = 0
-item_count = 3
+item_count = 6
 popup/item_0/text = "Factor Oracle"
 popup/item_1/text = "Random"
 popup/item_1/id = 1
 popup/item_2/text = "Retrieval"
 popup/item_2/id = 2
+popup/item_3/text = "Token Random"
+popup/item_3/id = 3
+popup/item_4/text = "Token Factor Oracle"
+popup/item_4/id = 4
+popup/item_5/text = "Token Transformer"
+popup/item_5/id = 5
 
 [node name="StartButton" type="Button" parent="."]
 offset_left = 1008.0

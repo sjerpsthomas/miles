@@ -62,15 +62,16 @@ public partial class MidiScheduler : Node
 			Repetitions = Repetitions,
 		});
 
-		var soloist = new TransformerSoloist();
-
-		// Soloist soloist = soloistIndex switch
-		// {
-		// 	0 => new FactorOracleSoloist(),
-		// 	1 => new RandomSoloist(),
-		// 	2 => new RetrievalSoloist(),
-		// 	_ => throw new ArgumentOutOfRangeException()
-		// };
+		Soloist soloist = soloistIndex switch
+		{
+			0 => new NoteFactorOracleSoloist(),
+			1 => new RandomSoloist(),
+			2 => new RetrievalSoloist(),
+			3 => new RandomTokenSoloist(),
+			4 => new TokenFactorOracleSoloist(), 
+			5 => new TransformerSoloist(),
+			_ => throw new ArgumentOutOfRangeException()
+		};
         
 		Components.Add(new SoloMidiSchedulerComponent(soloTrack, leadSheet, soloist)
 		{
