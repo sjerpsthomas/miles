@@ -1,27 +1,63 @@
-﻿using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using System.Net;
-using NAudio.Midi;
+﻿using System.Diagnostics.CodeAnalysis;
 using static Core.midi.Chord;
-using static Core.midi.token.conversion.OctaveMelody;
+using static Core.midi.token.conversion.RelativeMelody;
 
-namespace Core.midi.token.conversion;
+namespace Core.midi.token.conversion.stage;
 
-public static class PassingToneStage
+public static class PitchStage
 {
+    public static RelativeMelody TokenizePitch(List<MidiNote> midiNotes)
+    {
+        if (midiNotes is [])
+            return new RelativeMelody();
+        
+        var resArr = new RelativeMelodyToken?[midiNotes.Count];
+
+        var prevDelta = 999;
+        for (var i = 0; i < midiNotes.Count - 1; i++)
+        {
+            var (_, time, length, note, velocity) = midiNotes[i];
+            var delta = midiNotes[i + 1].Note - note;
+
+            // Add passing tone if delta is same as previous
+            if (prevDelta == delta)
+            {
+                resArr[i] = new RelativeMelodyPassingTone(time, length, velocity);
+            }
+            else
+            {
+                // note - 36 omitted; octaves are removed during DeduceOctaves anyway
+                var octaveScaleNote = CMajor.GetRelativeNote(note);
+                resArr[i] = new RelativeMelodyNote(octaveScaleNote, time, length, velocity);
+            }
+            
+            prevDelta = delta;
+        }
+        
+        // Add last note
+        {
+            var (_, time, length, note, velocity) = midiNotes[^1];
+            // note - 36 omitted; octaves are removed during DeduceOctaves anyway
+            var octaveScaleNote = CMajor.GetRelativeNote(note);
+            resArr[^1] = new RelativeMelodyNote(octaveScaleNote, time, length, velocity);
+        }
+
+        return new RelativeMelody { Tokens = resArr.Select(it => it!).ToList() };
+    }
+    
     [SuppressMessage("ReSharper", "ConvertTypeCheckPatternToNullCheck")]
-    public static List<MidiNote> ResolvePassingTones(OctaveMelody octaveMelody, LeadSheet leadSheet, int startMeasureNum)
+    public static List<MidiNote> ReconstructPitch(RelativeMelody relativeMelody, LeadSheet leadSheet, int startMeasureNum)
     {
         var outputName = OutputName.Algorithm;
         
-        var tokens = octaveMelody.Tokens;
+        var tokens = relativeMelody.Tokens;
         var resArr = new MidiNote?[tokens.Count];
 
         // First convert all note tokens
         for (var index = 0; index < tokens.Count; index++)
         {
             var token = tokens[index];
-            if (token is not OctaveMelodyNote(var octaveScaleNote, var time, var length, var velocity)) continue;
+            if (token is not RelativeMelodyNote(var octaveScaleNote, var time, var length, var velocity)) continue;
 
             var note = leadSheet.ChordAtTime(time + startMeasureNum).GetAbsoluteNote(octaveScaleNote) + 36;
             resArr[index] = new MidiNote(outputName, time, length, note, velocity);
@@ -33,15 +69,15 @@ public static class PassingToneStage
             if (resArr[index] != null) continue;
             
             var firstIndex = index - 1;
-            var firstMidiNote = firstIndex >= 0 && tokens[firstIndex] is OctaveMelodyNote
+            var firstMidiNote = firstIndex >= 0 && tokens[firstIndex] is RelativeMelodyNote
                 ? resArr[firstIndex]
                 : null;
 
             var secondIndex = index + 1;
-            while (secondIndex < tokens.Count && tokens[secondIndex] is not OctaveMelodyNote)
+            while (secondIndex < tokens.Count && tokens[secondIndex] is not RelativeMelodyNote)
                 secondIndex++;
             
-            var secondMidiNote = secondIndex < tokens.Count && tokens[secondIndex] is OctaveMelodyNote
+            var secondMidiNote = secondIndex < tokens.Count && tokens[secondIndex] is RelativeMelodyNote
                 ? resArr[secondIndex]
                 : null;
 
@@ -76,7 +112,7 @@ public static class PassingToneStage
             {
                 var ptIndex = index + k;
                     
-                if (tokens[ptIndex] is not OctaveMelodyPassingTone(var ptTime, var ptLength, var ptVelocity))
+                if (tokens[ptIndex] is not RelativeMelodyPassingTone(var ptTime, var ptLength, var ptVelocity))
                     continue;
                     
                 var f = (k + 1) / ((double)passingCount + 1);
@@ -91,44 +127,5 @@ public static class PassingToneStage
             .Select(it => (MidiNote)it!)
             .ToList();
         return res;
-    }
-
-    public static OctaveMelody DeducePassingTones(List<MidiNote> midiNotes)
-    {
-        if (midiNotes is [])
-            return new OctaveMelody();
-        
-        var resArr = new OctaveMelodyToken?[midiNotes.Count];
-
-        var prevDelta = 999;
-        for (var i = 0; i < midiNotes.Count - 1; i++)
-        {
-            var (_, time, length, note, velocity) = midiNotes[i];
-            var delta = midiNotes[i + 1].Note - note;
-
-            // Add passing tone if delta is same as previous
-            if (prevDelta == delta)
-            {
-                resArr[i] = new OctaveMelodyPassingTone(time, length, velocity);
-            }
-            else
-            {
-                // note - 36 omitted; octaves are removed during DeduceOctaves anyway
-                var octaveScaleNote = CMajor.GetRelativeNote(note);
-                resArr[i] = new OctaveMelodyNote(octaveScaleNote, time, length, velocity);
-            }
-            
-            prevDelta = delta;
-        }
-        
-        // Add last note
-        {
-            var (_, time, length, note, velocity) = midiNotes[^1];
-            // note - 36 omitted; octaves are removed during DeduceOctaves anyway
-            var octaveScaleNote = CMajor.GetRelativeNote(note);
-            resArr[^1] = new OctaveMelodyNote(octaveScaleNote, time, length, velocity);
-        }
-
-        return new OctaveMelody { Tokens = resArr.Select(it => it!).ToList() };
     }
 }

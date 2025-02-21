@@ -158,7 +158,7 @@ public class LakhTokenizer
                 }
 
                 // Deduce melody, add to result
-                var tokens = TokenMethods.DeduceMelody(notes);
+                var tokens = TokenMethods.Tokenize(notes);
                 var tokensStr = TokenMethods.TokensToString(tokens);
                 
                 // Trim measure tokens

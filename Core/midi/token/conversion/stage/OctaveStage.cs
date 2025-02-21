@@ -1,13 +1,27 @@
-﻿using System.Runtime.InteropServices;
-using System.Threading.Tasks.Dataflow;
-
-namespace Core.midi.token.conversion;
+﻿namespace Core.midi.token.conversion.stage;
 
 public static class OctaveStage
 {
+    public static TokenMelody TokenizeOctaves(RelativeMelody relativeMelody)
+    {
+        return new TokenMelody
+        {
+            Tokens = relativeMelody.Tokens.Select(token =>
+                (TokenMelody.TokenMelodyToken)(token switch
+                    {
+                        RelativeMelody.RelativeMelodyNote(var octaveScaleNote, var time, var length, var velocity) =>
+                            new TokenMelody.TokenMelodyNote(octaveScaleNote % 7, time, length, velocity),
+                        RelativeMelody.RelativeMelodyPassingTone(var time, var length, var velocity) =>
+                            new TokenMelody.TokenMelodyPassingTone(time, length, velocity),
+                        _ => throw new ArgumentOutOfRangeException()
+                    }
+                )).ToList()
+        };
+    }
+    
     private enum OctaveDirection { Up, Down };
     private record OctaveEvent(OctaveDirection Direction, int Index);
-    public static OctaveMelody ResolveOctaves(TokenMelody tokenMelody)
+    public static RelativeMelody ReconstructOctaves(TokenMelody tokenMelody)
     {
         var tokens = tokenMelody.Tokens;
         
@@ -66,7 +80,7 @@ public static class OctaveStage
         }
 
         // Create tokens
-        var res = new OctaveMelody { Tokens = new(tokens.Count) };
+        var res = new RelativeMelody { Tokens = new(tokens.Count) };
         {
             var currentOctave = 2 + (octaveEvents.Count == 0 ? 0 : -(totalOctave / octaveEvents.Count));
             currentOctave = Math.Clamp(currentOctave, 0, 3);
@@ -88,31 +102,14 @@ public static class OctaveStage
 
                 res.Tokens.Add(tokens[index] switch {
                     TokenMelody.TokenMelodyNote(var scaleNote, var time, var length, var velocity) =>
-                        new OctaveMelody.OctaveMelodyNote(scaleNote + 7 * currentOctave, time, length, velocity),
+                        new RelativeMelody.RelativeMelodyNote(scaleNote + 7 * currentOctave, time, length, velocity),
                     TokenMelody.TokenMelodyPassingTone(var time, var length, var velocity) =>
-                        new OctaveMelody.OctaveMelodyPassingTone(time, length, velocity),
+                        new RelativeMelody.RelativeMelodyPassingTone(time, length, velocity),
                     _ => throw new ArgumentOutOfRangeException()
                 });
             }
         }
         
         return res;
-    }
-    
-    public static TokenMelody DeduceOctaves(OctaveMelody octaveMelody)
-    {
-        return new TokenMelody
-        {
-            Tokens = octaveMelody.Tokens.Select(token =>
-                (TokenMelody.TokenMelodyToken)(token switch
-                    {
-                        OctaveMelody.OctaveMelodyNote(var octaveScaleNote, var time, var length, var velocity) =>
-                            new TokenMelody.TokenMelodyNote(octaveScaleNote % 7, time, length, velocity),
-                        OctaveMelody.OctaveMelodyPassingTone(var time, var length, var velocity) =>
-                            new TokenMelody.TokenMelodyPassingTone(time, length, velocity),
-                        _ => throw new ArgumentOutOfRangeException()
-                    }
-                )).ToList()
-        };
     }
 }

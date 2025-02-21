@@ -30,7 +30,7 @@ public class TransformerSoloist: Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Deduce and set tokens
-        var tokens = TokenMethods.DeduceMelody(Notes);
+        var tokens = TokenMethods.Tokenize(Notes);
         Transformer.SetTokens(tokens);
         
         List<Token> res = [];
@@ -67,7 +67,7 @@ public class TransformerSoloist: Soloist
         }
         
         // Get notes from tokens, print
-        var notes = TokenMethods.ResolveMelody(res, LeadSheet, startMeasureNum);
+        var notes = TokenMethods.Reconstruct(res, LeadSheet, startMeasureNum);
         GD.Print(string.Join(',', notes.Select(it => it.Note.ToString())));
 
         // Return

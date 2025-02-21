@@ -21,11 +21,11 @@ public static class TokenPerformanceTest
         var tokens = TokenMethods.TokensFromString("2..F3p4.56S2M.1762f.453Ms5pp2.3F76p4M23");
         var moreTokens = Enumerable.Repeat(tokens, 1000).SelectMany(it => it).ToList();
 
-        var notes = TokenMethods.ResolveMelody(moreTokens, leadSheet, 0);
+        var notes = TokenMethods.Reconstruct(moreTokens, leadSheet, 0);
 
         for (var i = 0; i < n; i++)
         {
-            _ = TokenMethods.DeduceMelody(notes);
+            _ = TokenMethods.Tokenize(notes);
         }
 
         sw.Stop();

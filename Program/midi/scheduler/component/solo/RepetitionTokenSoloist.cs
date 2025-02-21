@@ -37,10 +37,10 @@ public class RepetitionTokenSoloist: Soloist
 
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
-        var tokens = TokenMethods.DeduceMelody(Notes);
+        var tokens = TokenMethods.Tokenize(Notes);
         GD.Print(TokenMethods.TokensToString(tokens));
         
-        var notes = TokenMethods.ResolveMelody(tokens, LeadSheet, startMeasureNum);
+        var notes = TokenMethods.Reconstruct(tokens, LeadSheet, startMeasureNum);
         GD.Print(string.Join(',', notes.Select(it => it.Note.ToString())));
         
         return MidiSong.FromNotes(notes).Measures;

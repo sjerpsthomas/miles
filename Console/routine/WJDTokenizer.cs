@@ -109,7 +109,7 @@ public class WJDTokenizer
         }
         
         // Convert velocity token melody to tokens, get string
-        var tokens = TokenMethods.DeduceMelody(midiNotes);
+        var tokens = TokenMethods.Tokenize(midiNotes);
         var tokensStr = TokenMethods.TokensToString(tokens);
                 
         // Trim measure tokens

@@ -30,7 +30,7 @@ public class TokenFactorOracleSoloist : Soloist
                 notes.Add(note with { Time = note.Time + index });
         
         // Get tokens, add to factor oracle
-        var tokens = TokenMethods.DeduceMelody(notes);
+        var tokens = TokenMethods.Tokenize(notes);
         TokenFactorOracle.AddTokens(tokens);
     }
 
@@ -83,7 +83,7 @@ public class TokenFactorOracleSoloist : Soloist
             res.RemoveAt(0);
         
         // Get notes from tokens, print
-        var notes = TokenMethods.ResolveMelody(res, LeadSheet, startMeasureNum);
+        var notes = TokenMethods.Reconstruct(res, LeadSheet, startMeasureNum);
         GD.Print(string.Join(',', notes.Select(it => it.Note.ToString())));
 
         // Return

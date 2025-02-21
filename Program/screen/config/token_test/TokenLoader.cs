@@ -32,7 +32,7 @@ public partial class TokenLoader : Node
 		
 		// Get song from notes
 		var leadSheet = new LeadSheet { Chords = [[Chord.CMajor]] };
-		var notes = TokenMethods.ResolveMelody(tokens, leadSheet, 0);
+		var notes = TokenMethods.Reconstruct(tokens, leadSheet, 0);
 		var song = MidiSong.FromNotes(notes);
 
 		var scheduler = (MidiScheduler)GetNode("%MidiScheduler");

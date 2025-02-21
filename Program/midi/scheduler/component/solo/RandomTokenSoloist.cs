@@ -66,7 +66,7 @@ public class RandomTokenSoloist: Soloist
         }
         GD.Print(TokenMethods.TokensToString(tokens));
         
-        var notes = TokenMethods.ResolveMelody(tokens, LeadSheet, startMeasureNum);
+        var notes = TokenMethods.Reconstruct(tokens, LeadSheet, startMeasureNum);
         GD.Print(string.Join(',', notes.Select(it => it.Note.ToString())));
         
         return MidiSong.FromNotes(notes).Measures;

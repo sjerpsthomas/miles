@@ -1,4 +1,5 @@
 ﻿using Core.midi.token.conversion;
+using Core.midi.token.conversion.stage;
 using NAudio.Wave;
 using static Core.midi.token.Token;
 
@@ -22,38 +23,24 @@ public static class TokenMethods
     public static List<Token> TokensFromString(string str) => str.Select(FromChar).ToList();
     public static string TokensToString(List<Token> tokens) => string.Concat(tokens.Select(ToChar));
     
-    public static List<MidiNote> ResolveMelody(List<Token> tokens, LeadSheet leadSheet, int startMeasureNum)
+    public static List<Token> Tokenize(List<MidiNote> midiNotes)
     {
-        // Console.WriteLine("Resolving velocity...");
-        var velocityTokenMelody = VelocityStage.ResolveVelocity(tokens);
-
-        // Console.WriteLine("Resolving timing...");
-        var tokenMelody = TimingStage.ResolveTiming(velocityTokenMelody);
-
-        // Console.WriteLine("Resolving octaves...");
-        var octaveMelody = OctaveStage.ResolveOctaves(tokenMelody);
-
-        // Console.WriteLine("Resolving passing tones...");
-        var midiNotes = PassingToneStage.ResolvePassingTones(octaveMelody, leadSheet, startMeasureNum);
-
-        return midiNotes;
-    }
-
-    public static List<Token> DeduceMelody(List<MidiNote> midiNotes)
-    {
-        // Console.WriteLine("Deducing passing tones...");
-        var octaveMelody = PassingToneStage.DeducePassingTones(midiNotes);
-
-        // Console.WriteLine("Deducing octaves...");
-        var tokenMelody = OctaveStage.DeduceOctaves(octaveMelody);
-        
-        // Console.WriteLine("Deducing timing...");
-        var velocityTokenMelody = TimingStage.DeduceTiming(tokenMelody);
-
-        // Console.WriteLine("Deducing velocity...");
-        var tokens = VelocityStage.DeduceVelocity(velocityTokenMelody);
+        var relativeMelody = PitchStage.TokenizePitch(midiNotes);
+        var tokenMelody = OctaveStage.TokenizeOctaves(relativeMelody);
+        var timedTokenMelody = TimingStage.TokenizeTiming(tokenMelody);
+        var tokens = VelocityStage.TokenizeVelocity(timedTokenMelody);
 
         return tokens;
+    }
+    
+    public static List<MidiNote> Reconstruct(List<Token> tokens, LeadSheet leadSheet, int startMeasureNum)
+    {
+        var timedTokenMelody = VelocityStage.ReconstructVelocity(tokens);
+        var tokenMelody = TimingStage.ReconstructTiming(timedTokenMelody);
+        var relativeMelody = OctaveStage.ReconstructOctaves(tokenMelody);
+        var midiNotes = PitchStage.ReconstructPitch(relativeMelody, leadSheet, startMeasureNum);
+
+        return midiNotes;
     }
 
     public static bool IsNote(this Token token)
