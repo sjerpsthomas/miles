@@ -5,7 +5,7 @@ import training
 
 
 # Hyperparameters
-NUM_EPOCHS = 1
+NUM_EPOCHS = 20
 LEARNING_RATE = 0.001
 BATCH_SIZE = 32
 

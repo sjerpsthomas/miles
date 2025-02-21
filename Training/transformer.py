@@ -30,7 +30,7 @@ class DecoderOnlyTransformer(nn.Module):
         self.linear = nn.Linear(D_MODEL, VOCAB_SIZE)
 
     def forward(self, x: torch.Tensor):
-        batch_size, seq_len = x.shape
+        _, seq_len = x.shape
 
         # Get all positions (integer values)
         positions: torch.Tensor = torch.arange(seq_len, device=x.device).unsqueeze(0)

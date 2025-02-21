@@ -6,7 +6,7 @@ from transformer import *
 import tokens
 from time import time
 
-# (trains the model with the specified paramters)
+# (trains the model with the specified parameters)
 def train(
     given_model: DecoderOnlyTransformer,
     dataset_file_path: str,
@@ -17,17 +17,17 @@ def train(
 ) -> None:
     print("[training] Training started!")
 
-    dataset: tokens.TokenDataset = tokens.load_dataset(dataset_file_path)
-    data_loader: DataLoader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-
     # Create device
     device_name: str = "cuda" if torch.cuda.is_available() else "cpu"
-    if not torch.cuda.is_available():
-        print("[training] CUDA not available!")
-        exit()
     device: torch.device = torch.device(device_name)
-
     print(f"[training] Using device {device_name}")
+
+    # Initialize dataset
+    dataset: tokens.TokenDataset = tokens.load_dataset(dataset_file_path)
+    data_loader = DataLoader(
+        dataset, batch_size=batch_size, shuffle=True, num_workers=8, 
+        prefetch_factor=2, collate_fn=tokens.collate_fn, persistent_workers=True
+    )
 
     # create model, loss and optimizer
     model = given_model.to(device)
@@ -41,13 +41,13 @@ def train(
     # Train
     for epoch in range(num_epochs):
         model.train()
-        total_loss: float = 0
 
-        inputs: torch.Tensor
-        targets: torch.Tensor
+        total_loss: float = 0
 
         i: int = 0
 
+        inputs: torch.Tensor
+        targets: torch.Tensor
         for inputs, targets in data_loader:
             inputs, targets = inputs.to(device), targets.to(device)
 
@@ -68,14 +68,15 @@ def train(
             if i % 500 == 0:
                 print(f"[training] Done with step {i}/{len(data_loader)}")
                 progress_file.write(f"[training] Done with step {i}/{len(data_loader)}\n")
-                progress_file.flush()
             
-            if time() - start_time > 1800:
+            if time() - start_time > 900:
                 print(f"[training] Timing out")
                 break
 
         avg_loss = total_loss / len(data_loader)
         print(f"[training] Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.4f}")
+
+        torch.save(model.state_dict(), f"__intermediate_model_{epoch + 1}.pth")
 
         progress_file.write(f"[training] Done with epoch {epoch + 1}")
 

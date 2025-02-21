@@ -2,6 +2,7 @@ from enum import IntEnum
 import transformer
 import torch
 from torch.utils.data import Dataset
+import numpy as np
 
 class Token(IntEnum): 
     Rest = 0
@@ -49,7 +50,7 @@ token_map: dict[str, Token] = {
 
 
 class TokenDataset(Dataset):
-    def __init__(self, tokens: list[Token], seq_length: int):
+    def __init__(self, tokens: torch.Tensor, seq_length: int):
         self.tokens = tokens
         self.seq_length = seq_length
         self.num_samples = len(tokens) - seq_length
@@ -59,27 +60,29 @@ class TokenDataset(Dataset):
 
     def __getitem__(self, idx):
         # Get token sequences
-        input_seq: list[Token] = self.tokens[idx : idx + self.seq_length]
-        target_seq: list[Token] = self.tokens[idx + 1 : idx + self.seq_length + 1]  # Shifted by 1 token
+        input_seq: torch.Tensor = self.tokens[idx : idx + self.seq_length]
+        target_seq: torch.Tensor = self.tokens[idx + 1 : idx + self.seq_length + 1]  # Shifted by 1 token
 
         # Convert to tensors
-        inputs: torch.Tensor = torch.tensor(input_seq, dtype=torch.long)
-        targets: torch.Tensor = torch.tensor(target_seq, dtype=torch.long)
+        return input_seq, target_seq
 
-        # Convert to tensors
-        return inputs, targets
+
+def collate_fn(batch):
+    inputs, targets = zip(*batch)  # Unzip batch
+    return torch.stack(inputs), torch.stack(targets)  # Pre-stack for efficiency
 
 
 # (loads a token dataset from the specified file)
 def load_dataset(file_path: str) -> TokenDataset:
     # Load tokens
-    tokens: list[Token]
     with open(file_path, "r") as file:
-        token_chars: str = file.read()
-        tokens = list(token_map[c] for c in token_chars)
+        token_chars = file.read()
+    
+    tokens = np.array([token_map[c] for c in token_chars], dtype=np.int64)  # Use NumPy first
+    tokens_tensor = torch.from_numpy(tokens)  # Convert NumPy array to Tensor
 
     # Create dataset
-    dataset: TokenDataset = TokenDataset(tokens, transformer.SEQ_LEN)
+    dataset: TokenDataset = TokenDataset(tokens_tensor, transformer.SEQ_LEN)
 
     # Print status update
     print(f"[tokens] Loaded {len(dataset)} tokens in dataset")
