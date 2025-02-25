@@ -1,6 +1,7 @@
 ﻿using Core.midi.token.conversion;
 using Core.midi.token.conversion.stage;
 using NAudio.Wave;
+using static Core.midi.LeadSheet;
 using static Core.midi.token.Token;
 
 namespace Core.midi.token;
@@ -36,7 +37,7 @@ public static class TokenMethods
     public static List<MidiNote> Reconstruct(List<Token> tokens, LeadSheet leadSheet, int startMeasureNum)
     {
         var timedTokenMelody = VelocityStage.ReconstructVelocity(tokens);
-        var tokenMelody = TimingStage.ReconstructTiming(timedTokenMelody);
+        var tokenMelody = TimingStage.ReconstructTiming(timedTokenMelody, leadSheet);
         var relativeMelody = OctaveStage.ReconstructOctaves(tokenMelody);
         var midiNotes = PitchStage.ReconstructPitch(relativeMelody, leadSheet, startMeasureNum);
 

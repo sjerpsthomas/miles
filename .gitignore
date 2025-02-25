@@ -1,3 +1,11 @@
 /Training/__pycache__
 /Training/tokens
+
+# Weimar Jazz database
 Console/wjazzd.db
+
+# Large files
+*.pth
+*.out
+*.onnx
+*.tokens
