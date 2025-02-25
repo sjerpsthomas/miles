@@ -5,7 +5,7 @@ import training
 
 
 # Hyperparameters
-NUM_EPOCHS = 20
+NUM_EPOCHS = 10
 LEARNING_RATE = 0.001
 BATCH_SIZE = 32
 
@@ -18,6 +18,7 @@ def pre_train(
 
     # Create model
     model: DecoderOnlyTransformer = DecoderOnlyTransformer()
+    model.load_state_dict(torch.load("__im2.pth"))
 
     # Train    
     training.train(

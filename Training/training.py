@@ -5,6 +5,13 @@ from torch.utils.data import DataLoader
 from transformer import *
 import tokens
 from time import time
+from datetime import datetime
+
+
+# (returns a timestamp string)
+def timestamp() -> str:
+    return datetime.now().strftime("%H:%M:%S")
+
 
 # (trains the model with the specified parameters)
 def train(
@@ -23,10 +30,9 @@ def train(
     print(f"[training] Using device {device_name}")
 
     # Initialize dataset
-    dataset: tokens.TokenDataset = tokens.load_dataset(dataset_file_path)
+    dataset: tokens.TokenDataset = tokens.load_dataset_bytes(dataset_file_path)
     data_loader = DataLoader(
-        dataset, batch_size=batch_size, shuffle=True, num_workers=8, 
-        prefetch_factor=2, collate_fn=tokens.collate_fn, persistent_workers=True
+        dataset, batch_size=batch_size, shuffle=True
     )
 
     # create model, loss and optimizer
@@ -35,8 +41,6 @@ def train(
     optimizer: optim.Adam = optim.Adam(model.parameters(), lr=learning_rate)
 
     start_time = time()
-
-    progress_file = open("training_test_progress.txt", "a")
 
     # Train
     for epoch in range(num_epochs):
@@ -54,10 +58,8 @@ def train(
             # Evaluate the model, evaluate loss
             optimizer.zero_grad()
 
-            with torch.autocast(device_type="cuda", dtype=torch.float16):
-                logits: torch.Tensor = model(inputs)
-
-                loss: torch.Tensor = loss_fn(logits.view(-1, VOCAB_SIZE), targets.view(-1))
+            logits: torch.Tensor = model(inputs)
+            loss: torch.Tensor = loss_fn(logits.view(-1, VOCAB_SIZE), targets.view(-1))
             
             loss.backward()
             optimizer.step()
@@ -65,27 +67,21 @@ def train(
             total_loss += loss.item()
 
             i += 1
-            if i % 500 == 0:
-                print(f"[training] Done with step {i}/{len(data_loader)}")
-                progress_file.write(f"[training] Done with step {i}/{len(data_loader)}\n")
-            
-            if time() - start_time > 900:
-                print(f"[training] Timing out")
-                break
 
+            # Print
+            if i % 500 == 0:
+                print(f"[training] [{timestamp()}] Done with step {i}/{len(data_loader)}")
+            
+        # Print loss
         avg_loss = total_loss / len(data_loader)
         print(f"[training] Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.4f}")
 
+        # Save intermediate model
         torch.save(model.state_dict(), f"__intermediate_model_{epoch + 1}.pth")
-
-        progress_file.write(f"[training] Done with epoch {epoch + 1}")
-
-
-    progress_file.close()
 
     # Save the model
     torch.save(model.state_dict(), save_location)
-    print(f"[training] Model saved to {save_location}")
+    print(f"[training] [{timestamp()}] Model saved to {save_location}")
 
     # Print time diff
-    print(f"[training] Finished in {time() - start_time} seconds!")
+    print(f"[training] [{timestamp()}] Finished in {time() - start_time} seconds!")
