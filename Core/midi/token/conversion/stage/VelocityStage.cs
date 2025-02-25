@@ -1,5 +1,6 @@
 ﻿using static Core.midi.token.conversion.TimedTokenMelody;
 using static Core.midi.token.Token;
+using static Core.midi.token.TokenMethods;
 
 namespace Core.midi.token.conversion.stage;
 
@@ -10,13 +11,13 @@ public static class VelocityStage
         var tokens = timedTokenMelody.Tokens;
         List<Token> res = new(tokens.Count);
 
-        var currentVelocity = 96;
+        var currentVelocity = TokenVelocity.Quiet;
         void HandleVelocity(int velocity)
         {
-            var newVelocity = velocity <= 96 ? 96 : 127;
+            var newVelocity = velocity <= 96 ? TokenVelocity.Quiet : TokenVelocity.Loud;
             if (newVelocity != currentVelocity)
             {
-                res.Add(newVelocity == 96 ? Quiet : Loud);
+                res.Add(newVelocity == TokenVelocity.Quiet ? Quiet : Loud);
                 currentVelocity = newVelocity;
             }
         }
@@ -41,10 +42,10 @@ public static class VelocityStage
                 case TimedTokenMelodySpeed(var speed):
                     res.Add(speed switch
                     {
-                        TokenMethods.TokenSpeed.SuperFast => SuperFast,
-                        TokenMethods.TokenSpeed.Fast => Fast,
-                        TokenMethods.TokenSpeed.Slow => Slow,
-                        TokenMethods.TokenSpeed.SuperSlow => SuperSlow,
+                        TokenSpeed.SuperFast => SuperFast,
+                        TokenSpeed.Fast => Fast,
+                        TokenSpeed.Slow => Slow,
+                        TokenSpeed.SuperSlow => SuperSlow,
                         _ => throw new ArgumentOutOfRangeException()
                     });
                     break;
@@ -62,7 +63,7 @@ public static class VelocityStage
     {
         List<TimedTokenMelodyToken> resTokens = new(tokens.Count);
 
-        int currentVelocity = 96;
+        var currentVelocity = TokenVelocity.Quiet;
         
         foreach (var token in tokens)
         {
@@ -79,11 +80,11 @@ public static class VelocityStage
                 case Note5:
                 case Note6:
                 case Note7:
-                    resTokens.Add(new TimedTokenMelodyNote((int)token - 1, currentVelocity));
+                    resTokens.Add(new TimedTokenMelodyNote((int)token - 1, currentVelocity == TokenVelocity.Quiet ? 96 : 127));
                     break;
 
                 case PassingTone:
-                    resTokens.Add(new TimedTokenMelodyPassingTone(currentVelocity));
+                    resTokens.Add(new TimedTokenMelodyPassingTone(currentVelocity == TokenVelocity.Quiet ? 96 : 127));
                     break;
 
                 case SuperFast:
@@ -95,10 +96,10 @@ public static class VelocityStage
                     break;
     
                 case Loud:
-                    currentVelocity = 96;
+                    currentVelocity = TokenVelocity.Loud;
                     break;
                 case Quiet:
-                    currentVelocity = 127;
+                    currentVelocity = TokenVelocity.Quiet;
                     break;
     
                 case Measure:

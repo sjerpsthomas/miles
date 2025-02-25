@@ -19,7 +19,7 @@ public static class TokenMethods
         Slow,
         SuperSlow,
     }
-    
+
     public static List<Token> TokensFromString(string str) => str.Select(FromChar).ToList();
     public static string TokensToString(List<Token> tokens) => string.Concat(tokens.Select(ToChar));
     
@@ -83,6 +83,26 @@ public static class TokenMethods
         TokenSpeed.SuperSlow => 0.5,
         _ => throw new ArgumentOutOfRangeException()
     };
+    
+    public static bool HasVelocity(this Token token, out TokenVelocity velocity)
+    {
+        velocity = TokenVelocity.Quiet;
+        
+        switch (token)
+        {
+            case Quiet:
+                velocity = TokenVelocity.Quiet;
+                break;
+            case Loud:
+                velocity = TokenVelocity.Loud;
+                break;
+            
+            default:
+                return false;
+        }
+
+        return true;
+    }
 
     public static Token FromChar(char c) => c switch
     {
