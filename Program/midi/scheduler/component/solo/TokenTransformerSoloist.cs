@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.midi;
 using Core.midi.token;
@@ -7,7 +8,7 @@ using Godot;
 
 namespace Program.midi.scheduler.component.solo;
 
-public class TransformerSoloist: Soloist
+public class TokenTransformerSoloist: Soloist
 {
     public Transformer Transformer;
     public List<MidiNote> Notes = [];
@@ -17,7 +18,7 @@ public class TransformerSoloist: Soloist
     {
          LeadSheet = leadSheet;
 
-         Transformer = new Transformer("onnx_transformer.onnx");
+         Transformer = new Transformer("250225_transformer.onnx");
     }
 
     public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
@@ -65,10 +66,11 @@ public class TransformerSoloist: Soloist
                     break;
             }
         }
+
+        Console.WriteLine(TokenMethods.TokensToString(res));
         
         // Get notes from tokens, print
         var notes = TokenMethods.Reconstruct(res, LeadSheet, startMeasureNum);
-        GD.Print(string.Join(',', notes.Select(it => it.Note.ToString())));
 
         // Return
         return MidiSong.FromNotes(notes).Measures;

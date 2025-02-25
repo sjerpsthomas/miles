@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="onnx_transformer.onnx">
+    <None Update="250225_transformer.onnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

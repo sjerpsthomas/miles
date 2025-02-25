@@ -114,8 +114,6 @@ public class TokenShuffleModel
 
     public List<Token> Permutate(List<Token> tokens, int numPermutations = 3)
     {
-        Console.WriteLine($"First token: {tokens[0]}");
-        
         // Initialize RNG
         var rng = new Random();
 

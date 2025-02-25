@@ -1,4 +1,5 @@
-﻿using static Core.midi.token.conversion.TokenMelody;
+﻿using static Core.midi.LeadSheet;
+using static Core.midi.token.conversion.TokenMelody;
 using static Core.midi.token.conversion.TimedTokenMelody;
 using static Core.midi.token.TokenMethods;
 
@@ -150,7 +151,7 @@ public static class TimingStage
     }
     
     private record Phrase(List<TokenMelodyToken> Tokens, double Start, double End, TokenSpeed FinalSpeed);
-    public static TokenMelody ReconstructTiming(TimedTokenMelody timedTokenMelody)
+    public static TokenMelody ReconstructTiming(TimedTokenMelody timedTokenMelody, LeadSheet leadSheet)
     {
         var tokens = timedTokenMelody.Tokens;
 
@@ -221,13 +222,23 @@ public static class TimingStage
 
                         // Ignore dummy notes, fix length
                         if (phraseToken is not TokenMelodyNote(_, _, _, 0))
+                        {
+                            var newTime = phrase.Start + i * newTokenTime;
+                            var newLength = newTokenTime;
+                            if (leadSheet.Style == StyleEnum.Swing && Math.Abs(newTime - 0.5) < 0.02)
+                            {
+                                newTime += 0.66 - newTime;
+                                newTokenTime -= 0.66 - newTime;
+                            }
+                            
                             res.Tokens.Add(
                                 phraseToken with
                                 {
-                                    Time = currentMeasureNum + phrase.Start + i * newTokenTime,
-                                    Length = newTokenTime
+                                    Time = currentMeasureNum + newTime,
+                                    Length = newLength
                                 }
                             );
+                        }
                     }
 
                     currentMeasure[index] = phrase;

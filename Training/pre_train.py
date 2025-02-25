@@ -1,5 +1,4 @@
 import torch
-from torch.utils.data import TensorDataset
 from transformer import *
 import training
 

@@ -69,7 +69,7 @@ public partial class MidiScheduler : Node
 			2 => new RetrievalSoloist(),
 			3 => new TokenRandomSoloist(),
 			4 => new TokenFactorOracleSoloist(), 
-			5 => new TransformerSoloist(),
+			5 => new TokenTransformerSoloist(),
 			6 => new TokenMarkovSoloist(),
 			7 => new TokenShuffleSoloist(),
 			_ => throw new ArgumentOutOfRangeException()

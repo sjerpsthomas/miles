@@ -1,11 +1,10 @@
 import torch
-from torch.utils.data import TensorDataset
 from transformer import *
 import training
 
 
 # Hyperparameters
-NUM_EPOCHS = 3
+NUM_EPOCHS = 4
 LEARNING_RATE = 0.0001
 BATCH_SIZE = 32
 
@@ -18,7 +17,7 @@ def fine_tune(
 
     # Create model
     model: DecoderOnlyTransformer = DecoderOnlyTransformer()
-    model.load_state_dict(torch.load("pretrained_transformer.pth"))
+    model.load_state_dict(torch.load("__im6.pth"))
 
     # Train
     training.train(
