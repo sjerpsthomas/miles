@@ -157,11 +157,11 @@ popup/item_3/text = "Token Random"
 popup/item_3/id = 3
 popup/item_4/text = "Token Factor Oracle"
 popup/item_4/id = 4
-popup/item_5/text = "Token Transformer"
+popup/item_5/text = "Token Markov"
 popup/item_5/id = 5
-popup/item_6/text = "Token Markov"
+popup/item_6/text = "Token Shuffle"
 popup/item_6/id = 6
-popup/item_7/text = "Token Shuffle"
+popup/item_7/text = "Token Transformer"
 popup/item_7/id = 7
 
 [node name="StartButton" type="Button" parent="."]
