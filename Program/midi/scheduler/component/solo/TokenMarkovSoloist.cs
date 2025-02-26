@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.midi;
 using Core.midi.token;
+using Godot;
+using Program.util;
+using static Godot.FileAccess.ModeFlags;
 
 namespace Program.midi.scheduler.component.solo;
 
@@ -11,6 +14,13 @@ public class TokenMarkovSoloist : Soloist
     public LeadSheet LeadSheet;
 
     public TokenMarkovModel Model = new(3);
+
+    public string StandardPath;
+    
+    public TokenMarkovSoloist(string standardPath)
+    {
+        StandardPath = standardPath;
+    }
     
     private void Learn(List<MidiMeasure> measures)
     {
@@ -35,6 +45,13 @@ public class TokenMarkovSoloist : Soloist
         
         // Learn the solo's measures
         Learn(solo.Measures);
+        
+        // Learn measures from extra songs
+        for (var i = 1; i <= 4; i++)
+        {
+            var extraSong = MidiSong.FromStream(new FileAccessStream(StandardPath + "back.mid", Read));
+            Learn(extraSong.Measures);
+        }
     }
 
     public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
