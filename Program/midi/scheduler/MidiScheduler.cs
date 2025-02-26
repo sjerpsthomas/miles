@@ -64,9 +64,9 @@ public partial class MidiScheduler : Node
 
 		Soloist soloist = soloistIndex switch
 		{
-			0 => new NoteFactorOracleSoloist(),
-			1 => new RandomSoloist(),
-			2 => new RetrievalSoloist(),
+			0 => new NoteRandomSoloist(),
+			1 => new RetrievalSoloist(),
+			2 => new NoteFactorOracleSoloist(),
 			3 => new TokenRandomSoloist(),
 			4 => new TokenFactorOracleSoloist(), 
 			5 => new TokenTransformerSoloist(),

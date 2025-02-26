@@ -52,7 +52,7 @@ public static class OctaveStage
             if (scaleNote2 >= 6 && scaleNote >= 6) continue;
 
             var direction = scaleNote < scaleNote2 ? OctaveDirection.Down : OctaveDirection.Up;
-            Console.WriteLine($"scaleNote: {scaleNote}, scaleNote2: {scaleNote2}, direction: {direction}");
+            // Console.WriteLine($"scaleNote: {scaleNote}, scaleNote2: {scaleNote2}, direction: {direction}");
             
             // Create octave event
             octaveEvents.Add(
@@ -83,7 +83,7 @@ public static class OctaveStage
         var res = new RelativeMelody { Tokens = new(tokens.Count) };
         {
             var currentOctave = 2 + (octaveEvents.Count == 0 ? 0 : -(totalOctave / octaveEvents.Count));
-            currentOctave = Math.Clamp(currentOctave, 0, 3);
+            currentOctave = 2;//Math.Clamp(currentOctave, 0, 3);
             var octaveEventIndex = 0;
 
             for (var index = 0; index < tokens.Count; index++)
@@ -97,6 +97,7 @@ public static class OctaveStage
                         currentOctave += octaveEvent.Direction == OctaveDirection.Up ? 1 : -1;
                         currentOctave = Math.Clamp(currentOctave, 0, 3);
                         octaveEventIndex++;
+                        currentOctave = 2;
                     }
                 }
 

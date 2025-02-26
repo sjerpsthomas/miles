@@ -4,7 +4,7 @@ using Core.midi;
 
 namespace Program.midi.scheduler.component.solo;
 
-public class RandomSoloist : Soloist
+public class NoteRandomSoloist : Soloist
 {
     private LeadSheet _leadSheet;
     

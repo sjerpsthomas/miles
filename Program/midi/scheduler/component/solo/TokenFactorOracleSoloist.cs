@@ -82,11 +82,8 @@ public class TokenFactorOracleSoloist : Soloist
         while (res is [Token.Measure, ..])
             res.RemoveAt(0);
         
-        // Get notes from tokens, print
+        // Reconstruct, return notes
         var notes = TokenMethods.Reconstruct(res, LeadSheet, startMeasureNum);
-        GD.Print(string.Join(',', notes.Select(it => it.Note.ToString())));
-
-        // Return
         return MidiSong.FromNotes(notes).Measures;
     }
 }

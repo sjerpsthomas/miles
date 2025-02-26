@@ -41,6 +41,7 @@ text = "Token Test Scene"
 horizontal_alignment = 1
 
 [node name="InstructionsLabel" type="Label" parent="Panel"]
+layout_mode = 0
 offset_top = 80.0
 offset_right = 1216.0
 offset_bottom = 144.0

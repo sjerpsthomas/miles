@@ -7,7 +7,7 @@ using Godot;
 
 namespace Program.midi.scheduler.component.solo;
 
-public class RepetitionTokenSoloist: Soloist
+public class TokenRepetitionSoloist: Soloist
 {
     public List<MidiNote> Notes;
     public LeadSheet LeadSheet;
@@ -41,7 +41,6 @@ public class RepetitionTokenSoloist: Soloist
         GD.Print(TokenMethods.TokensToString(tokens));
         
         var notes = TokenMethods.Reconstruct(tokens, LeadSheet, startMeasureNum);
-        GD.Print(string.Join(',', notes.Select(it => it.Note.ToString())));
         
         return MidiSong.FromNotes(notes).Measures;
     }
