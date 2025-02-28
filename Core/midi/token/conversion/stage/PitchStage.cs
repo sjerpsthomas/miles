@@ -6,19 +6,22 @@ namespace Core.midi.token.conversion.stage;
 
 public static class PitchStage
 {
-    public static RelativeMelody TokenizePitch(List<MidiNote> midiNotes)
+    public static RelativeMelody TokenizePitch(List<MidiNote> midiNotes, LeadSheet? leadSheet)
     {
         if (midiNotes is [])
             return new RelativeMelody();
         
         var resArr = new RelativeMelodyToken?[midiNotes.Count];
 
+        // Get key of song
+        var key = leadSheet?.Key ?? CMajor;
+        
         var prevDelta = 999;
         for (var i = 0; i < midiNotes.Count - 1; i++)
         {
             var (_, time, length, note, velocity) = midiNotes[i];
             var delta = midiNotes[i + 1].Note - note;
-
+            
             // Add passing tone if delta is same as previous
             if (prevDelta == delta)
             {
@@ -27,7 +30,7 @@ public static class PitchStage
             else
             {
                 // note - 36 omitted; octaves are removed during DeduceOctaves anyway
-                var octaveScaleNote = CMajor.GetRelativeNote(note);
+                var octaveScaleNote = key.GetRelativeNote(note);
                 resArr[i] = new RelativeMelodyNote(octaveScaleNote, time, length, velocity);
             }
             
@@ -38,7 +41,7 @@ public static class PitchStage
         {
             var (_, time, length, note, velocity) = midiNotes[^1];
             // note - 36 omitted; octaves are removed during DeduceOctaves anyway
-            var octaveScaleNote = CMajor.GetRelativeNote(note);
+            var octaveScaleNote = key.GetRelativeNote(note);
             resArr[^1] = new RelativeMelodyNote(octaveScaleNote, time, length, velocity);
         }
 

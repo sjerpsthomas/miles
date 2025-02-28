@@ -11,6 +11,8 @@ public class NoteFactorOracleSoloist : Soloist
     private LeadSheet _leadSheet;
     
     public NoteFactorOracle NoteFactorOracle = new();
+
+    public int HumanFourStart;
     
     public override void Initialize(MidiSong solo, LeadSheet leadSheet)
     {
@@ -23,6 +25,8 @@ public class NoteFactorOracleSoloist : Soloist
 
     public override void IngestMeasures(List<MidiMeasure> measures, int measureNum)
     {
+        HumanFourStart = NoteFactorOracle.Nodes.Count;
+        
         var recordedMelody = MidiMelody.FromMeasures(measures, _leadSheet, measureNum);
         
         // Add recorded melody to melody and factor oracle
@@ -40,7 +44,7 @@ public class NoteFactorOracleSoloist : Soloist
         // Traverse factor oracle until time runs out
         var rng = new Random();
         var time = 0.0;
-        var index = rng.Next(0, NoteFactorOracle.Nodes.Count - 1);
+        var index = rng.Next(HumanFourStart, NoteFactorOracle.Nodes.Count - 1);
         
         while (time < generateMeasureCount)
         {

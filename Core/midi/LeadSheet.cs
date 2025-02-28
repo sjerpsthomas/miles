@@ -9,6 +9,8 @@ public class LeadSheet
     public enum StyleEnum { Straight, Swing }
 
     public int BPM;
+
+    public Chord Key;
     
     public StyleEnum Style;
     

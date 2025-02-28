@@ -11,6 +11,8 @@ public class TokenFactorOracleSoloist : Soloist
 {
     public TokenFactorOracle TokenFactorOracle;
     public LeadSheet LeadSheet;
+
+    public int HumanFourStart;
     
     public override void Initialize(MidiSong solo, LeadSheet leadSheet)
     {
@@ -23,6 +25,8 @@ public class TokenFactorOracleSoloist : Soloist
 
     public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
     {
+        HumanFourStart = TokenFactorOracle.Nodes.Count;
+        
         // Get notes (shifted by measure number)
         List<MidiNote> notes = [];
         for (var index = 0; index < measures.Count; index++)
@@ -30,7 +34,7 @@ public class TokenFactorOracleSoloist : Soloist
                 notes.Add(note with { Time = note.Time + index });
         
         // Get tokens, add to factor oracle
-        var tokens = TokenMethods.Tokenize(notes);
+        var tokens = TokenMethods.Tokenize(notes, LeadSheet);
         TokenFactorOracle.AddTokens(tokens);
     }
 
@@ -40,7 +44,7 @@ public class TokenFactorOracleSoloist : Soloist
         
         // Traverse factor oracle
         var rng = new Random();
-        var index = rng.Next(0, TokenFactorOracle.Nodes.Count - 1);
+        var index = rng.Next(HumanFourStart, TokenFactorOracle.Nodes.Count - 1);
         
         var measureCount = 0;
         var tokenCount = 0;

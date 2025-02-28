@@ -25,7 +25,7 @@ public class TokenShuffleSoloist : Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Tokenize, permutate tokens
-        var tokens = TokenMethods.Tokenize(Notes);
+        var tokens = TokenMethods.Tokenize(Notes, LeadSheet);
         var permutatedTokens = new TokenShuffleModel().Permutate(tokens);
 
         Console.WriteLine(TokenMethods.TokensToString(permutatedTokens));

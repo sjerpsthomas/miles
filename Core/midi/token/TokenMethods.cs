@@ -24,9 +24,9 @@ public static class TokenMethods
     public static List<Token> TokensFromString(string str) => str.Select(FromChar).ToList();
     public static string TokensToString(List<Token> tokens) => string.Concat(tokens.Select(ToChar));
     
-    public static List<Token> Tokenize(List<MidiNote> midiNotes)
+    public static List<Token> Tokenize(List<MidiNote> midiNotes, LeadSheet? leadSheet = null)
     {
-        var relativeMelody = PitchStage.TokenizePitch(midiNotes);
+        var relativeMelody = PitchStage.TokenizePitch(midiNotes, leadSheet);
         var tokenMelody = OctaveStage.TokenizeOctaves(relativeMelody);
         var timedTokenMelody = TimingStage.TokenizeTiming(tokenMelody);
         var tokens = VelocityStage.TokenizeVelocity(timedTokenMelody);

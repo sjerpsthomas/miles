@@ -31,7 +31,7 @@ public class TokenTransformerSoloist: Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Deduce and set tokens
-        var tokens = TokenMethods.Tokenize(Notes);
+        var tokens = TokenMethods.Tokenize(Notes, LeadSheet);
         Transformer.SetTokens(tokens);
         
         List<Token> res = [];

@@ -35,7 +35,7 @@ public class TokenMarkovSoloist : Soloist
         }
 
         // Create tokens, learn from them
-        var tokens = TokenMethods.Tokenize(notes);
+        var tokens = TokenMethods.Tokenize(notes, LeadSheet);
         Model.Learn([tokens]);
     }
     

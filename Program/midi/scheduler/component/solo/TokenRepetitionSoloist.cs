@@ -37,7 +37,7 @@ public class TokenRepetitionSoloist: Soloist
 
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
-        var tokens = TokenMethods.Tokenize(Notes);
+        var tokens = TokenMethods.Tokenize(Notes, LeadSheet);
         GD.Print(TokenMethods.TokensToString(tokens));
         
         var notes = TokenMethods.Reconstruct(tokens, LeadSheet, startMeasureNum);
