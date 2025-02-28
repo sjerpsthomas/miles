@@ -22,11 +22,25 @@ public abstract class GenericMarkov<TPhrase, TUnigram>
 {
     private class TempLogger
     {
-        public void Info(string s) => Console.WriteLine($"[MarkovSharp info] {s}");
+        public static bool Active = false;
+        
+        public void Info(string s)
+        {
+            if (!Active) return;
+            Console.WriteLine($"[MarkovSharp info] {s}");
+        }
 
-        public void Debug(string s) => Console.WriteLine($"[MarkovSharp debug] {s}");
+        public void Debug(string s)
+        {
+            if (!Active) return;
+            Console.WriteLine($"[MarkovSharp debug] {s}");
+        }
 
-        public void Warn(string s) => Console.WriteLine($"[MarkovSharp warn] {s}");
+        public void Warn(string s)
+        {
+            if (!Active) return;
+            Console.WriteLine($"[MarkovSharp warn] {s}");
+        }
     }
     
     private readonly TempLogger _logger = new();

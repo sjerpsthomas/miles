@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.midi;
 using Core.midi.token;
-using Godot;
 using Program.util;
 using static Godot.FileAccess.ModeFlags;
 
@@ -63,7 +62,7 @@ public class TokenMarkovSoloist : Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Generate measures
-        var tokens = Model.Walk(4).Select(it => it.Append(Token.Measure)).SelectMany(it => it).ToList();
+        var tokens = Model.Walk(4).Select(it => it.Take(10).Append(Token.Measure)).SelectMany(it => it).ToList();
         
         // Take no more than 4 measures
         var measureCount = 0;
