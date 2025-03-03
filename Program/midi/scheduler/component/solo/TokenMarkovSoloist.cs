@@ -36,6 +36,7 @@ public class TokenMarkovSoloist : Soloist
         // Create tokens, learn from them
         var tokens = TokenMethods.Tokenize(notes, LeadSheet);
         List<List<Token>> tokensList = [tokens];
+        Console.WriteLine($"learning from {TokenMethods.TokensToString(tokens)}");
         Model.Learn(tokensList);
     }
     
@@ -49,7 +50,7 @@ public class TokenMarkovSoloist : Soloist
         // Learn measures from extra songs
         for (var i = 1; i <= 4; i++)
         {
-            var extraSong = MidiSong.FromMidiFileStream(new FileAccessStream(StandardPath + "back.mid", Read));
+            var extraSong = MidiSong.FromNotesFileStream(new FileAccessStream(StandardPath + $"_extra_{i}.notes", Read));
             Learn(extraSong.Measures);
         }
     }
@@ -63,7 +64,13 @@ public class TokenMarkovSoloist : Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Generate measures
-        var tokens = Model.Walk(4).Select(it => it.Take(10).Append(Token.Measure)).SelectMany(it => it).ToList();
+        var tokens = Model.Walk(4)
+            .Select(it =>
+                it.Where(t => t != Token.Measure)
+                    .Take(10)
+                    .Append(Token.Measure)
+            )
+            .SelectMany(it => it).ToList();
         
         // Take no more than 4 measures
         var measureCount = 0;

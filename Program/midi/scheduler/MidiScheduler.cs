@@ -45,7 +45,7 @@ public partial class MidiScheduler : Node
 		
 		// Load necessary files
 		var backingTrack = MidiSong.FromNotesFileStream(new FileAccessStream(standardPath + "backing.notes", Read));
-		var soloTrack = MidiSong.FromMidiFileStream(new FileAccessStream(standardPath + "solo.mid", Read));
+		var soloTrack = MidiSong.FromNotesFileStream(new FileAccessStream(standardPath + "solo.notes", Read));
 		var leadSheet = LeadSheet.FromStream(new FileAccessStream(standardPath + "sheet.json", Read));
 		
 		// Get BPM
