@@ -25,14 +25,14 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
         if ((currentMeasure + 4) % 8 != 0) return;
         if (currentMeasure >= LeadSheet.Chords.Count * Repetitions) return;
 
-        var recordMeasureCount = 4;
-        var generateMeasureCount = 4;
+        const int recordMeasureCount = 4;
+        const int generateMeasureCount = 4;
         
         // Flush recording
         Recorder.Flush(currentMeasure);
         
         // Get recorded measures, ingest
-        var recordedMeasures = Recorder.Song.Measures.TakeLast(recordMeasureCount).ToList();
+        var recordedMeasures = Recorder.GetUserMeasures(recordMeasureCount).ToList();
         Soloist.IngestMeasures(recordedMeasures, currentMeasure - recordMeasureCount);
 
         var measures = Soloist.Generate(generateMeasureCount, currentMeasure);

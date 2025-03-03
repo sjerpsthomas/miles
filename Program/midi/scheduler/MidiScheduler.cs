@@ -109,9 +109,11 @@ public partial class MidiScheduler : Node
 		MidiServer.Instance.Scheduler = null;
 		Enabled = false;
 
+		var currentMeasure = (int)Math.Truncate(Time);
+		
 		lock (NoteQueue)
 			while (NoteQueue.TryDequeue(out var note, out _))
-				if (note.Velocity == 0) MidiServer.Instance.Send(note);
+				MidiServer.Instance.Send(note with { Time = note.Time + currentMeasure });
 	}
 	
 	public void Run()
@@ -142,7 +144,9 @@ public partial class MidiScheduler : Node
 		{
 			if (currentMeasure == 1 + SongLength * Repetitions)
 			{
+				Recorder.CallDeferred("Save");
 				((PerformanceScreen)GetTree().CurrentScene).CallDeferred("Quit");
+				
 				Enabled = false;
 				return;
 			}
@@ -156,8 +160,13 @@ public partial class MidiScheduler : Node
 		
 		// Play notes when needed
 		lock (NoteQueue)
+		{
 			while (NoteQueue.TryPeek(out _, out var time) && time < Time)
-				MidiServer.Instance.Send(NoteQueue.Dequeue());
+			{
+				var note = NoteQueue.Dequeue();
+				MidiServer.Instance.Send(note with { Time = note.Time + currentMeasure });
+			}
+		}
 	}
 
 	public void AddMeasure(int measureNum, MidiMeasure measure)

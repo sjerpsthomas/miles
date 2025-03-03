@@ -1,4 +1,6 @@
-﻿namespace Program.midi.scheduler.component;
+﻿using System.Linq;
+
+namespace Program.midi.scheduler.component;
 
 public class RepeaterMidiSchedulerComponent : MidiSchedulerComponent
 {
@@ -7,8 +9,10 @@ public class RepeaterMidiSchedulerComponent : MidiSchedulerComponent
         if ((currentMeasure + 2) % 4 != 0) return;
         
         Recorder.Flush(currentMeasure);
-            
-        Scheduler.AddMeasure(measureNum: currentMeasure, Recorder.Song.Measures[^2]);
-        Scheduler.AddMeasure(measureNum: currentMeasure + 1, Recorder.Song.Measures[^1]);
+
+        // Repeat user measures
+        var userMeasures = Recorder.GetUserMeasures(2).ToArray();
+        Scheduler.AddMeasure(measureNum: currentMeasure, userMeasures[0]);
+        Scheduler.AddMeasure(measureNum: currentMeasure + 1, userMeasures[1]);
     }
 }

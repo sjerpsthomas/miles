@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Core.midi;
 using Godot;
+using Program.util;
 
 namespace Program.midi.recorder;
 
 public partial class MidiRecorder : Node
 {
 	public MidiSong Song = new();
-	
+
 	public List<MidiNote> PendingNotes = [];
 	
 	public override void _Ready()
@@ -17,7 +19,7 @@ public partial class MidiRecorder : Node
 		MidiServer.Instance.NoteSent += OnMidiServerNoteSent;
 	}
 
-	public void ProcessPendingNote(MidiNote pendingNote, double endTime)
+	public void ProcessNoteEnd(MidiNote pendingNote, double endTime)
 	{
 		// Find measure of pending note, create empty measure(s)
 		var measureNum = (int)Math.Truncate(pendingNote.Time);
@@ -37,7 +39,7 @@ public partial class MidiRecorder : Node
 	{
 		// Process all pending notes
 		foreach (var pendingNote in PendingNotes)
-			ProcessPendingNote(pendingNote, newMeasureCount);
+			ProcessNoteEnd(pendingNote, newMeasureCount);
 		PendingNotes.Clear();
         
 		// Fill measures
@@ -46,29 +48,53 @@ public partial class MidiRecorder : Node
 
 	public void OnMidiServerNoteSent(MidiNote midiNote)
 	{
-		if (midiNote.OutputName != OutputName.Loopback) return;
 		if (midiNote.Time < 0) return;
-        
-		if (midiNote.Velocity > 0)
+
+		if (midiNote.Velocity == 0)
+		{
+			// Find pending note, return if none found
+			var findPendingNotes = PendingNotes
+				.FindAll(note => note.OutputName == midiNote.OutputName && note.Note == midiNote.Note);
+			if (findPendingNotes is not [var pendingNote])
+			{
+				Console.WriteLine("[MIDI RECORDER] Error in pending note (note off)");
+				return;
+			}
+
+			// Remove note from pending list
+			PendingNotes.Remove(pendingNote);
+
+			// Add pending note to corresponding measure
+			ProcessNoteEnd(pendingNote, midiNote.Time);
+		}
+		else
 		{
 			// Assert no similar pending notes exist
-			var pendingNoteIndex = PendingNotes.FindLastIndex(note => note.Note == midiNote.Note);
-			Debug.Assert(pendingNoteIndex == -1);
+			if (PendingNotes.Any(note => note.OutputName == midiNote.OutputName && note.Note == midiNote.Note))
+				Console.WriteLine("[MIDI RECORDER] Error in pending note (note on)");
 
 			// Add note to pending list
 			PendingNotes.Add(midiNote);
 		}
-		else
-		{
-			// Find pending note, return if none found
-			var findPendingNotes = PendingNotes.FindAll(note => note.Note == midiNote.Note);
-			if (findPendingNotes is not [var pendingNote]) return;
-			
-			// Remove note from pending list
-			PendingNotes.Remove(pendingNote);
-			
-			// Add pending note to corresponding measure
-			ProcessPendingNote(pendingNote, midiNote.Time);
-		}
+	}
+	
+	public IEnumerable<MidiMeasure> GetUserMeasures(int count) => Song.Measures.TakeLast(count).Select(
+		it => new MidiMeasure { Notes = it.Notes.Where(note => note.OutputName == OutputName.Loopback).ToList() }
+	);
+
+	public void Save()
+	{
+		// Get file name
+		var init = GetNode("/root/PerformanceScreenInit");
+		var standardName = (string)init.Get("standard_name");
+		var soloistIndex = (int)init.Get("soloist");
+		var dateTime = DateTime.Now.ToString("yyMMdd HHmm");
+		var fileName = $"user://recordings/[{dateTime}] {standardName} {soloistIndex}.notes";
+		
+		// Save to stream
+		Song.ToNotesFileStream(new FileAccessStream(fileName, FileAccess.ModeFlags.Write));
+
+		// Print
+		Console.WriteLine($"Saved to {fileName}");
 	}
 }

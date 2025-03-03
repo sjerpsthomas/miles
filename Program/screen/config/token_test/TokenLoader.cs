@@ -8,25 +8,47 @@ using Program.midi.scheduler.component;
 
 public partial class TokenLoader : Node
 {
+	public MidiScheduler Scheduler => (MidiScheduler)GetNode("%MidiScheduler");
+	public TextEdit SelectedTokensText => (TextEdit)GetNode("%SelectedTokensText");
+	
 	public override void _Ready()
 	{
-		var scheduler = (MidiScheduler)GetNode("%MidiScheduler");
+		Scheduler.BPM = 120;
+		Scheduler.SongLength = 1;
+		Scheduler.Repetitions = 9999;
 		
-		scheduler.BPM = 120;
-		scheduler.SongLength = 1;
-		scheduler.Repetitions = 9999;
-		
-		scheduler.Components.Add(new MetronomeMidiSchedulerComponent
+		Scheduler.Components.Add(new MetronomeMidiSchedulerComponent
 		{
-			Scheduler = scheduler,
+			Scheduler = Scheduler,
 			Recorder = null,
 		});
         
-		scheduler.Start();
+		Scheduler.Start();
+	}
+
+	public void LoadFile(string filePath)
+	{
+		var extension = Path.GetExtension(filePath);
+		switch (extension)
+		{
+			case ".tokens":
+				LoadTokens(filePath);
+				break;
+			case ".notes":
+				LoadNotes(filePath);
+				break;
+			case ".mid":
+				LoadMidi(filePath);
+				break;
+			default:
+				SelectedTokensText.Text += $"Unknown file format at {filePath}!";
+				break;
+		}
 	}
 
 	public void LoadTokens(string filePath)
 	{
+		// Open file
 		var text = File.ReadAllText(filePath);
 		var tokens = TokenMethods.TokensFromString(text);
 		
@@ -39,19 +61,60 @@ public partial class TokenLoader : Node
 		var currentMeasure = (int)Math.Truncate(scheduler.Time);
 		scheduler.AddSong(currentMeasure + 1, song);
 
+		// Log
 		var tokensStr = TokenMethods.TokensToString(tokens);
-		((TextEdit)GetNode("%SelectedTokensText")).Text = "Tokens found:\n" + tokensStr.Replace("M", "M\n");
+		SelectedTokensText.Text = $"Tokens from {filePath} loaded successfully!\n{tokensStr.Replace("M", "M\n")}";
 
+		// Show 'stop playing' button
 		((Button)GetNode("%StopPlayingButton")).Visible = true;
 	}
 
-	public void StopPlaying()
+	public void LoadNotes(string filePath)
 	{
+		// Get song
+		var song = MidiSong.FromNotesFileStream(new FileStream(filePath, FileMode.Open));
+		
+		// Schedule song
 		var scheduler = (MidiScheduler)GetNode("%MidiScheduler");
-		scheduler.NoteQueue.Clear();
+		var currentMeasure = (int)Math.Truncate(scheduler.Time);
+		scheduler.AddSong(currentMeasure + 1, song);
+		
+		// Log
+		SelectedTokensText.Text = $"Notes from {filePath} loaded successfully!\n";
+        
+		// Show 'stop playing' button
+		((Button)GetNode("%StopPlayingButton")).Visible = true;
+	}
 
-		((TextEdit)GetNode("%SelectedTokensText")).Text = "Tokens found:\n(...)";
+	public void LoadMidi(string filePath)
+	{
+		// Get song
+		var song = MidiSong.FromMidiFileStream(new FileStream(filePath, FileMode.Open));
+		
+		// Schedule song
+		var scheduler = (MidiScheduler)GetNode("%MidiScheduler");
+		var currentMeasure = (int)Math.Truncate(scheduler.Time);
+		scheduler.AddSong(currentMeasure + 1, song);
+		
+		// Log
+		SelectedTokensText.Text = $"MIDI from {filePath} loaded successfully!\n";
+        
+		// Show 'stop playing' button
+		((Button)GetNode("%StopPlayingButton")).Visible = true;
+	}
+
+	public void Stop()
+	{
+		Scheduler.Stop();
+		Scheduler.Start();
+
+		SelectedTokensText.Text += "Stopped playing\n";
 		
 		((Button)GetNode("%StopPlayingButton")).Visible = false;
+	}
+
+	public void Quit()
+	{
+		Scheduler.Stop();
 	}
 }

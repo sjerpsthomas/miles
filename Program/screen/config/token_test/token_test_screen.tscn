@@ -37,7 +37,7 @@ offset_right = 1216.0
 offset_bottom = 64.0
 theme_override_fonts/font = ExtResource("5_qu8do")
 theme_override_font_sizes/font_size = 40
-text = "Token Test Scene"
+text = "File Test Scene"
 horizontal_alignment = 1
 
 [node name="InstructionsLabel" type="Label" parent="Panel"]
@@ -47,7 +47,7 @@ offset_right = 1216.0
 offset_bottom = 144.0
 theme_override_fonts/font = ExtResource("6_ntnw1")
 theme_override_font_sizes/font_size = 36
-text = "Drag any *.tokens file into the window to play it back!"
+text = "Drag any *.tokens or *.notes file into the window to play it back!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -60,11 +60,10 @@ offset_right = 1184.0
 offset_bottom = 478.0
 theme_override_fonts/font = ExtResource("6_ntnw1")
 theme_override_font_sizes/font_size = 36
-text = "Tokens found:
-(...)"
 
 [node name="StopPlayingButton" type="Button" parent="Panel"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

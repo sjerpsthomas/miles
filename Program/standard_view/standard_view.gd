@@ -56,7 +56,6 @@ func refresh() -> void:
 	var num_measures: int = data["Chords"].size()
 	for i in range(num_measures):
 		var measure_data = data["Chords"][i]
-		var solo_division: int = data["SoloDivision"][i]
 		var section_label: String = data["SectionLabels"][i]
 		var double_barline: bool = i == num_measures - 1 or data["SectionLabels"][i + 1] != ""
 		
@@ -82,7 +81,7 @@ func refresh() -> void:
 		measure.size.y = height
 		
 		# set measure color
-		if solo_division == 1:
+		if i % 8 >= 4:
 			measure.modulate = Color.CORNFLOWER_BLUE.lightened(0.7)
 			measure.modulate.a = 0.6
 		

@@ -16,8 +16,6 @@ public class LeadSheet
     
     public List<List<Chord>> Chords;
     
-    public List<SoloType> SoloDivision;
-
     public List<string> SectionLabels;
     
     public Chord ChordAtTime(double time)
