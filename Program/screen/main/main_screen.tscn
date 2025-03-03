@@ -17,20 +17,41 @@ unique_name_in_owner = true
 
 [node name="StartButton" type="Button" parent="."]
 offset_left = 400.0
-offset_top = 208.0
+offset_top = 232.0
 offset_right = 880.0
-offset_bottom = 304.0
+offset_bottom = 328.0
 theme_override_fonts/font = ExtResource("2_7jmhx")
 theme_override_font_sizes/font_size = 40
 text = "Start (CΔ)"
 script = ExtResource("3_ovtu3")
 chord = "100010010000"
 
+[node name="PupilInfoLabel" type="Label" parent="."]
+offset_left = 416.0
+offset_top = 348.0
+offset_right = 608.0
+offset_bottom = 384.0
+theme_override_fonts/font = ExtResource("5_ku68l")
+theme_override_font_sizes/font_size = 30
+text = "(Optional) Pupil info"
+vertical_alignment = 1
+
+[node name="PupilInfoLineEdit" type="LineEdit" parent="."]
+unique_name_in_owner = true
+offset_left = 608.0
+offset_top = 344.0
+offset_right = 864.0
+offset_bottom = 388.0
+theme_override_fonts/font = ExtResource("5_ku68l")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "(...)"
+alignment = 1
+
 [node name="QuitButton" type="Button" parent="."]
 offset_left = 400.0
-offset_top = 336.0
+offset_top = 416.0
 offset_right = 880.0
-offset_bottom = 432.0
+offset_bottom = 512.0
 theme_override_fonts/font = ExtResource("2_7jmhx")
 theme_override_font_sizes/font_size = 40
 text = "Quit (C-)"
@@ -54,6 +75,15 @@ theme_override_colors/font_color = Color(0.25, 1, 0.25, 1)
 theme_override_fonts/font = ExtResource("5_ku68l")
 theme_override_font_sizes/font_size = 30
 text = "Configuration"
+
+[node name="Label" type="Label" parent="."]
+offset_top = 72.0
+offset_right = 1280.0
+offset_bottom = 199.0
+theme_override_fonts/font = ExtResource("2_7jmhx")
+theme_override_font_sizes/font_size = 80
+text = "Real-Time Jazz Solo Generation"
+horizontal_alignment = 1
 
 [connection signal="Press" from="." to="StartButton" method="_on_screen_press"]
 [connection signal="Press" from="." to="QuitButton" method="_on_screen_press"]

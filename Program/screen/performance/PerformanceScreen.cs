@@ -69,7 +69,10 @@ public partial class PerformanceScreen : Node2D
 		// Stop scheduler
 		GetNode<MidiScheduler>("%MidiScheduler").Stop();
 		
-		// Change scene
-		GetTree().ChangeSceneToFile("res://screen/song_select/song_select_screen.tscn");
+		// Change to appropriate scene
+		var isPupil = (bool)GetNode("/root/PerformanceScreenInit").Get("is_pupil");
+		GetTree().ChangeSceneToFile(isPupil
+			? "res://screen/main/main_screen.tscn"
+			: "res://screen/song_select/song_select_screen.tscn");
 	}
 }

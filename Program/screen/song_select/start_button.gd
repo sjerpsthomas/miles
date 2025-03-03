@@ -12,5 +12,6 @@ func _pressed() -> void:
 	PerformanceScreenInit.standard_name = standard_view.standard_name
 	PerformanceScreenInit.soloist = soloist
 	PerformanceScreenInit.repetition_count = repetition_count
+	PerformanceScreenInit.is_pupil = false
 	
 	get_tree().change_scene_to_file("res://screen/performance/performance_screen.tscn")

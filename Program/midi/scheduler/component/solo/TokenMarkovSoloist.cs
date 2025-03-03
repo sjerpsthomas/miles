@@ -35,7 +35,8 @@ public class TokenMarkovSoloist : Soloist
 
         // Create tokens, learn from them
         var tokens = TokenMethods.Tokenize(notes, LeadSheet);
-        Model.Learn([tokens]);
+        List<List<Token>> tokensList = [tokens];
+        Model.Learn(tokensList);
     }
     
     public override void Initialize(MidiSong solo, LeadSheet leadSheet)
