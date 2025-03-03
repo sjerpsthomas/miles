@@ -1,4 +1,5 @@
-﻿using NAudio.Midi;
+﻿using System.Text;
+using NAudio.Midi;
 
 namespace Core.midi;
 
@@ -6,7 +7,7 @@ public class MidiSong
 {
     public List<MidiMeasure> Measures = [];
 
-    public static MidiSong FromStream(Stream stream)
+    public static MidiSong FromMidiFileStream(Stream stream)
     {
         var song = new MidiSong();
         
@@ -51,6 +52,49 @@ public class MidiSong
 
         return song;
     }
+
+    public static MidiSong FromNotesFileStream(Stream stream)
+    {
+        using var reader = new BinaryReader(stream, Encoding.UTF8, false);
+
+        // Read count
+        var count = reader.ReadInt32();
+        
+        // Read notes
+        var notes = Enumerable.Range(0, count).Select(_ =>
+            new MidiNote(
+                OutputName: (OutputName)reader.ReadByte(),
+                Time: reader.ReadDouble(),
+                Length: reader.ReadDouble(),
+                Note: reader.ReadInt32(),
+                Velocity: reader.ReadInt32()
+            )
+        ).ToList();
+
+        // Convert to Song
+        return FromNotes(notes);
+    }
+
+    public void ToNotesFileStream(Stream stream)
+    {
+        using var writer = new BinaryWriter(stream, Encoding.UTF8, false);
+        
+        // Get notes
+        var notes = ToNotes();
+        
+        // Write count
+        writer.Write(notes.Count);
+        
+        // Write notes
+        foreach (var note in notes)
+        {
+            writer.Write((byte)note.OutputName);
+            writer.Write(note.Time);
+            writer.Write(note.Length);
+            writer.Write(note.Note);
+            writer.Write(note.Velocity);
+        }
+    }
     
     public void Fill(int newMeasureCount)
     {
@@ -77,5 +121,11 @@ public class MidiSong
         }
 
         return new MidiSong { Measures = measures };
+    }
+
+    public List<MidiNote> ToNotes()
+    {
+        return Measures.SelectMany((measure, measureNum) =>
+            measure.Notes.Select(note => note with { Time = note.Time + measureNum })).ToList();
     }
 }

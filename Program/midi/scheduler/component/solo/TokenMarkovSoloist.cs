@@ -49,7 +49,7 @@ public class TokenMarkovSoloist : Soloist
         // Learn measures from extra songs
         for (var i = 1; i <= 4; i++)
         {
-            var extraSong = MidiSong.FromStream(new FileAccessStream(StandardPath + "back.mid", Read));
+            var extraSong = MidiSong.FromMidiFileStream(new FileAccessStream(StandardPath + "back.mid", Read));
             Learn(extraSong.Measures);
         }
     }

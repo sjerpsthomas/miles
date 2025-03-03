@@ -1,17 +1,10 @@
-﻿using System.Xml.XPath;
-using Core.midi;
-using Core.midi.token;
-using Core.midi.token.conversion;
+﻿using Core.midi;
 using Microsoft.Data.Sqlite;
 
 namespace Console.routine;
 
-public class WJDTokenizer
+public class WJDToNotes
 {
-    public SqliteConnection Connection;
-    
-    const int NumSolos = 456;
-    
     private record WJDNote(
         int Bar,
         int Beat,
@@ -24,9 +17,9 @@ public class WJDTokenizer
         int Denom
     );
     
-    IEnumerable<WJDNote> GetNotes(int melId)
+    private IEnumerable<WJDNote> GetWJDNotes(SqliteConnection connection, int melId)
     {
-        var command = Connection.CreateCommand();
+        var command = connection.CreateCommand();
         command.CommandText =
             $"select bar, beat, division, tatum, pitch, duration, loud_cent, num, denom from melody where melid = {melId}";
         
@@ -59,7 +52,7 @@ public class WJDTokenizer
         }
     }
     
-    void HandleMelody(int melId, int transpose, string exportFolderName)
+    public IEnumerable<MidiNote> GetNotes(SqliteConnection connection, int melId)
     {
         // Print
         System.Console.WriteLine($"Handling melody {melId}");
@@ -69,7 +62,7 @@ public class WJDTokenizer
         string signature;
         {
             // Get average tempo
-            var soloInfoCommand = Connection.CreateCommand();
+            var soloInfoCommand = connection.CreateCommand();
             soloInfoCommand.CommandText = $"select avgtempo, signature from solo_info where melid = {melId}";
             using var reader = soloInfoCommand.ExecuteReader();
             reader.Read();
@@ -81,54 +74,35 @@ public class WJDTokenizer
         if (signature != "4/4")
         {
             System.Console.WriteLine($"Discarded mel_id {melId}: not in 4/4");
-            return;
+            return [];
         }
-
-        // Keep track of tokens
-        List<MidiNote> midiNotes = [];
         
         // Get notes
-        var notes = GetNotes(melId);
+        var notes = GetWJDNotes(connection, melId);
         
-        foreach (var note in notes)
-        {
-            // Ignore pickup measures
-            if (note.Bar < 1) continue;
-
-            // Get time
-            var resTime = note.Bar + (note.Beat - 1 + (note.Tatum - 1) / note.Division) / note.Num;
-            
-            // Get length
-            var resLength = note.Duration * (avgTempo / 60);
-            
-            // Get velocity
-            var resVelocity = (int)(note.LoudCent * 127);
-            
-            // Add note
-            midiNotes.Add(new MidiNote(OutputName.Unknown, resTime, resLength, note.Pitch, resVelocity));
-        }
-        
-        // Convert velocity token melody to tokens, get string
-        var tokens = TokenMethods.Tokenize(midiNotes);
-        var tokensStr = TokenMethods.TokensToString(tokens);
-                
-        // Trim measure tokens
-        tokensStr = tokensStr.Trim('M');
-        tokensStr += 'M';
-                
-        // Get export file name, write to disk
-        var exportFileName = Path.Join(exportFolderName, $"{melId % 10000}.tokens");
-        File.WriteAllText(exportFileName, tokensStr);
+        // Keep track of tokens
+        return
+            from note in notes
+            where note.Bar >= 1
+            let resTime = note.Bar + ((note.Tatum - 1) / note.Division + note.Beat - 1) / note.Num
+            let resLength = note.Duration * (avgTempo / 60)
+            let resVelocity = (int)(note.LoudCent * 127)
+            select new MidiNote(OutputName.Unknown, resTime, resLength, note.Pitch, resVelocity);
     }
     
-    public void Run()
+
+    public void Run(int melId)
     {
-        Connection = new("Filename=wjazzd.db");
-        Connection.Open();
+        using var connection = new SqliteConnection("Filename=wjazzd.db");
+        connection.Open();
+
+        // Get notes from database
+        var notes = GetNotes(connection, melId);
+
+        // Get song from notes
+        var song = MidiSong.FromNotes(notes.ToList());
         
-        for (var melId = 1; melId <= NumSolos; melId++)
-            HandleMelody(melId, 0, "C:\\Users\\thoma\\Desktop\\wjd_tokens");
-        
-        Connection.Dispose();
+        // Save to file
+        song.ToNotesFileStream(new FileStream($@"C:\Users\thoma\Desktop\wjd_notes\{melId}.notes", FileMode.CreateNew));
     }
 }
