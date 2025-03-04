@@ -37,9 +37,10 @@ public partial class MidiRecorder : Node
 	
 	public void Flush(int newMeasureCount)
 	{
-		// Process all pending notes
+		// Process all pending user notes
 		foreach (var pendingNote in PendingNotes)
-			ProcessNoteEnd(pendingNote, newMeasureCount);
+			if (pendingNote.OutputName == OutputName.Loopback)
+				ProcessNoteEnd(pendingNote, newMeasureCount);
 		PendingNotes.Clear();
         
 		// Fill measures
@@ -49,30 +50,26 @@ public partial class MidiRecorder : Node
 	public void OnMidiServerNoteSent(MidiNote midiNote)
 	{
 		if (midiNote.Time < 0) return;
-
+		if (midiNote.OutputName is OutputName.Metronome or OutputName.Unknown) return;
+		
 		if (midiNote.Velocity == 0)
 		{
-			// Find pending note, return if none found
+			// Find similar pending notes, return if none found
 			var findPendingNotes = PendingNotes
 				.FindAll(note => note.OutputName == midiNote.OutputName && note.Note == midiNote.Note);
-			if (findPendingNotes is not [var pendingNote])
-			{
-				Console.WriteLine("[MIDI RECORDER] Error in pending note (note off)");
-				return;
-			}
+			if (findPendingNotes is []) return;
+			
+			// Remove similar pending notes from pending list
+			foreach (var findPendingNote in findPendingNotes)
+				PendingNotes.Remove(findPendingNote);
 
-			// Remove note from pending list
-			PendingNotes.Remove(pendingNote);
-
+			var pendingNote = findPendingNotes.Last();
+			
 			// Add pending note to corresponding measure
 			ProcessNoteEnd(pendingNote, midiNote.Time);
 		}
 		else
 		{
-			// Assert no similar pending notes exist
-			if (PendingNotes.Any(note => note.OutputName == midiNote.OutputName && note.Note == midiNote.Note))
-				Console.WriteLine("[MIDI RECORDER] Error in pending note (note on)");
-
 			// Add note to pending list
 			PendingNotes.Add(midiNote);
 		}
