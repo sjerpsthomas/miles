@@ -1,6 +1,4 @@
-﻿using static Core.midi.token.TokenMethods;
-
-namespace Core.midi.token.conversion;
+﻿namespace Core.midi.token.conversion;
 
 public class TokenMelody
 {

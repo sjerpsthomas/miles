@@ -43,7 +43,7 @@ public partial class MidiServer : Node
             [OutputName.Backing4Drums] = FindMidiOut("Backing 4 - Drums"),
         };
 
-        GD.Print($"[MIDI] Setup successful (using keyboard '{keyboardMidiName}')!");
+        Console.WriteLine($"[MIDI] Setup successful (using keyboard '{keyboardMidiName}')!");
 
         LearnerIn.MessageReceived += (_, args) =>
         {

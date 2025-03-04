@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using Core.midi;
@@ -29,7 +30,7 @@ public class TokenRandomSoloist: Soloist
             tokens.AddRange(Enumerable.Range(0, measureTokenAmount).Select(_ => GetToken()));
             tokens.Add(Token.Measure);
         }
-        GD.Print(TokenMethods.TokensToString(tokens));
+        Console.WriteLine(TokenMethods.TokensToString(tokens));
         
         var notes = TokenMethods.Reconstruct(tokens, LeadSheet, startMeasureNum);
         

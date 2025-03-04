@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using Core.midi;
@@ -38,7 +39,7 @@ public class TokenRepetitionSoloist: Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         var tokens = TokenMethods.Tokenize(Notes, LeadSheet);
-        GD.Print(TokenMethods.TokensToString(tokens));
+        Console.WriteLine(TokenMethods.TokensToString(tokens));
         
         var notes = TokenMethods.Reconstruct(tokens, LeadSheet, startMeasureNum);
         

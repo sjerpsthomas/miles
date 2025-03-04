@@ -84,7 +84,16 @@ public static class TokenMethods
         TokenSpeed.SuperSlow => 0.5,
         _ => throw new ArgumentOutOfRangeException()
     };
-    
+
+    public static TokenSpeed ToSpeed(this double speed) =>
+        (int)Math.Round(Math.Log2(speed)) switch
+        {
+            <= -4 => TokenSpeed.SuperFast,
+            -3 => TokenSpeed.Fast,
+            -2 => TokenSpeed.Slow,
+            _ => TokenSpeed.SuperSlow,
+        };
+
     public static bool HasVelocity(this Token token, out TokenVelocity velocity)
     {
         velocity = TokenVelocity.Quiet;

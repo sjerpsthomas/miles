@@ -7,6 +7,177 @@ namespace Core.midi.token.conversion.stage;
 
 public static class TimingStage
 {
+    private abstract record TimingTemp(double Time, double Length);
+    private record TimingTempToken(TokenMelodyToken Token) : TimingTemp(Token.Time, Token.Length);
+    private record TimingTempRest(double Time, double Length) : TimingTemp(Time, Length);
+    
+    public static TimedTokenMelody TokenizeTiming2(TokenMelody tokenMelody)
+    {
+        var tokens = tokenMelody.Tokens;
+        
+        // Lengthen sequence per measure
+        List<List<TimingTemp>> units = GetUnits(tokens);
+
+        if (units is [])
+            return new TimedTokenMelody();
+        
+        // Fit measure to result
+        return Fit(units);
+    }
+
+    private static List<List<TimingTemp>> GetUnits(List<TokenMelodyToken> tokens)
+    {
+        // Early return
+        if (tokens is [])
+            return [];
+        
+        // Move notes that are close to barlines
+        for (var index = 0; index < tokens.Count; index++)
+        {
+            var token = tokens[index];
+            var tokenTime = token.Time;
+            var tokenSnapped = Math.Round(token.Time);
+            
+            if (tokenTime - Math.Truncate(tokenTime) is > 0.997 or < 0.003)
+                tokens[index] = token with { Time = tokenSnapped };
+        }
+
+        // Delete small notes
+        for (var index = 0; index < tokens.Count; index++)
+        {
+            if (!(tokens[index].Length < 0.03)) continue;
+
+            // Console.WriteLine("Small note removed");
+            tokens.RemoveAt(index);
+            index -= 1;
+        }
+        
+        // Early return
+        if (tokens is [])
+            return [];
+        
+        // Delete small rests, make monophonic
+        var measureCount = (int)Math.Truncate(tokens.Max(it => it.Time)) + 1;
+        var measures = Enumerable.Range(0, measureCount)
+            .Select(it => tokens.Where(t => (int)Math.Truncate(t.Time) == it).ToList());
+
+        List<List<TimingTemp>> res = [];
+        
+        // var mesaure = tokens.GroupBy(it => (int)Math.Truncate(it.Time)).Select(it => it.ToList());
+        foreach (var measure in measures)
+        {
+            List<TimingTemp> resMeasure = [];
+            
+            // Add dummy note to end of measure
+            measure.Add(new TokenMelodyNote(0, 1.0, 0.0, 0));
+            
+            // Handle all but dummy note
+            for (var index = 0; index < measure.Count - 1; index++)
+            {
+                var token = measure[index];
+                var nextToken = measure[index + 1];
+
+                var addRest = true;
+                
+                var restLength = nextToken.Time - (token.Time + token.Length);
+                if (restLength < 0.6 * token.Time)
+                {
+                    measure[index] = token with { Length = nextToken.Time - token.Time };
+                    addRest = false;
+                }
+            
+                // Add token (and maybe rest) to measure
+                resMeasure.Add(new TimingTempToken(token));
+                if (addRest) resMeasure.Add(new TimingTempRest(token.Time + token.Length, restLength));
+            }
+            
+            res.Add(resMeasure);
+        }
+
+        return res;
+    }
+    
+    private static TimedTokenMelody Fit(List<List<TimingTemp>> units)
+    {
+        // Initialize result
+        var res = new List<TimedTokenMelodyToken>(units.Count);
+        
+        // Fit to sections
+        foreach (var measure in units)
+        {
+            var best = double.PositiveInfinity;
+            var startIndex = 0;
+            var phraseStart = 0.0;
+            var previousPhraseEnd = 0.0;
+            var previousAverageSpeed = TokenSpeed.Fast;
+
+            for (var index = 0; index < measure.Count; index++)
+            {
+                var unit = measure[index];
+
+                var currentPhrase = measure.Skip(startIndex).Take(index - startIndex + 1).ToArray();
+                
+                // Get average speed of phrase
+                var averageSpeed = currentPhrase.Average(it => it.Time).ToSpeed();
+                var averageSpeedDouble = averageSpeed.ToDouble();
+                
+                // Quantize end of unit (based on average speed)
+                var phraseEnd = (int)Math.Ceiling((unit.Time + unit.Length) / averageSpeedDouble) * averageSpeedDouble;
+                var unitTime = (phraseEnd - phraseStart) / currentPhrase.Length;
+                
+                // Get average deviation of end of units
+                var averageError = currentPhrase.Select(
+                    (phraseUnit, i) => Math.Abs(phraseUnit.Time + phraseUnit.Length - (phraseStart + i * unitTime))
+                ).Average();
+            
+                // Check if unit does not improve average error
+                if (averageError > best || index == measure.Count - 1)
+                {
+                    if (index == measure.Count - 1)
+                    {
+                        index += 1;
+                        previousAverageSpeed = averageSpeed;
+                        previousPhraseEnd = phraseEnd;
+                    }
+                    
+                    // Add previous average speed
+                    res.Add(new TimedTokenMelodySpeed(previousAverageSpeed));
+
+                    // Add all in [startIndex..(index-1)] to result
+                    for (var j = startIndex; j < index; j++)
+                    {
+                        var addUnit = measure[j];
+                        if (addUnit is TimingTempToken(TokenMelodyNote(var nScaleTone, _, _, var nVelocity)))
+                            res.Add(new TimedTokenMelodyNote(nScaleTone, nVelocity));
+                        else if (addUnit is TimingTempToken(TokenMelodyPassingTone(_, _, var ptVelocity)))
+                            res.Add(new TimedTokenMelodyPassingTone(ptVelocity));
+                        else if (addUnit is TimingTempRest)
+                            res.Add(new TimedTokenMelodyRest());
+                    }
+
+                    // Reset variables
+                    best = double.PositiveInfinity;
+                    phraseStart = previousPhraseEnd;
+                    previousPhraseEnd = 0.0;
+                    previousAverageSpeed = TokenSpeed.Fast;
+
+                    // Restart at current index
+                    index -= 1;
+                }
+                else
+                {
+                    best = averageError;
+                    previousPhraseEnd = phraseStart;
+                    previousAverageSpeed = averageSpeed;
+                }
+            }
+            
+            res.Add(new TimedTokenMelodyMeasure());
+        }
+
+        return new TimedTokenMelody { Tokens = res };
+    }
+    
     public static TimedTokenMelody TokenizeTiming(TokenMelody tokenMelody)
     {
         var tokens = tokenMelody.Tokens;
@@ -66,14 +237,7 @@ public static class TimingStage
         var startTime = tokens[0].Time;
         if (startTime > 0.03)
         {
-            var f = (int)Math.Round(Math.Log2(startTime));
-            currentSpeed = f switch
-            {
-                <= -4 => TokenSpeed.SuperFast,
-                -3 => TokenSpeed.Fast,
-                -2 => TokenSpeed.Slow,
-                _ => TokenSpeed.SuperSlow,
-            };
+            currentSpeed = startTime.ToSpeed();
         }
         
         // (Creates a rest of specified length)
@@ -111,14 +275,7 @@ public static class TimingStage
                 var token = measure[index];
 
                 // Get speed of note length
-                var f = (int)Math.Round(Math.Log2(token.Length));
-                var newSpeed = f switch
-                {
-                    <= -4 => TokenSpeed.SuperFast,
-                    -3 => TokenSpeed.Fast,
-                    -2 => TokenSpeed.Slow,
-                    _ => TokenSpeed.SuperSlow,
-                };
+                var newSpeed = token.Length.ToSpeed();
 
                 // Add speed tokens
                 if (newSpeed != currentSpeed)
