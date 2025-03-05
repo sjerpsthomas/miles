@@ -352,6 +352,9 @@ public static class TimingStage
         var trunc = (int)Math.Truncate(time);
         time -= trunc;
 
+        if (time < 0.0 || time > 1.0)
+            throw new Exception("asdfhiuoerhtuoi");
+
         if (time < 0.5)
             time = time / 0.5 * 0.66;
         else
@@ -442,7 +445,7 @@ public static class TimingStage
                             var swing = leadSheet.Style == StyleEnum.Swing;
                             var oldTime = newTime;
                             newTime = ApplySwing(newTime, swing);
-                            newLength -= newTime - oldTime;
+                            newLength = ApplySwing(oldTime + newLength, swing) - newTime;
                             
                             res.Tokens.Add(
                                 phraseToken with

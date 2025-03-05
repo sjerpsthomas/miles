@@ -20,7 +20,7 @@ public static class OctaveStage
     }
     
     private enum OctaveDirection { Up, Down };
-    private record OctaveEvent(OctaveDirection Direction, int Index);
+    private record OctaveEvent(OctaveDirection Direction, int Index, double Priority);
     public static RelativeMelody ReconstructOctaves(TokenMelody tokenMelody)
     {
         var tokens = tokenMelody.Tokens;
@@ -31,7 +31,7 @@ public static class OctaveStage
         {
             // Get token, skip if not note
             var token = tokens[index];
-            if (token is not TokenMelody.TokenMelodyNote(var scaleNote, _, _, _)) continue;
+            if (token is not TokenMelody.TokenMelodyNote(var scaleNote, _, var length, _)) continue;
                 
             // Skip when note not leading to octave break
             if (scaleNote is > 2 and < 6) continue;
@@ -43,7 +43,7 @@ public static class OctaveStage
 
             if (secondIndex >= tokens.Count)
                 continue;
-            if (tokens[secondIndex] is not TokenMelody.TokenMelodyNote(var scaleNote2, _, _, _))
+            if (tokens[secondIndex] is not TokenMelody.TokenMelodyNote(var scaleNote2, _, var length2, _))
                 continue;
 
             // Skip when note not leading to octave break
@@ -53,37 +53,30 @@ public static class OctaveStage
 
             var direction = scaleNote < scaleNote2 ? OctaveDirection.Down : OctaveDirection.Up;
             // Console.WriteLine($"scaleNote: {scaleNote}, scaleNote2: {scaleNote2}, direction: {direction}");
+
+            var priority =
+                Math.Min(length / 0.25, 1.0) +
+                Math.Min(length2 / 0.25, 1.0) +
+                (6 - (Math.Max(scaleNote, scaleNote2) - Math.Min(scaleNote, scaleNote2))) / 2.0;
             
             // Create octave event
             octaveEvents.Add(
-                new OctaveEvent(direction, index)
+                new OctaveEvent(direction, index + 1, priority)
             );
         }
 
-        // Determine all octave events
-        //   that would decrease range of melody if removed
-        // TODO?
-        
-        // Remove the event(s) with worst border note distance
-        //  (or largest rest between notes)
-        // TODO?
-
-        // Get average octave
-        var totalOctave = 0;
-        {
-            var currentOctave = 0;
-            foreach (var (direction, _) in octaveEvents)
-            {
-                totalOctave += currentOctave;
-                currentOctave += direction == OctaveDirection.Up ? 1 : -1;
-            }
-        }
+        // Limit octave events based on priority
+        var measureCount = (int)Math.Truncate(tokens.Last().Time) + 1;
+        octaveEvents = octaveEvents
+            .OrderBy(it => it.Priority)
+            .Take(measureCount)
+            .OrderBy(it => it.Index)
+            .ToList();
 
         // Create tokens
         var res = new RelativeMelody { Tokens = new(tokens.Count) };
         {
-            var currentOctave = 2 + (octaveEvents.Count == 0 ? 0 : -(totalOctave / octaveEvents.Count));
-            currentOctave = 2;//Math.Clamp(currentOctave, 0, 3);
+            var currentOctave = 2;
             var octaveEventIndex = 0;
 
             for (var index = 0; index < tokens.Count; index++)
@@ -97,7 +90,6 @@ public static class OctaveStage
                         currentOctave += octaveEvent.Direction == OctaveDirection.Up ? 1 : -1;
                         currentOctave = Math.Clamp(currentOctave, 0, 3);
                         octaveEventIndex++;
-                        currentOctave = 2;
                     }
                 }
 
