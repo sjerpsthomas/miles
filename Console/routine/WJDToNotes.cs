@@ -84,8 +84,8 @@ public class WJDToNotes
         return
             from note in notes
             where note.Bar >= 1
-            let resTime = note.Bar + ((note.Tatum - 1) / note.Division + note.Beat - 1) / note.Num
-            let resLength = note.Duration * (avgTempo / 60)
+            let resTime = note.Bar + ((note.Tatum - 1) / (double)note.Division + note.Beat - 1) / note.Num
+            let resLength = note.Duration * 0.25 * (avgTempo / 60)
             let resVelocity = (int)(note.LoudCent * 127)
             select new MidiNote(OutputName.Unknown, resTime, resLength, note.Pitch, resVelocity);
     }

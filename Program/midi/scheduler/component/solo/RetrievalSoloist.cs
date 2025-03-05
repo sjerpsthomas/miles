@@ -26,6 +26,6 @@ public class RetrievalSoloist : Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Schedule measures from solo
-        return _solo.Measures.GetRange(startMeasureNum, generateMeasureCount);
+        return _solo.Measures.GetRange(startMeasureNum % _solo.Measures.Count, generateMeasureCount);
     }
 }
