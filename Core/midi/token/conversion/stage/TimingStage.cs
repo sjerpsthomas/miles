@@ -11,7 +11,7 @@ public static class TimingStage
     private record TimingTempToken(TokenMelodyToken Token) : TimingTemp(Token.Time, Token.Length);
     private record TimingTempRest(double Time, double Length) : TimingTemp(Time, Length);
 
-    public static TimedTokenMelody TokenizeTiming2(TokenMelody tokenMelody, LeadSheet? leadSheet)
+    public static TimedTokenMelody TokenizeTiming(TokenMelody tokenMelody, LeadSheet? leadSheet)
     {
         var tokens = tokenMelody.Tokens;
         
@@ -183,7 +183,7 @@ public static class TimingStage
         return new TimedTokenMelody { Tokens = res };
     }
     
-    public static TimedTokenMelody TokenizeTiming(TokenMelody tokenMelody, LeadSheet? leadSheet)
+    public static TimedTokenMelody TokenizeTiming2(TokenMelody tokenMelody, LeadSheet? leadSheet)
     {
         var tokens = tokenMelody.Tokens;
 
