@@ -237,7 +237,7 @@ public static class TimingStage
             var token = tokens[index];
         
             var newTime = RemoveSwing(token.Time, swing);
-            var newLength = token.Length - (newTime - token.Time);
+            var newLength = RemoveSwing(token.Time + token.Length, swing) - newTime;
 
             tokens[index] = token with { Time = newTime, Length = newLength };
         }
