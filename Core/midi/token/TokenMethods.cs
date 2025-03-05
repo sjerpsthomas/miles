@@ -28,7 +28,7 @@ public static class TokenMethods
     {
         var relativeMelody = PitchStage.TokenizePitch(midiNotes, leadSheet);
         var tokenMelody = OctaveStage.TokenizeOctaves(relativeMelody);
-        var timedTokenMelody = TimingStage.TokenizeTiming(tokenMelody);
+        var timedTokenMelody = TimingStage.TokenizeTiming(tokenMelody, leadSheet);
         var tokens = VelocityStage.TokenizeVelocity(timedTokenMelody);
 
         return tokens;

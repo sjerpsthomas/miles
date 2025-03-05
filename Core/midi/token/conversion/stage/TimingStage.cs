@@ -10,13 +10,13 @@ public static class TimingStage
     private abstract record TimingTemp(double Time, double Length);
     private record TimingTempToken(TokenMelodyToken Token) : TimingTemp(Token.Time, Token.Length);
     private record TimingTempRest(double Time, double Length) : TimingTemp(Time, Length);
-    
-    public static TimedTokenMelody TokenizeTiming2(TokenMelody tokenMelody)
+
+    public static TimedTokenMelody TokenizeTiming2(TokenMelody tokenMelody, LeadSheet? leadSheet)
     {
         var tokens = tokenMelody.Tokens;
         
         // Lengthen sequence per measure
-        List<List<TimingTemp>> units = GetUnits(tokens);
+        List<List<TimingTemp>> units = GetUnits(tokens, leadSheet);
 
         if (units is [])
             return new TimedTokenMelody();
@@ -25,7 +25,7 @@ public static class TimingStage
         return Fit(units);
     }
 
-    private static List<List<TimingTemp>> GetUnits(List<TokenMelodyToken> tokens)
+    private static List<List<TimingTemp>> GetUnits(List<TokenMelodyToken> tokens, LeadSheet? leadSheet)
     {
         // Early return
         if (tokens is [])
@@ -86,8 +86,13 @@ public static class TimingStage
                     addRest = false;
                 }
             
+                // Remove swing
+                var swing = (leadSheet?.Style ?? StyleEnum.Straight) == StyleEnum.Swing;
+                var newTime = RemoveSwing(token.Time, swing);
+                var newLength = token.Length - (newTime - token.Time);
+                
                 // Add token (and maybe rest) to measure
-                resMeasure.Add(new TimingTempToken(token));
+                resMeasure.Add(new TimingTempToken(token with { Time = newTime, Length = newLength }));
                 if (addRest) resMeasure.Add(new TimingTempRest(token.Time + token.Length, restLength));
             }
             
@@ -178,7 +183,7 @@ public static class TimingStage
         return new TimedTokenMelody { Tokens = res };
     }
     
-    public static TimedTokenMelody TokenizeTiming(TokenMelody tokenMelody)
+    public static TimedTokenMelody TokenizeTiming(TokenMelody tokenMelody, LeadSheet? leadSheet)
     {
         var tokens = tokenMelody.Tokens;
 
@@ -225,6 +230,18 @@ public static class TimingStage
             }
         }
         
+        // Remove swing
+        var swing = (leadSheet?.Style ?? StyleEnum.Straight) == StyleEnum.Swing;
+        for (var index = 0; index < tokens.Count - 1; index++)
+        {
+            var token = tokens[index];
+        
+            var newTime = RemoveSwing(token.Time, swing);
+            var newLength = token.Length - (newTime - token.Time);
+
+            tokens[index] = token with { Time = newTime, Length = newLength };
+        }
+
         // Early return
         if (tokens is [])
             return new TimedTokenMelody();
@@ -306,6 +323,44 @@ public static class TimingStage
         
         return res;
     }
+
+    public static double RemoveSwing(double time, bool enable)
+    {
+        // Early return
+        if (!enable) return time;
+        
+        // Truncate
+        var trunc = (int)Math.Truncate(time);
+        time -= trunc;
+
+        if (time < 0.666)
+            time = time / 0.666 * 0.5;
+        else
+            time = 1 - (1 - time) / 0.333 * 0.5;
+
+        time += trunc;
+
+        return time;
+    }
+
+    public static double ApplySwing(double time, bool enable)
+    {
+        // Early return
+        if (!enable) return time;
+        
+        // Truncate
+        var trunc = (int)Math.Truncate(time);
+        time -= trunc;
+
+        if (time < 0.5)
+            time = time / 0.5 * 0.66;
+        else
+            time = 1 - ((1 - time) / 0.5 * 0.33);
+
+        time += trunc;
+
+        return time;
+    }
     
     private record Phrase(List<TokenMelodyToken> Tokens, double Start, double End, TokenSpeed FinalSpeed);
     public static TokenMelody ReconstructTiming(TimedTokenMelody timedTokenMelody, LeadSheet leadSheet)
@@ -382,11 +437,12 @@ public static class TimingStage
                         {
                             var newTime = phrase.Start + i * newTokenTime;
                             var newLength = newTokenTime;
-                            if (leadSheet.Style == StyleEnum.Swing && Math.Abs(newTime - 0.5) < 0.02)
-                            {
-                                newTime += 0.66 - newTime;
-                                newTokenTime -= 0.66 - newTime;
-                            }
+
+                            // Apply swing
+                            var swing = leadSheet.Style == StyleEnum.Swing;
+                            var oldTime = newTime;
+                            newTime = ApplySwing(newTime, swing);
+                            newLength -= newTime - oldTime;
                             
                             res.Tokens.Add(
                                 phraseToken with
