@@ -29,7 +29,16 @@ public partial class MidiServer : Node
         Instance = this;
 
         var keyboardMidiName = (string)GetNode("/root/Config").Get("keyboard_midi_name");
-        LearnerIn = FindMidiIn(keyboardMidiName);
+        try
+        {
+            LearnerIn = FindMidiIn(keyboardMidiName);
+        }
+        catch (Exception)
+        {
+            // Default to no input
+            LearnerIn = FindMidiIn("no_input");
+            GetNode("/root/Config").Set("keyboard_midi_name", "no_input");
+        }
         LearnerIn.Start();
         
         Outputs = new()
