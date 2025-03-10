@@ -1,7 +1,5 @@
-﻿using System.Xml.XPath;
-using Core.midi;
+﻿using Core.conversion;
 using Core.midi.token;
-using Core.midi.token.conversion;
 using Microsoft.Data.Sqlite;
 
 namespace Console.routine;
@@ -13,10 +11,10 @@ public class WJDToTokens
     void HandleMelody(SqliteConnection connection, int melId, string exportFolderName)
     {
         // Get notes
-        var midiNotes = new WJDToNotes().GetNotes(connection, melId).ToList();
+        var midiNotes = Conversion.WeimarToNotes(connection, melId).ToList();
         
         // Convert velocity token melody to tokens, get string
-        var tokens = TokenMethods.Tokenize(midiNotes);
+        var tokens = Conversion.Tokenize(midiNotes);
         var tokensStr = TokenMethods.TokensToString(tokens);
                 
         // Trim measure tokens

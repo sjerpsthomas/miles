@@ -24,25 +24,7 @@ public static class TokenMethods
     public static List<Token> TokensFromString(string str) => str.Select(FromChar).ToList();
     public static string TokensToString(List<Token> tokens) => string.Concat(tokens.Select(ToChar));
     
-    public static List<Token> Tokenize(List<MidiNote> midiNotes, LeadSheet? leadSheet = null)
-    {
-        var relativeMelody = PitchStage.TokenizePitch(midiNotes, leadSheet);
-        var tokenMelody = OctaveStage.TokenizeOctaves(relativeMelody);
-        var timedTokenMelody = TimingStage.TokenizeTiming(tokenMelody, leadSheet);
-        var tokens = VelocityStage.TokenizeVelocity(timedTokenMelody);
-
-        return tokens;
-    }
     
-    public static List<MidiNote> Reconstruct(List<Token> tokens, LeadSheet leadSheet, int startMeasureNum)
-    {
-        var timedTokenMelody = VelocityStage.ReconstructVelocity(tokens);
-        var tokenMelody = TimingStage.ReconstructTiming(timedTokenMelody, leadSheet);
-        var relativeMelody = OctaveStage.ReconstructOctaves(tokenMelody);
-        var midiNotes = PitchStage.ReconstructPitch(relativeMelody, leadSheet, startMeasureNum);
-
-        return midiNotes;
-    }
 
     public static bool IsNote(this Token token)
     {
