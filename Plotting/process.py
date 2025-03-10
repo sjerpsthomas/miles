@@ -32,11 +32,13 @@ class Performance:
 
     def __init__(self, notes: list[MidiNote]) -> None:
         # Initialize empty measures
-        self.measures = NUM_MEASURES * [Measure([])]
+        self.measures = [Measure([]) for _ in range(NUM_MEASURES)]
 
         # Append notes to measures
         for note in notes:
             measure_num: int = int(note.time)
+            if measure_num >= NUM_MEASURES: continue
+
             measure: Measure = self.measures[measure_num]
             relative_note = dataclasses.replace(note, time=(note.time - measure_num))
 
@@ -50,8 +52,9 @@ class Performance:
     def human_fours(self):# -> list[list[Measure]]:
         res: list[list[Measure]] = []
 
-        for i in range(0, NUM_MEASURES, 4):
-            res.append(self.measures[i:i+4])
+        for i in range(0, NUM_MEASURES, 8):
+            measures_of_loopback = list(map(lambda measure: measure.of_output_name(OutputName.LOOPBACK), self.measures[i:i+4]))
+            res.append(measures_of_loopback)
         
         return res
 
@@ -59,7 +62,8 @@ class Performance:
     def agent_fours(self) -> list[list[Measure]]:
         res: list[list[Measure]] = []
 
-        for i in range(4, NUM_MEASURES, 4):
-            res.append(self.measures[i:i+4])
+        for i in range(4, NUM_MEASURES, 8):
+            measures_of_algorithm = list(map(lambda measure: measure.of_output_name(OutputName.ALGORITHM), self.measures[i:i+4]))
+            res.append(measures_of_algorithm)
         
         return res

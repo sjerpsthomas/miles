@@ -1,5 +1,6 @@
 from enum import IntEnum 
 from dataclasses import dataclass
+from typing import Self
 
 # (Python port of OutputName.cs)
 class OutputName(IntEnum): 
@@ -25,3 +26,8 @@ class MidiNote:
 @dataclass
 class Measure:
     notes: list[MidiNote]
+
+    def of_output_name(self, output_name: OutputName) -> Self:
+        notes: list[MidiNote] = list(filter(lambda note: note.output_name == output_name, self.notes))
+        return Measure(notes)
+
