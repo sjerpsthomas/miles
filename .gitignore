@@ -9,3 +9,4 @@ Console/wjazzd.db
 *.out
 *.onnx
 *.tokens
+Plotting/spreadsheet.xlsx
