@@ -36,7 +36,7 @@ public partial class Conversion
                     reader.GetInt32(3),
                     (int)reader.GetFloat(4),
                     reader.GetFloat(5),
-                    reader.GetFloat(6),
+                    reader.IsDBNull(6) ? 96 : reader.GetFloat(6),
                     reader.GetInt32(7)
                 );
             }

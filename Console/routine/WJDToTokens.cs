@@ -1,6 +1,8 @@
 ﻿using Core.conversion;
+using Core.midi;
 using Core.midi.token;
 using Microsoft.Data.Sqlite;
+using static Core.midi.LeadSheet;
 
 namespace Console.routine;
 
@@ -8,13 +10,54 @@ public class WJDToTokens
 {
     const int NumSolos = 456;
     
-    void HandleMelody(SqliteConnection connection, int melId, string exportFolderName)
+    void Run(int melId, string exportFolderName)
     {
+        using var connection = new SqliteConnection("Filename=wjazzd.db");
+        connection.Open();
+        
         // Get notes
         var midiNotes = Conversion.WeimarToNotes(connection, melId).ToList();
         
+        // Get key and rhythm feel
+        string keyStr;
+        string rhythmFeel;
+        {
+            // Get average tempo
+            var soloInfoCommand = connection.CreateCommand();
+            soloInfoCommand.CommandText = $"select key, rhythmfeel from solo_info where melid = {melId}";
+            using var reader = soloInfoCommand.ExecuteReader();
+            reader.Read();
+            keyStr = reader.GetString(0);
+            rhythmFeel = reader.GetString(1);
+        }
+        
+        // Parse key
+        keyStr = keyStr
+            .Replace("-maj", "M7")
+            .Replace("-min", "m7");
+        Chord key;
+        try
+        {
+            key = Chord.Deserialize(keyStr);
+        }
+        catch (Exception e)
+        {
+            System.Console.WriteLine($"Skipped key: {e}");
+            key = Chord.CMajor;
+        }
+        
+        // Parse rhythm feel
+        var style = rhythmFeel.Contains("SWING") ? StyleEnum.Swing : StyleEnum.Straight;
+
+        // Create lead sheet
+        var leadSheet = new LeadSheet()
+        {
+            Chords = Enumerable.Range(0, midiNotes.Count).Select(x => new List<Chord>() { key }).ToList(),
+            Style = style
+        };
+        
         // Convert velocity token melody to tokens, get string
-        var tokens = Conversion.Tokenize(midiNotes);
+        var tokens = Conversion.Tokenize(midiNotes, leadSheet);
         var tokensStr = TokenMethods.TokensToString(tokens);
                 
         // Trim measure tokens
@@ -26,12 +69,10 @@ public class WJDToTokens
         File.WriteAllText(exportFileName, tokensStr);
     }
     
-    public void Run()
+    public void RunAllStandards(string path)
     {
-        using var connection = new SqliteConnection("Filename=wjazzd.db");
-        connection.Open();
-        
-        for (var melId = 1; melId <= NumSolos; melId++)
-            HandleMelody(connection, melId, @"C:\Users\thoma\Desktop\wjd_tokens");
+        // Run on all melodies
+        foreach (var melody in WJDToNotes.Melodies)
+            new WJDToTokens().Run(melody, path);
     }
 }
