@@ -1,6 +1,21 @@
 extends "res://screen/chord_button.gd"
 
 
+# -
+func _ready() -> void:
+	var pupil_info: String = PerformanceScreenInit.pupil_info
+	
+	if pupil_info == "": return
+	
+	# Increment pupil info
+	var pupil_info_arr := pupil_info.split(' ')
+	var pupil_info_name := pupil_info_arr[0]
+	var pupil_info_index := int(pupil_info_arr[1])
+	
+	%PupilInfoLineEdit.text = pupil_info_name + " " + str(pupil_info_index + 1)
+
+
+# -
 func _pressed() -> void:
 	var pupil_info: String = %PupilInfoLineEdit.text
 	
@@ -20,6 +35,7 @@ func _pressed() -> void:
 		PerformanceScreenInit.soloist = soloist
 		PerformanceScreenInit.repetition_count = 2
 		PerformanceScreenInit.is_pupil = true
+		PerformanceScreenInit.pupil_info = pupil_info
 		
 		print("[MAIN_SCREEN] Playing ", standard_name, " with soloist ", soloist)
 		
