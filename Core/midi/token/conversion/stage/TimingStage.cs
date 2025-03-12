@@ -7,16 +7,16 @@ namespace Core.midi.token.conversion.stage;
 
 public static class TimingStage
 {
-    private abstract record TimingTemp(double Time, double Length);
-    private record TimingTempToken(TokenMelodyToken Token) : TimingTemp(Token.Time, Token.Length);
-    private record TimingTempRest(double Time, double Length) : TimingTemp(Time, Length);
+    private abstract record TimingStageUnit(double Time, double Length);
+    private record TimingStageUnitToken(TokenMelodyToken Token) : TimingStageUnit(Token.Time, Token.Length);
+    private record TimingStageUnitRest(double Time, double Length) : TimingStageUnit(Time, Length);
 
     public static TimedTokenMelody TokenizeTiming(TokenMelody tokenMelody, LeadSheet? leadSheet)
     {
         var tokens = tokenMelody.Tokens;
         
         // Lengthen sequence per measure
-        List<List<TimingTemp>> units = GetUnits(tokens, leadSheet);
+        List<List<TimingStageUnit>> units = GetUnits(tokens, leadSheet);
 
         if (units is [])
             return new TimedTokenMelody();
@@ -25,7 +25,7 @@ public static class TimingStage
         return Fit(units);
     }
 
-    private static List<List<TimingTemp>> GetUnits(List<TokenMelodyToken> tokens, LeadSheet? leadSheet)
+    private static List<List<TimingStageUnit>> GetUnits(List<TokenMelodyToken> tokens, LeadSheet? leadSheet)
     {
         // Early return
         if (tokens is [])
@@ -61,12 +61,12 @@ public static class TimingStage
         var measures = Enumerable.Range(0, measureCount)
             .Select(it => tokens.Where(t => (int)Math.Truncate(t.Time) == it).ToList());
 
-        List<List<TimingTemp>> res = [];
+        List<List<TimingStageUnit>> res = [];
         
         // var mesaure = tokens.GroupBy(it => (int)Math.Truncate(it.Time)).Select(it => it.ToList());
         foreach (var measure in measures)
         {
-            List<TimingTemp> resMeasure = [];
+            List<TimingStageUnit> resMeasure = [];
             
             // Add dummy note to end of measure
             measure.Add(new TokenMelodyNote(0, 1.0, 0.0, 0));
@@ -92,8 +92,8 @@ public static class TimingStage
                 var newLength = token.Length - (newTime - token.Time);
                 
                 // Add token (and maybe rest) to measure
-                resMeasure.Add(new TimingTempToken(token with { Time = newTime, Length = newLength }));
-                if (addRest) resMeasure.Add(new TimingTempRest(token.Time + token.Length, restLength));
+                resMeasure.Add(new TimingStageUnitToken(token with { Time = newTime, Length = newLength }));
+                if (addRest) resMeasure.Add(new TimingStageUnitRest(token.Time + token.Length, restLength));
             }
             
             res.Add(resMeasure);
@@ -102,7 +102,7 @@ public static class TimingStage
         return res;
     }
     
-    private static TimedTokenMelody Fit(List<List<TimingTemp>> units)
+    private static TimedTokenMelody Fit(List<List<TimingStageUnit>> units)
     {
         // Initialize result
         var res = new List<TimedTokenMelodyToken>(units.Count);
@@ -152,11 +152,11 @@ public static class TimingStage
                     for (var j = startIndex; j < index; j++)
                     {
                         var addUnit = measure[j];
-                        if (addUnit is TimingTempToken(TokenMelodyNote(var nScaleTone, _, _, var nVelocity)))
+                        if (addUnit is TimingStageUnitToken(TokenMelodyNote(var nScaleTone, _, _, var nVelocity)))
                             res.Add(new TimedTokenMelodyNote(nScaleTone, nVelocity));
-                        else if (addUnit is TimingTempToken(TokenMelodyPassingTone(_, _, var ptVelocity)))
+                        else if (addUnit is TimingStageUnitToken(TokenMelodyPassingTone(_, _, var ptVelocity)))
                             res.Add(new TimedTokenMelodyPassingTone(ptVelocity));
-                        else if (addUnit is TimingTempRest)
+                        else if (addUnit is TimingStageUnitRest)
                             res.Add(new TimedTokenMelodyRest());
                     }
 
