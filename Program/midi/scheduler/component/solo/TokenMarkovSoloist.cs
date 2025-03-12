@@ -36,6 +36,11 @@ public class TokenMarkovSoloist : Soloist
 
         // Create tokens, learn from them
         var tokens = Conversion.Tokenize(notes, LeadSheet);
+        Learn(tokens);
+    }
+
+    private void Learn(List<Token> tokens)
+    {
         List<List<Token>> tokensList = [tokens];
         Console.WriteLine($"learning from {TokenMethods.TokensToString(tokens)}");
         Model.Learn(tokensList);
@@ -48,11 +53,14 @@ public class TokenMarkovSoloist : Soloist
         // Learn the solo's measures
         Learn(solo.Measures);
         
-        // Learn measures from extra songs
+        // Learn tokens from extra songs
         for (var i = 1; i <= 4; i++)
         {
-            var extraSong = MidiSong.FromNotesFileStream(new FileAccessStream(StandardPath + $"_extra_{i}.notes", Read));
-            Learn(extraSong.Measures);
+            // Get from file
+            var fileAccessStream = new FileAccessStream(StandardPath + $"_extra_{i}.tokens", Read);
+            var extraSongTokens = TokenMethods.FromTokensFileStream(fileAccessStream);
+            
+            Learn(extraSongTokens);
         }
     }
 

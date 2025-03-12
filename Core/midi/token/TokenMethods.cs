@@ -23,8 +23,16 @@ public static class TokenMethods
 
     public static List<Token> TokensFromString(string str) => str.Select(FromChar).ToList();
     public static string TokensToString(List<Token> tokens) => string.Concat(tokens.Select(ToChar));
-    
-    
+
+
+    public static List<Token> FromTokensFileStream(Stream stream)
+    {
+        using var reader = new StreamReader(stream);
+
+        var content = reader.ReadToEnd();
+
+        return TokensFromString(content);
+    }
 
     public static bool IsNote(this Token token)
     {
