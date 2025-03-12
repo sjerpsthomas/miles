@@ -62,14 +62,16 @@ public static class TimingStage
             .Select(it => tokens.Where(t => (int)Math.Truncate(t.Time) == it).ToList());
 
         List<List<TimingStageUnit>> res = [];
-        
-        // var mesaure = tokens.GroupBy(it => (int)Math.Truncate(it.Time)).Select(it => it.ToList());
+
         foreach (var measure in measures)
         {
             List<TimingStageUnit> resMeasure = [];
             
             // Add dummy note to end of measure
             measure.Add(new TokenMelodyNote(0, 1.0, 0.0, 0));
+            
+            // Handle initial / full-measure rest
+            resMeasure.Add(new TimingStageUnitRest(0.0, measure is [] ? 1.0 : measure[0].Time));
             
             // Handle all but dummy note
             for (var index = 0; index < measure.Count - 1; index++)
