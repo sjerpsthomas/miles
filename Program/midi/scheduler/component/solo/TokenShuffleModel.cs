@@ -90,7 +90,8 @@ public class TokenShuffleModel
     {
         // Convert to mirror tokens, reverse, convert back
         var mirrorTokens = ToMirrorTokens(tokens);
-        var reversedTokens = mirrorTokens.Reverse();
+        var reversedTokens = mirrorTokens.ToList();
+        reversedTokens.Reverse();
         return ToTokens(reversedTokens);
     }
 

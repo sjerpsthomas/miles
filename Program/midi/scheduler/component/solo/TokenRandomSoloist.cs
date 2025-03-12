@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using Core.conversion;
 using Core.midi;
 using Core.midi.token;
 using Godot;
@@ -32,7 +33,7 @@ public class TokenRandomSoloist: Soloist
         }
         Console.WriteLine(TokenMethods.TokensToString(tokens));
         
-        var notes = TokenMethods.Reconstruct(tokens, LeadSheet, startMeasureNum);
+        var notes = Conversion.Reconstruct(tokens, LeadSheet, startMeasureNum);
         
         return MidiSong.FromNotes(notes).Measures;
     }

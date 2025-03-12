@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using Core.conversion;
 using Core.midi;
 using Core.midi.token;
 using Godot;
@@ -38,10 +39,10 @@ public class TokenRepetitionSoloist: Soloist
 
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
-        var tokens = TokenMethods.Tokenize(Notes, LeadSheet);
+        var tokens = Conversion.Tokenize(Notes, LeadSheet);
         Console.WriteLine(TokenMethods.TokensToString(tokens));
         
-        var notes = TokenMethods.Reconstruct(tokens, LeadSheet, startMeasureNum);
+        var notes = Conversion.Reconstruct(tokens, LeadSheet, startMeasureNum);
         
         return MidiSong.FromNotes(notes).Measures;
     }

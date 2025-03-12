@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.conversion;
 using Core.midi;
 using Core.midi.token;
 using Core.ml;
@@ -31,7 +32,7 @@ public class TokenTransformerSoloist: Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Deduce and set tokens
-        var tokens = TokenMethods.Tokenize(Notes, LeadSheet);
+        var tokens = Conversion.Tokenize(Notes, LeadSheet);
         Transformer.SetTokens(tokens);
         
         List<Token> res = [];
@@ -70,7 +71,7 @@ public class TokenTransformerSoloist: Soloist
         Console.WriteLine(TokenMethods.TokensToString(res));
         
         // Get notes from tokens, print
-        var notes = TokenMethods.Reconstruct(res, LeadSheet, startMeasureNum);
+        var notes = Conversion.Reconstruct(res, LeadSheet, startMeasureNum);
 
         // Return
         return MidiSong.FromNotes(notes).Measures;

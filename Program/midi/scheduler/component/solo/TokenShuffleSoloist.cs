@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.conversion;
 using Core.midi;
 using Core.midi.token;
 
@@ -25,13 +26,13 @@ public class TokenShuffleSoloist : Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Tokenize, permutate tokens
-        var tokens = TokenMethods.Tokenize(Notes, LeadSheet);
+        var tokens = Conversion.Tokenize(Notes, LeadSheet);
         var permutatedTokens = new TokenShuffleModel().Permutate(tokens);
 
         Console.WriteLine(TokenMethods.TokensToString(permutatedTokens));
         
         // Reconstruct, return notes
-        var notes = TokenMethods.Reconstruct(permutatedTokens, LeadSheet, startMeasureNum);
+        var notes = Conversion.Reconstruct(permutatedTokens, LeadSheet, startMeasureNum);
         return MidiSong.FromNotes(notes).Measures;
     }
 }

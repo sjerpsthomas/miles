@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.conversion;
 using Core.midi;
 using Core.midi.token;
 using Godot;
@@ -34,7 +35,7 @@ public class TokenFactorOracleSoloist : Soloist
                 notes.Add(note with { Time = note.Time + index });
         
         // Get tokens, add to factor oracle
-        var tokens = TokenMethods.Tokenize(notes, LeadSheet);
+        var tokens = Conversion.Tokenize(notes, LeadSheet);
         TokenFactorOracle.AddTokens(tokens);
     }
 
@@ -87,7 +88,7 @@ public class TokenFactorOracleSoloist : Soloist
             res.RemoveAt(0);
         
         // Reconstruct, return notes
-        var notes = TokenMethods.Reconstruct(res, LeadSheet, startMeasureNum);
+        var notes = Conversion.Reconstruct(res, LeadSheet, startMeasureNum);
         return MidiSong.FromNotes(notes).Measures;
     }
 }
