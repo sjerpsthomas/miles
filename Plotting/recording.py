@@ -1,12 +1,40 @@
-from core import *
-from typing import Generator
+from typing import Self
 from binreader import BinaryReader
 from operator import attrgetter
-import functools
-import dataclasses
+from enum import IntEnum
+from dataclasses import *
 
 
 NUM_MEASURES: int = 64
+
+# (Python port of OutputName.cs)
+class OutputName(IntEnum):
+    LOOPBACK = 0,
+    ALGORITHM = 1
+    METRONOME = 2
+    BACKING1BASS = 3
+    BACKING2PIANO = 4
+    BACKING3KEYBOARD = 5
+    BACKING4DRUMS = 6
+    UNKNOWN = 7
+
+# (Python port of MidiNote.cs)
+@dataclass
+class MidiNote:
+    output_name: OutputName
+    time: float
+    note: int
+    length: float
+    velocity: int
+
+
+@dataclass
+class Measure:
+    notes: list[MidiNote]
+
+    def of_output_name(self, output_name: OutputName) -> Self:
+        notes: list[MidiNote] = list(filter(lambda note: note.output_name == output_name, self.notes))
+        return Measure(notes)
 
 
 class Recording:
@@ -40,7 +68,7 @@ class Recording:
                 if measure_num >= NUM_MEASURES: continue
 
                 measure: Measure = self.measures[measure_num]
-                relative_note = dataclasses.replace(note, time=(note.time - measure_num))
+                relative_note = replace(note, time=(note.time - measure_num))
 
                 measure.notes.append(relative_note)
 
@@ -48,6 +76,7 @@ class Recording:
             for measure in self.measures:
                 measure.notes.sort(key=attrgetter('time'))
 
+    @property
     def human_fours(self) -> list[list[Measure]]:
         res: list[list[Measure]] = []
 
@@ -57,6 +86,7 @@ class Recording:
         
         return res
 
+    @property
     def agent_fours(self) -> list[list[Measure]]:
         res: list[list[Measure]] = []
 

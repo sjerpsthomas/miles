@@ -1,6 +1,11 @@
-from core import *
+from typing import Any
+
+from numpy import ndarray, dtype
+
+from recording import Measure, MidiNote
 import numpy as np
 from dataclasses import replace
+from numpy.typing import NDArray
 
 
 # TODO: token metrics?
@@ -10,14 +15,14 @@ from dataclasses import replace
 
 def note_list(measures: list[Measure]) -> list[int]: return [note.note for measure in measures for note in measure.notes]
 
-def length_list(measures: list[Measure]) -> list[int]: return [note.length for measure in measures for note in measure.notes]
+def length_list(measures: list[Measure]) -> list[float]: return [note.length for measure in measures for note in measure.notes]
 
 
 # SIMPLE FEATURES
 
-def note_std(measures: list[Measure]) -> float: return np.std(note_list(measures))
+def note_std(measures: list[Measure]) -> float: return float(np.std(note_list(measures)))
 
-def length_std(measures: list[Measure]) -> float: return np.std(length_list(measures))
+def length_std(measures: list[Measure]) -> float: return float(np.std(length_list(measures)))
 
 def note_range(measures: list[Measure]) -> float:
     notes: list[int] = note_list(measures)
@@ -29,25 +34,18 @@ def note_density(measures: list[Measure]) -> float:
 
 # INTERVAL FEATURES
 
-def interval_list(measures: list[Measure]) -> list[int]:
+def interval_list(measures: list[Measure]) -> NDArray:
     return np.diff([note.note for measure in measures for note in measure.notes])
 
 def interval_avg(measures: list[Measure]) -> float: return np.average(np.abs(interval_list(measures)))
-def interval_std(measures: list[Measure]) -> float: return np.std(interval_list(measures))
+def interval_std(measures: list[Measure]) -> float: return float(np.std(interval_list(measures)))
 
 
 # PITCH CLASS FEATURES
 
 def note_share(measures: list[Measure], pitch_class: int) -> float:
     notes: list[int] = note_list(measures)
-    return sum(note % 12 == pitch_class for note in notes) / len(notes)
-
-def note_root_share(measures: list[Measure], key: int) -> float: return note_share(measures, key % 12)
-
-def note_third_share(measures: list[Measure], key: int) -> float: return note_share(measures, (key + 4) % 12)
-
-def note_fifth_share(measures: list[Measure], key: int) -> float: return note_share(measures, (key + 7) % 12)
-
+    return sum(note % 12 == pitch_class % 12 for note in notes) / len(notes)
 
 # MELODIC ARC FEATURES
 
@@ -55,11 +53,11 @@ def all_notes(measures: list[Measure]) -> list[MidiNote]:
     return [replace(note, time=(note.time + i)) for i in range(len(measures)) for note in measures[i].notes]
 
 def melodic_arc_list(measures: list[Measure]) -> list[tuple[float, float]]:
-    intervals: list[int] = interval_list(measures)
+    intervals: NDArray = interval_list(measures)
     notes: list[MidiNote] = all_notes(measures)
 
     # Get places where interval switches sign
-    boundaries = np.nonzero(np.diff(intervals))[0] + 1
+    boundaries: NDArray = np.nonzero(np.diff(intervals))[0] + 1
     
     # Build arcs list based on boundaries
     arcs: list[list[MidiNote]] = []
@@ -79,9 +77,9 @@ def melodic_arc_list(measures: list[Measure]) -> list[tuple[float, float]]:
 
     return list(zip(durations, heights))
 
-def melodic_arc_duration_avg(measures: list[Measure]) -> float: return np.average([width for (width, _) in melodic_arc_list(measures)])
+def melodic_arc_duration_avg(measures: list[Measure]) -> float: return float(np.average([width for (width, _) in melodic_arc_list(measures)]))
 
-def melodic_arc_height_avg(measures: list[Measure]) -> float: return np.average([height for (_, height) in melodic_arc_list(measures)])
+def melodic_arc_height_avg(measures: list[Measure]) -> float: return float(np.average([height for (_, height) in melodic_arc_list(measures)]))
 
 def extrema_ratio(measures: list[Measure]) -> float:
     # Get number of melodic arcs and note count
@@ -94,10 +92,10 @@ def extrema_ratio(measures: list[Measure]) -> float:
 
 # OTHER METRICS
 
-def ioi_list(measures: list[Measure]) -> list[float]:
+def ioi_list(measures: list[Measure]) -> NDArray:
     return np.diff([note.time for note in all_notes(measures)])
 
-def ioi_avg(measures: list[Measure]) -> float: return np.average(ioi_list(measures))
+def ioi_avg(measures: list[Measure]) -> float: return float(np.average(ioi_list(measures)))
 
 def npvi(measures: list[Measure]) -> float:
     time_intervals = ioi_list(measures)

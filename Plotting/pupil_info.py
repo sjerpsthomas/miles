@@ -1,7 +1,7 @@
 import openpyxl.worksheet
 import numpy as np
 from dataclasses import dataclass
-from numpy import ndarray
+from numpy.typing import NDArray
 from recording import Recording
 
 # IDs of songs
@@ -82,8 +82,13 @@ def get_all_pupil_info(file_name: str = "spreadsheet.xlsx") -> list[PupilInfo]:
                 song: int = SONG_IDS[song_str]
                 algorithm: int = ALGORITHM_IDS[algorithm_str]
 
-                file_path: str = f"recordings/{pupil}_{session}_{performance}.notes"
-                recording: Recording = Recording(file_path)
+                file_path: str = f"recordings/{session + 1}/{pupil + 1}/{performance + 1}.notes"
+
+                recording = None
+                try:
+                    recording: Recording = Recording(file_path)
+                except:
+                    pass
 
                 responses: list[int] = [int(sheet.cell(start_row + 3 + i, 6).value) for i in range(NUM_QUESTIONS)]
                 performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, responses)
@@ -98,9 +103,9 @@ def get_all_pupil_info(file_name: str = "spreadsheet.xlsx") -> list[PupilInfo]:
 
 
 # (Retrieves responses, independent of time)
-def get_responses(all_pupil_info: list[PupilInfo]) -> ndarray:
+def get_responses(all_pupil_info: list[PupilInfo]) -> NDArray:
     # For every pupil, for every song, for every algorithm, there are 4 responses
-    responses: ndarray = np.zeros((NUM_PUPILS, NUM_SONGS, NUM_ALGORITHMS, NUM_QUESTIONS), dtype=int)
+    responses: NDArray = np.zeros((NUM_PUPILS, NUM_SONGS, NUM_ALGORITHMS, NUM_QUESTIONS), dtype=int)
 
     # For every pupil
     for pupil in range(NUM_PUPILS):
