@@ -32,6 +32,13 @@ ALGORITHM_NAMES: dict[int, str] = {
     2: "Token Markov",
 }
 
+# Pitch classes of root, third and fifth of songs
+SONG_PITCH_CLASSES: dict[str, list[int]] = {
+    "Long Ago and Far Away": [7, 11, 2],
+    "Summertime": [7, 10, 2],
+    "My Little Suede Shoes": [3, 7, 10]
+}
+
 NUM_PUPILS = 5
 NUM_PERFORMANCES = NUM_SONGS = NUM_ALGORITHMS = 3
 NUM_SESSIONS = 3
