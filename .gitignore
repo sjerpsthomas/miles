@@ -8,5 +8,4 @@ Console/wjazzd.db
 *.pth
 *.out
 *.onnx
-*.tokens
 Plotting/spreadsheet.xlsx
