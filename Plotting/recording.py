@@ -1,4 +1,6 @@
 from typing import Self
+
+import numpy as np
 from binreader import BinaryReader
 from operator import attrgetter
 from enum import IntEnum
@@ -59,6 +61,15 @@ class Recording:
                 for _ in range(count)
             ]
 
+            notes = [note for note in notes if note.output_name in [OutputName.LOOPBACK, OutputName.ALGORITHM]]
+
+            for i in range(len(notes) - 1):
+                note: MidiNote = notes[i]
+                next_note: MidiNote = notes[i + 1]
+
+                ioi: float = next_note.time - note.time
+                note.length = min(ioi, note.length)
+
             # Initialize empty measures
             self.measures = [Measure([]) for _ in range(NUM_MEASURES)]
 
@@ -75,6 +86,12 @@ class Recording:
             # Sort measures
             for measure in self.measures:
                 measure.notes.sort(key=attrgetter('time'))
+
+    @property
+    def fours(self) -> list[list[Measure]]:
+        asdf = np.split(np.array(self.measures), 64//4)
+
+        return list(map(lambda x: list(x), asdf))
 
     @property
     def human_fours(self) -> list[list[Measure]]:

@@ -1,7 +1,5 @@
 import openpyxl.worksheet
-import numpy as np
 from dataclasses import dataclass
-from numpy.typing import NDArray
 from recording import Recording
 
 # IDs of songs
@@ -41,7 +39,7 @@ SONG_PITCH_CLASSES: dict[str, list[int]] = {
 
 NUM_PUPILS = 5
 NUM_PERFORMANCES = NUM_SONGS = NUM_ALGORITHMS = 3
-NUM_SESSIONS = 3
+NUM_SESSIONS = 2
 NUM_QUESTIONS = 4
 
 @dataclass
@@ -107,26 +105,3 @@ def get_all_pupil_info(file_name: str = "spreadsheet.xlsx") -> list[PupilInfo]:
         res.append(pupil_info)
     
     return res
-
-
-# (Retrieves responses, independent of time)
-def get_responses(all_pupil_info: list[PupilInfo]) -> NDArray:
-    # For every pupil, for every song, for every algorithm, there are 4 responses
-    responses: NDArray = np.zeros((NUM_PUPILS, NUM_SONGS, NUM_ALGORITHMS, NUM_QUESTIONS), dtype=int)
-
-    # For every pupil
-    for pupil in range(NUM_PUPILS):
-        # For every session they do
-        for session in range(NUM_SESSIONS):
-            # For every performance they do within that session
-            for performance in range(NUM_PERFORMANCES):
-                # Get performance info
-                performance_info: PerformanceInfo = all_pupil_info[pupil].sessions[session].performances[performance]
-                song: int = performance_info.song
-                algorithm: int = performance_info.algorithm
-
-                # Set responses
-                for i in range(NUM_QUESTIONS):
-                    responses[pupil][song][algorithm][i] = performance_info.responses[i]
-    
-    return responses
