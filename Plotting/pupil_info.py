@@ -50,6 +50,7 @@ class PerformanceInfo:
     algorithm: int
     recording: Recording
     responses: list[int]
+    edit_distances: list[int]
 
 @dataclass
 class SessionInfo:
@@ -80,22 +81,34 @@ def get_all_pupil_info(file_name: str = "spreadsheet.xlsx") -> list[PupilInfo]:
 
             # For every performance they do within that session
             for performance in range(NUM_PERFORMANCES):
+                
+                
+                # Get start row in spreadsheet
                 start_row: int = 8 * performance + 27 * session
 
                 # Get performance info as text
                 song_and_algorithm: str = str(sheet.cell(start_row + 2, 3).value)
+
                 # Extract song and algorithm from text
                 [song_str, algorithm_str] = song_and_algorithm.split(", ")
                 song: int = SONG_IDS[song_str]
                 algorithm: int = ALGORITHM_IDS[algorithm_str]
 
-                file_path: str = f"recordings/{pupil + 1}/{session + 1}/{performance + 1}.notes"
+                # Get recording
+                recording_path: str = f"recordings/{pupil + 1}/{session + 1}/{performance + 1}.notes"
+                recording: Recording = Recording(recording_path)
 
-                recording: Recording = Recording(file_path)
-
+                # Get responses
                 responses: list[int] = [int(sheet.cell(start_row + 3 + i, 6).value) for i in range(NUM_QUESTIONS)]
-                performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, responses)
-
+                
+                # Get edit distances
+                edit_distances: list[int]
+                edit_distances_path: str = f"recordings/edit_distance/{pupil + 1}/{session + 1}/{performance + 1}.txt"
+                with open(edit_distances_path, 'r') as f:
+                    edit_distances = [ int(line) for line in f ]
+                
+                # Create performance info, add
+                performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, responses, edit_distances)
                 session_info.performances.append(performance_info)
             
             pupil_info.sessions.append(session_info)
