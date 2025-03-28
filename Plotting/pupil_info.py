@@ -38,8 +38,10 @@ SONG_PITCH_CLASSES: dict[str, list[int]] = {
 }
 
 NUM_PUPILS = 5
-NUM_PERFORMANCES = NUM_SONGS = NUM_ALGORITHMS = 3
-NUM_SESSIONS = 2
+NUM_PERFORMANCES = 3
+NUM_SONGS = 3
+NUM_ALGORITHMS = 3
+NUM_SESSIONS = 3
 NUM_QUESTIONS = 4
 
 @dataclass
@@ -87,13 +89,9 @@ def get_all_pupil_info(file_name: str = "spreadsheet.xlsx") -> list[PupilInfo]:
                 song: int = SONG_IDS[song_str]
                 algorithm: int = ALGORITHM_IDS[algorithm_str]
 
-                file_path: str = f"recordings/{session + 1}/{pupil + 1}/{performance + 1}.notes"
+                file_path: str = f"recordings/{pupil + 1}/{session + 1}/{performance + 1}.notes"
 
-                recording = None
-                try:
-                    recording: Recording = Recording(file_path)
-                except:
-                    pass
+                recording: Recording = Recording(file_path)
 
                 responses: list[int] = [int(sheet.cell(start_row + 3 + i, 6).value) for i in range(NUM_QUESTIONS)]
                 performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, responses)
