@@ -37,6 +37,12 @@ SONG_PITCH_CLASSES: dict[str, list[int]] = {
     "My Little Suede Shoes": [3, 7, 10]
 }
 
+SONG_BPMS = {
+    "Long Ago and Far Away": 178,
+    "Summertime": 84,
+    "My Little Suede Shoes": 146
+}
+
 NUM_PUPILS = 5
 NUM_PERFORMANCES = 3
 NUM_SONGS = 3
@@ -81,8 +87,6 @@ def get_all_pupil_info(file_name: str = "spreadsheet.xlsx") -> list[PupilInfo]:
 
             # For every performance they do within that session
             for performance in range(NUM_PERFORMANCES):
-                
-                
                 # Get start row in spreadsheet
                 start_row: int = 8 * performance + 27 * session
 

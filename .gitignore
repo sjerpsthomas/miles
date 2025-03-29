@@ -9,3 +9,4 @@ Console/wjazzd.db
 *.out
 *.onnx
 Plotting/spreadsheet.xlsx
+/Plotting/charts

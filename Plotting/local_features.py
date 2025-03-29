@@ -17,6 +17,11 @@ def note_list(measures: list[Measure]) -> list[int]: return [note.note for measu
 
 def length_list(measures: list[Measure]) -> list[float]: return [note.length for measure in measures for note in measure.notes]
 
+def to_bpm_independent(measures: list[Measure], bpm: float) -> list[MidiNote]:
+    notes = all_notes(measures)
+    return [
+        replace(note, time=(note.time * 60 * (4 / bpm)), length=(note.length * 60 * (4 / bpm))) for note in notes
+    ]
 
 # SIMPLE FEATURES
 
@@ -37,7 +42,10 @@ def note_density(measures: list[Measure]) -> float:
 def interval_list(measures: list[Measure]) -> NDArray:
     return np.diff([note.note for measure in measures for note in measure.notes])
 
-def interval_avg(measures: list[Measure]) -> float: return np.average(np.abs(interval_list(measures)))
+def interval_avg(measures: list[Measure]) -> float: 
+    intervals = np.abs(interval_list(measures))
+    if len(intervals) == 0: return 0.0
+    return np.average(intervals)
 def interval_std(measures: list[Measure]) -> float: return float(np.std(interval_list(measures)))
 
 
@@ -47,14 +55,18 @@ def note_share(measures: list[Measure], pitch_class: int) -> float:
     notes: list[int] = note_list(measures)
     return sum(note % 12 == pitch_class % 12 for note in notes) / len(notes)
 
+def note_share_135(measures: list[Measure], pitch_classes: list[int]) -> float:
+    notes: list[int] = note_list(measures)
+    return sum(note % 12 in [p % 12 for p in pitch_classes] for note in notes) / len(notes)
+
 # MELODIC ARC FEATURES
 
 def all_notes(measures: list[Measure]) -> list[MidiNote]:
     return [replace(note, time=(note.time + i)) for i in range(len(measures)) for note in measures[i].notes]
 
-def melodic_arc_list(measures: list[Measure]) -> list[tuple[float, float]]:
+def melodic_arc_list(measures: list[Measure], bpm: float) -> list[tuple[float, float]]:
     intervals: NDArray = interval_list(measures)
-    notes: list[MidiNote] = all_notes(measures)
+    notes: list[MidiNote] = to_bpm_independent(measures, bpm)
 
     # Get places where interval switches sign
     boundaries: NDArray = np.nonzero(np.diff(intervals))[0] + 1
@@ -77,9 +89,9 @@ def melodic_arc_list(measures: list[Measure]) -> list[tuple[float, float]]:
 
     return list(zip(durations, heights))
 
-def melodic_arc_duration_avg(measures: list[Measure]) -> float: return float(np.average([width for (width, _) in melodic_arc_list(measures)]))
+def melodic_arc_duration_avg(measures: list[Measure], bpm: float) -> float: return float(np.average([width for (width, _) in melodic_arc_list(measures, bpm)]))
 
-def melodic_arc_height_avg(measures: list[Measure]) -> float: return float(np.average([height for (_, height) in melodic_arc_list(measures)]))
+def melodic_arc_height_avg(measures: list[Measure], bpm: float) -> float: return float(np.average([height for (_, height) in melodic_arc_list(measures, bpm)]))
 
 def extrema_ratio(measures: list[Measure]) -> float:
     # Get number of melodic arcs and note count
@@ -92,15 +104,18 @@ def extrema_ratio(measures: list[Measure]) -> float:
 
 # OTHER METRICS
 
-def ioi_list(measures: list[Measure]) -> NDArray:
-    return np.diff([note.time for note in all_notes(measures)])
+def ioi_list(measures: list[Measure], bpm: float) -> NDArray:
+    return np.diff([note.time for note in to_bpm_independent(measures, bpm)])
 
 def ioi_avg(measures: list[Measure]) -> float: return float(np.average(ioi_list(measures)))
 
-def npvi(measures: list[Measure]) -> float:
-    time_intervals = ioi_list(measures)
+def npvi(measures: list[Measure], bpm: float) -> float:
+    time_intervals = ioi_list(measures, bpm)
+    time_intervals = np.array([ioi for ioi in time_intervals if ioi > 0.01])
     note_count = len(time_intervals) + 1
     
+    if note_count <= 2: return 0.0
+
     return (100 / (note_count - 2)) * sum(
         abs(
             (time_intervals[k] - time_intervals[k + 1]) /
