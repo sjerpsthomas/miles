@@ -52,6 +52,9 @@ public partial class MidiServer : Node
             [OutputName.Backing4Drums] = FindMidiOut("Backing 4 - Drums"),
         };
 
+        // Hot-fix Unknown output name
+        Outputs[OutputName.Unknown] = Outputs[OutputName.Loopback];
+
         Console.WriteLine($"[MIDI] Setup successful (using keyboard '{keyboardMidiName}')!");
 
         LearnerIn.MessageReceived += (_, args) =>

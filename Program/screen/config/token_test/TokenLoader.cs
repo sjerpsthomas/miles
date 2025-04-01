@@ -14,7 +14,7 @@ public partial class TokenLoader : Node
 	
 	public override void _Ready()
 	{
-		Scheduler.BPM = 120;
+		Scheduler.Bpm = 120;
 		Scheduler.SongLength = 1;
 		Scheduler.Repetitions = 9999;
 		

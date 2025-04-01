@@ -6,9 +6,13 @@ namespace Core.midi;
 public class MidiSong
 {
     public List<MidiMeasure> Measures = [];
+    public int Bpm = UnknownBpm;
 
+    public const int UnknownBpm = -1;
+    
     public static MidiSong FromMidiFileStream(Stream stream)
     {
+        // TODO: how to get BPM from MIDI?
         var song = new MidiSong();
         
         var mf = new MidiFile(
@@ -57,6 +61,9 @@ public class MidiSong
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, false);
 
+        // Read BPM
+        var bpm = reader.ReadInt32();
+        
         // Read count
         var count = reader.ReadInt32();
         
@@ -72,7 +79,7 @@ public class MidiSong
         ).ToList();
 
         // Convert to Song
-        return FromNotes(notes);
+        return FromNotes(notes, bpm);
     }
 
     public void ToNotesFileStream(Stream stream)
@@ -81,6 +88,9 @@ public class MidiSong
         
         // Get notes
         var notes = ToNotes();
+        
+        // Write BPM
+        writer.Write(Bpm);
         
         // Write count
         writer.Write(notes.Count);
@@ -101,7 +111,7 @@ public class MidiSong
         while (Measures.Count < newMeasureCount) Measures.Add(new MidiMeasure([]));
     }
     
-    public static MidiSong FromNotes(List<MidiNote> notes)
+    public static MidiSong FromNotes(List<MidiNote> notes, int bpm = UnknownBpm)
     {
         if (notes.Count == 0)
         {
@@ -120,7 +130,7 @@ public class MidiSong
             measures[measureNum].Notes.Add(note with { Time = note.Time - measureNum });
         }
 
-        return new MidiSong { Measures = measures };
+        return new MidiSong { Bpm = bpm, Measures = measures };
     }
 
     public List<MidiNote> ToNotes()

@@ -4,7 +4,7 @@ using Core.midi.token.conversion.stage;
 
 namespace Core.conversion;
 
-public partial class Conversion
+public static partial class Conversion
 {
     public static List<Token> Tokenize(List<MidiNote> midiNotes, LeadSheet? leadSheet = null)
     {

@@ -1,26 +1,30 @@
 import numpy as np
 from operator import attrgetter
 from notes_file import *
-from dataclasses import replace
+from dataclasses import replace, dataclass
 
 NUM_MEASURES: int = 64
 
+
+@dataclass
+class Measure:
+    notes: list[MidiNote]
+
+    def of_output_name(self, output_name: OutputName) -> Self:
+        notes: list[MidiNote] = list(filter(lambda note: note.output_name == output_name, self.notes))
+        return Measure(notes)
+
 class Recording:
+    bpm: int
     measures: list[Measure]
 
     def __init__(self, file_name: str) -> None:
         with open(file_name, "rb") as f:
-            note_file: NoteFile = NoteFile(f)
-            notes: list[MidiNote] = note_file.read_notes()
+            io = MidiSongIO(f)
+            song: MidiSong = io.read()
 
-            notes = [note for note in notes if note.output_name in [OutputName.LOOPBACK, OutputName.ALGORITHM]]
-
-            for i in range(len(notes) - 1):
-                note: MidiNote = notes[i]
-                next_note: MidiNote = notes[i + 1]
-
-                ioi: float = next_note.time - note.time
-                note.length = min(ioi, note.length)
+            self.bpm = song.bpm
+            notes = song.get_solo()
 
             # Initialize empty measures
             self.measures = [Measure([]) for _ in range(NUM_MEASURES)]

@@ -5,7 +5,7 @@ using NAudio.Midi;
 
 namespace Core.conversion;
 
-public partial class Conversion
+public static partial class Conversion
 {
     public static IEnumerable<List<MidiNote>> LakhToMidiNotes(string fileName, bool printAllow = false)
     {

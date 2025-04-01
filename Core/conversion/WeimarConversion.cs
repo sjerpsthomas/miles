@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 
 namespace Core.conversion;
 
-public partial class Conversion
+public static partial class Conversion
 {
     private record WeimarNote(
         int Bar,

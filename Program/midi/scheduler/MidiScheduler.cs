@@ -17,8 +17,7 @@ public partial class MidiScheduler : Node
 {
 	[Export] public MidiRecorder Recorder;
 	
-	// ReSharper disable once InconsistentNaming
-	public double BPM;
+	public int Bpm;
 
 	// Integer part: measure
 	// Fractional part: part within measure
@@ -48,8 +47,9 @@ public partial class MidiScheduler : Node
 		var soloTrack = MidiSong.FromNotesFileStream(new FileAccessStream(standardPath + "solo.notes", Read));
 		var leadSheet = LeadSheet.FromStream(new FileAccessStream(standardPath + "sheet.json", Read));
 		
-		// Get BPM
-		BPM = leadSheet.BPM;
+		// Get BPM, apply to MidiRecorder song
+		Bpm = leadSheet.Bpm;
+		Recorder.Song.Bpm = Bpm;
 		
 		// Add components
 		SongLength = backingTrack.Measures.Count;
@@ -131,7 +131,7 @@ public partial class MidiScheduler : Node
 	{
 		var elapsed = dateTime - StartDateTime;
 		double currentTimeMs = elapsed.TotalMilliseconds;
-		var currentMeasure = currentTimeMs / 1000.0 / (60.0 / BPM) / 4.0;
+		var currentMeasure = currentTimeMs / 1000.0 / (60.0 / Bpm) / 4.0;
 		
 		return currentMeasure - 2;
 	}

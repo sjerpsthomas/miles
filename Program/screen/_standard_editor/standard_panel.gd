@@ -11,7 +11,7 @@ func _ready() -> void:
 # TODO kan niet in _ready?
 func init() -> void:
 	$RhythmTypeOptionButton.select(standard_view.data["Style"])
-	$BPMTextEdit.text = str(int(standard_view.data["BPM"]))
+	$BPMTextEdit.text = str(int(standard_view.data["Bpm"]))
 
 # applies the UI data to the standard view
 func apply_to_standard() -> void:
@@ -19,7 +19,7 @@ func apply_to_standard() -> void:
 	
 	var bpm_text: String = $BPMTextEdit.text
 	if bpm_text.is_valid_int():
-		standard_view.data["BPM"] = int(bpm_text)
+		standard_view.data["Bpm"] = int(bpm_text)
 		$BPMTextEdit.flat = false
 	else:
 		$BPMTextEdit.flat = true
