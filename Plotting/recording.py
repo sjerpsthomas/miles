@@ -1,65 +1,17 @@
-from typing import Self
-
 import numpy as np
-from binreader import BinaryReader
 from operator import attrgetter
-from enum import IntEnum
-from dataclasses import *
-
+from notes_file import *
+from dataclasses import replace
 
 NUM_MEASURES: int = 64
-
-# (Python port of OutputName.cs)
-class OutputName(IntEnum):
-    LOOPBACK = 0,
-    ALGORITHM = 1
-    METRONOME = 2
-    BACKING1BASS = 3
-    BACKING2PIANO = 4
-    BACKING3KEYBOARD = 5
-    BACKING4DRUMS = 6
-    UNKNOWN = 7
-
-# (Python port of MidiNote.cs)
-@dataclass
-class MidiNote:
-    output_name: OutputName
-    time: float
-    note: int
-    length: float
-    velocity: int
-
-
-@dataclass
-class Measure:
-    notes: list[MidiNote]
-
-    def of_output_name(self, output_name: OutputName) -> Self:
-        notes: list[MidiNote] = list(filter(lambda note: note.output_name == output_name, self.notes))
-        return Measure(notes)
-
 
 class Recording:
     measures: list[Measure]
 
     def __init__(self, file_name: str) -> None:
         with open(file_name, "rb") as f:
-            reader: BinaryReader = BinaryReader(f)
-
-            # Read count
-            count: int = reader.read_int32()
-
-            # Read notes
-            notes: list[MidiNote] = [
-                MidiNote(
-                    output_name=OutputName(reader.read_byte()),
-                    time=reader.read_double(),
-                    length=reader.read_double(),
-                    note=reader.read_int32(),
-                    velocity=reader.read_int32(),
-                )
-                for _ in range(count)
-            ]
+            note_file: NoteFile = NoteFile(f)
+            notes: list[MidiNote] = note_file.read_notes()
 
             notes = [note for note in notes if note.output_name in [OutputName.LOOPBACK, OutputName.ALGORITHM]]
 
