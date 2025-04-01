@@ -1,16 +1,14 @@
 using System.Linq;
 using Core.midi;
 using Godot;
-using Godot.Collections;
 using Program.midi;
 
-namespace Program.util;
+namespace Program.util.piano;
 
 public partial class Piano : Node2D
 {
-	[Export] public Array<OutputName> OutputNames;
-
-	[Export] public Color PressedColor = Colors.DeepPink;
+	public OutputName OutputName = OutputName.Loopback;
+	[Export] public bool ShowAll = false;
 	
 	public override void _Ready()
 	{
@@ -24,11 +22,19 @@ public partial class Piano : Node2D
 	
 	public void _on_MidiServer_NoteSent(int outputName, int note, int velocity)
 	{
-		if (!OutputNames.Contains((OutputName)outputName)) return;
+		var color = (OutputName)outputName switch
+		{
+			OutputName.Loopback => new Color("ffd400"),
+			OutputName.Algorithm => new Color("6495ed"),
+			_ when ShowAll => Colors.DeepPink,
+			_ => new Color(0, 0, 0, 0)
+		};
+
+		if (color.A == 0) return;
 
 		var index = note - 36;
 		var key = GetChildren().FirstOrDefault(it => (int)it.Get("index") == index);
         
-		key?.Call("update_pressed", velocity > 0);
+		key?.Call("update_pressed", velocity > 0, color);
 	}
 }

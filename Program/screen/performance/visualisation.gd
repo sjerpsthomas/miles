@@ -22,7 +22,5 @@ func _process(_delta: float) -> void:
 	current_chord.global_position = standard_view.get_measure_global_position(current_measure)
 	current_chord.color = Color("ffd40080") if is_human_playing else Color("6495ed80")
 	
-	%Piano.PressedColor = Color("ffd400") if is_human_playing else Color("6495ed")
-	
 	var target_color := Color.WHITE if is_human_playing else Color.CORNFLOWER_BLUE
 	%Background.color = (%Background.color as Color).lerp(target_color, 0.15)

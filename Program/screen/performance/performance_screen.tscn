@@ -93,5 +93,3 @@ color = Color(0.254496, 0.254496, 0.254496, 1)
 [node name="Piano" parent="." instance=ExtResource("6_sd6b3")]
 unique_name_in_owner = true
 position = Vector2(173, 552)
-OutputNames = Array[int]([0, 1])
-PressedColor = Color(0.5, 0.5, 0.5, 1)

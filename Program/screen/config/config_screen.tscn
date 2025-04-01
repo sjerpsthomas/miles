@@ -63,7 +63,7 @@ script = ExtResource("3_3ngxk")
 [node name="Piano" parent="Panel" instance=ExtResource("1_llot4")]
 unique_name_in_owner = true
 position = Vector2(16, 208)
-OutputNames = Array[int]([0])
+ShowAll = true
 
 [node name="OutputNameLabel" type="Label" parent="Panel"]
 layout_mode = 0

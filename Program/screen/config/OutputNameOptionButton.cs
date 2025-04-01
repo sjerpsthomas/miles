@@ -1,7 +1,7 @@
 using System;
 using Core.midi;
 using Godot;
-using Piano = Program.util.Piano;
+using Piano = Program.util.piano.Piano;
 
 namespace Program.screen.config;
 
@@ -19,6 +19,6 @@ public partial class OutputNameOptionButton : OptionButton
 
 	public void _on_item_selected(int selected)
 	{
-		Piano.OutputNames = [Enum.Parse<OutputName>(GetItemText(selected))];
+		Piano.OutputName = Enum.Parse<OutputName>(GetItemText(selected));
 	}
 }
