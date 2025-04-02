@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bhgo3qcys2jqj"]
+[gd_scene load_steps=12 format=3 uid="uid://bhgo3qcys2jqj"]
 
 [ext_resource type="Script" path="res://screen/InputScreen.cs" id="1_juavs"]
 [ext_resource type="Script" path="res://screen/song_select/navigation_button.gd" id="3_0rf8i"]
@@ -7,10 +7,13 @@
 [ext_resource type="FontFile" uid="uid://mige7bocvy67" path="res://font/SofiaSansExtraCondensed-Regular.ttf" id="4_a108o"]
 [ext_resource type="Script" path="res://screen/song_select/edit_button.gd" id="5_v337t"]
 [ext_resource type="Script" path="res://screen/song_select/start_button.gd" id="7_h535r"]
+[ext_resource type="Script" path="res://screen/song_select/options_panel.gd" id="7_rrl48"]
 [ext_resource type="Script" path="res://screen/song_select/back_button.gd" id="8_acwt4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yk4dy"]
 bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_54lni"]
 
 [node name="SongSelectScreen" type="Node2D"]
 script = ExtResource("1_juavs")
@@ -19,6 +22,7 @@ script = ExtResource("1_juavs")
 position = Vector2(640, 320)
 
 [node name="Standards" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
 offset_left = 252.0
 offset_top = 16.0
 offset_right = 1028.0
@@ -74,12 +78,37 @@ text = "Edit"
 script = ExtResource("5_v337t")
 
 [node name="OptionsPanel" type="Panel" parent="."]
+unique_name_in_owner = true
 offset_left = 1008.0
 offset_top = 271.0
 offset_right = 1264.0
 offset_bottom = 480.0
+script = ExtResource("7_rrl48")
 
-[node name="RepetitionsLabel" type="Label" parent="OptionsPanel"]
+[node name="TabBar" type="TabBar" parent="OptionsPanel"]
+unique_name_in_owner = true
+offset_top = -38.0
+offset_right = 256.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 24
+current_tab = 0
+tab_alignment = 1
+scroll_to_selected = false
+tab_count = 2
+tab_0/title = "Performance"
+tab_1/title = "Recording"
+
+[node name="PerformancePanel" type="Panel" parent="OptionsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_54lni")
+
+[node name="RepetitionsLabel" type="Label" parent="OptionsPanel/PerformancePanel"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -97,7 +126,7 @@ theme_override_font_sizes/font_size = 30
 text = "Repetition Count"
 horizontal_alignment = 1
 
-[node name="RepetitionsTextEdit" type="LineEdit" parent="OptionsPanel"]
+[node name="RepetitionsTextEdit" type="LineEdit" parent="OptionsPanel/PerformancePanel"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
@@ -117,7 +146,7 @@ text = "2"
 placeholder_text = "-"
 alignment = 1
 
-[node name="SoloistLabel" type="Label" parent="OptionsPanel"]
+[node name="SoloistLabel" type="Label" parent="OptionsPanel/PerformancePanel"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -135,7 +164,7 @@ theme_override_font_sizes/font_size = 30
 text = "Soloist"
 horizontal_alignment = 1
 
-[node name="SoloistOptionButton" type="OptionButton" parent="OptionsPanel"]
+[node name="SoloistOptionButton" type="OptionButton" parent="OptionsPanel/PerformancePanel"]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 16.0
@@ -163,6 +192,92 @@ popup/item_6/text = "Token Shuffle"
 popup/item_6/id = 6
 popup/item_7/text = "Token Transformer"
 popup/item_7/id = 7
+
+[node name="RecordingPanel" type="Panel" parent="OptionsPanel"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_54lni")
+
+[node name="IndexLabel" type="Label" parent="OptionsPanel/RecordingPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -201.0
+offset_right = 128.0
+offset_bottom = -165.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 30
+text = "Performance index"
+horizontal_alignment = 1
+
+[node name="IndexTextEdit" type="LineEdit" parent="OptionsPanel/RecordingPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -112.0
+offset_top = -165.0
+offset_right = 112.0
+offset_bottom = -117.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 30
+text = "1/1/1"
+placeholder_text = "-"
+alignment = 1
+
+[node name="StartMeasureLabel" type="Label" parent="OptionsPanel/RecordingPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -109.0
+offset_right = 128.0
+offset_bottom = -73.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 30
+text = "Starting measure"
+horizontal_alignment = 1
+
+[node name="StartMeasureTextEdit" type="LineEdit" parent="OptionsPanel/RecordingPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -112.0
+offset_top = -64.0
+offset_right = 112.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("4_a108o")
+theme_override_font_sizes/font_size = 30
+text = "0"
+placeholder_text = "-"
+alignment = 1
 
 [node name="StartButton" type="Button" parent="."]
 offset_left = 1008.0
@@ -192,3 +307,5 @@ chord = "100100010000"
 [connection signal="Press" from="." to="RightButton" method="_on_screen_press"]
 [connection signal="Press" from="." to="StartButton" method="_on_screen_press"]
 [connection signal="Press" from="." to="BackButton" method="_on_screen_press"]
+[connection signal="tab_changed" from="OptionsPanel/TabBar" to="OptionsPanel" method="_on_tab_bar_tab_changed"]
+[connection signal="text_changed" from="OptionsPanel/RecordingPanel/IndexTextEdit" to="OptionsPanel" method="_on_index_text_edit_text_changed"]

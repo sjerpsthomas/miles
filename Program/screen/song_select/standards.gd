@@ -26,3 +26,11 @@ func refresh() -> void:
 func navigate(direction: int) -> void:
 	index = posmod(index + direction, standard_names.size())
 	refresh()
+
+
+func navigate_by_name(name: String) -> void:
+	for i in range(standard_names.size()):
+		if standard_names[i] == name:
+			index = i
+			refresh()
+			return

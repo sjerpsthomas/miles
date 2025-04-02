@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Core.midi;
 using Core.midi.token;
@@ -37,6 +38,30 @@ public partial class MidiScheduler : Node
 	{
 		// Get path of standard
 		var init = GetNode("/root/PerformanceScreenInit");
+
+		// Initialize based on notes path
+		var notesPath = (string)init.Get("notes_path");
+		if (notesPath == "")
+			InitializeTradingPerformance(init);
+		else
+			InitializePlaybackPerformance(notesPath);
+		
+		// Add metronome
+		AddMeasure(-2, new MidiMeasure([
+			new MidiNote(OutputName.Metronome, 0.0, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.5, 0.2, 22, 48),
+		]));
+		
+		AddMeasure(-1, new MidiMeasure([
+			new MidiNote(OutputName.Metronome, 0.00, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.25, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.50, 0.2, 22, 48),
+			new MidiNote(OutputName.Metronome, 0.75, 0.2, 22, 48),
+		]));
+	}
+
+	public void InitializeTradingPerformance(Node init)
+	{
 		var standardName = (string)init.Get("standard_name");
 		var standardPath = $"user://saves/{standardName}/";
 
@@ -81,18 +106,31 @@ public partial class MidiScheduler : Node
 			Recorder = Recorder,
 			Repetitions = Repetitions
 		});
+	}
 
-		AddMeasure(-2, new MidiMeasure([
-			new MidiNote(OutputName.Metronome, 0.0, 0.2, 22, 48),
-			new MidiNote(OutputName.Metronome, 0.5, 0.2, 22, 48),
-		]));
+	public void InitializePlaybackPerformance(string notesPath)
+	{
+		// Disable recording
+		// TODO: might want to leave that on?
+		Recorder.Active = false;
 		
-		AddMeasure(-1, new MidiMeasure([
-			new MidiNote(OutputName.Metronome, 0.00, 0.2, 22, 48),
-			new MidiNote(OutputName.Metronome, 0.25, 0.2, 22, 48),
-			new MidiNote(OutputName.Metronome, 0.50, 0.2, 22, 48),
-			new MidiNote(OutputName.Metronome, 0.75, 0.2, 22, 48),
-		]));
+		// Load track
+		var track = MidiSong.FromNotesFileStream(new FileAccessStream(notesPath, Read));
+		
+		// Get BPM, apply to MidiRecorder song
+		Bpm = track.Bpm;
+		Recorder.Song.Bpm = Bpm;
+        
+		// Add component
+		SongLength = 32;
+		Repetitions = 2;
+		Components.Add(new SongMidiSchedulerComponent
+		{
+			Scheduler = this,
+			Recorder = Recorder,
+			Song = track,
+			Repetitions = Repetitions,
+		});
 	}
 
 	public void Start()

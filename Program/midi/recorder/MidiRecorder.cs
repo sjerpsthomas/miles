@@ -13,6 +13,8 @@ public partial class MidiRecorder : Node
 	public MidiSong Song = new();
 
 	public List<MidiNote> PendingNotes = [];
+
+	public bool Active = true;
 	
 	public override void _Ready()
 	{
@@ -49,6 +51,7 @@ public partial class MidiRecorder : Node
 
 	public void OnMidiServerNoteSent(MidiNote midiNote)
 	{
+		if (!Active) return;
 		if (midiNote.Time < 0) return;
 		if (midiNote.OutputName is OutputName.Metronome or OutputName.Unknown) return;
 		
