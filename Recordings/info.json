@@ -103,6 +103,40 @@
               ]
             }
           ]
+        },
+        {
+          "performance": [
+            {
+              "song": 0,
+              "algorithm": 0,
+              "scores": [
+                3,
+                4,
+                4,
+                5
+              ]
+            },
+            {
+              "song": 1,
+              "algorithm": 1,
+              "scores": [
+                1,
+                4,
+                2,
+                4
+              ]
+            },
+            {
+              "song": 2,
+              "algorithm": 2,
+              "scores": [
+                2,
+                4,
+                3,
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -209,6 +243,40 @@
               ]
             }
           ]
+        },
+        {
+          "performance": [
+            {
+              "song": 0,
+              "algorithm": 1,
+              "scores": [
+                4,
+                4,
+                3,
+                4
+              ]
+            },
+            {
+              "song": 1,
+              "algorithm": 2,
+              "scores": [
+                2,
+                3,
+                2,
+                3
+              ]
+            },
+            {
+              "song": 2,
+              "algorithm": 0,
+              "scores": [
+                3,
+                4,
+                5,
+                4
+              ]
+            }
+          ]
         }
       ]
     },
@@ -315,6 +383,40 @@
               ]
             }
           ]
+        },
+        {
+          "performance": [
+            {
+              "song": 0,
+              "algorithm": 2,
+              "scores": [
+                4,
+                3,
+                2,
+                3
+              ]
+            },
+            {
+              "song": 1,
+              "algorithm": 0,
+              "scores": [
+                4,
+                4,
+                5,
+                5
+              ]
+            },
+            {
+              "song": 2,
+              "algorithm": 1,
+              "scores": [
+                3,
+                2,
+                3,
+                4
+              ]
+            }
+          ]
         }
       ]
     },
@@ -417,6 +519,40 @@
                 4,
                 4,
                 3,
+                3
+              ]
+            }
+          ]
+        },
+        {
+          "performance": [
+            {
+              "song": 0,
+              "algorithm": 0,
+              "scores": [
+                3,
+                2,
+                4,
+                4
+              ]
+            },
+            {
+              "song": 1,
+              "algorithm": 1,
+              "scores": [
+                3,
+                4,
+                3,
+                3
+              ]
+            },
+            {
+              "song": 2,
+              "algorithm": 2,
+              "scores": [
+                2,
+                3,
+                2,
                 3
               ]
             }
@@ -524,6 +660,40 @@
                 4,
                 4,
                 3
+              ]
+            }
+          ]
+        },
+        {
+          "performance": [
+            {
+              "song": 0,
+              "algorithm": 1,
+              "scores": [
+                5,
+                4,
+                3,
+                5
+              ]
+            },
+            {
+              "song": 1,
+              "algorithm": 2,
+              "scores": [
+                4,
+                5,
+                3,
+                3
+              ]
+            },
+            {
+              "song": 2,
+              "algorithm": 0,
+              "scores": [
+                5,
+                2,
+                4,
+                5
               ]
             }
           ]

@@ -44,8 +44,10 @@ class MidiSongIO:
 		self.endian = "<"
 
 	# READING
-	def read(self) -> MidiSong:
-		bpm = self._read_int()
+	def read(self, a: bool) -> MidiSong:
+		bpm = -1
+		if a:
+			bpm = self._read_int()
 
 		count = self._read_int()
 		notes = [

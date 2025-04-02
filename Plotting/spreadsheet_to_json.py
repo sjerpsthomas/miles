@@ -20,7 +20,7 @@ for pupil in range(NUM_PUPILS):
     sheet = workbook[str(pupil + 1)]
 
     # For every session they do
-    for session in range(NUM_SESSIONS):
+    for session in range(4):
         session_info = {
             "performance": []
         }
