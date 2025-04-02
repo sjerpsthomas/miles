@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using Core.midi;
 using Core.midi.token;
@@ -146,12 +148,6 @@ public partial class MidiScheduler : Node
 	{
 		MidiServer.Instance.Scheduler = null;
 		Enabled = false;
-
-		var currentMeasure = (int)Math.Truncate(Time);
-		
-		lock (NoteQueue)
-			while (NoteQueue.TryDequeue(out var note, out _))
-				MidiServer.Instance.Send(note with { Time = note.Time + currentMeasure });
 	}
 	
 	public void Run()
@@ -202,7 +198,7 @@ public partial class MidiScheduler : Node
 			while (NoteQueue.TryPeek(out _, out var time) && time < Time)
 			{
 				var note = NoteQueue.Dequeue();
-				MidiServer.Instance.Send(note with { Time = note.Time + currentMeasure });
+				MidiServer.Instance.Send(note);
 			}
 		}
 	}
@@ -213,13 +209,15 @@ public partial class MidiScheduler : Node
 		{
 			foreach (var note in measure.Notes)
 			{
-				NoteQueue.Enqueue(note, note.Time + measureNum);
+				if (note.Length <= 0.0) continue;
+				if (note.Velocity == 0) continue;
+				
+				var newNoteTime = note.Time + measureNum;
+				NoteQueue.Enqueue(note with { Time = newNoteTime }, newNoteTime);
 
-				// Add note off
-				if (note.Length == 0.0) continue;
-				if (note.Velocity <= 0) continue;
-				var noteOffTime = note.Time + note.Length;
-				NoteQueue.Enqueue(new MidiNote(note.OutputName, noteOffTime, 0, note.Note, 0), noteOffTime + measureNum);
+				var noteOffTime = newNoteTime + note.Length;
+
+				NoteQueue.Enqueue(new MidiNote(note.OutputName, noteOffTime, 0, note.Note, 0), noteOffTime);
 			}
 		}
 	}
