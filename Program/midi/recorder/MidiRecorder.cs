@@ -84,6 +84,8 @@ public partial class MidiRecorder : Node
 
 	public void Save()
 	{
+		if (!Active) return;
+		
 		// Get file name
 		var init = GetNode("/root/PerformanceScreenInit");
 		var standardName = (string)init.Get("standard_name");

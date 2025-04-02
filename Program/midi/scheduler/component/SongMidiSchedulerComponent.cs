@@ -11,18 +11,19 @@ public class SongMidiSchedulerComponent : MidiSchedulerComponent
     
     public override void HandleMeasure(int currentMeasure)
     {
-        // Early return if not song start
-        if (currentMeasure != 0) return;
-        
-        // Add all measures from file at start
         var songLength = Song.Measures.Count;
-        for (var i = 0; i < Repetitions; i++)
+        
+        if (currentMeasure < 0) return;
+        if (currentMeasure > songLength * Repetitions) return;
+
+        // Schedule first 8th of last measure at the end
+        if (currentMeasure == songLength * Repetitions)
         {
-            Scheduler.AddSong(songLength * i, Song);
+            var lastMeasure = new MidiMeasure(Song.Measures[0].Notes.Where(it => it.Time < 0.1));
+            Scheduler.AddMeasure(songLength * Repetitions, lastMeasure);
+            return;
         }
         
-        // Append first 8th of last measure
-        var lastMeasure = new MidiMeasure(Song.Measures[0].Notes.Where(it => it.Time < 0.1));
-        Scheduler.AddMeasure(songLength * Repetitions, lastMeasure);
+        Scheduler.AddMeasure(currentMeasure, Song.Measures[currentMeasure % songLength]);
     }
 }

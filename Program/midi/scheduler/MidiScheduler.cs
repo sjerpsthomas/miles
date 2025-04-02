@@ -25,6 +25,7 @@ public partial class MidiScheduler : Node
 	// Integer part: measure
 	// Fractional part: part within measure
 	public double Time = -2.0;
+	public int StartMeasure = 0;
 	
 	public PriorityQueue<MidiNote, double> NoteQueue = new();
 
@@ -46,9 +47,11 @@ public partial class MidiScheduler : Node
 		if (notesPath == "")
 			InitializeTradingPerformance(init);
 		else
-			InitializePlaybackPerformance(notesPath);
+			InitializePlaybackPerformance(init);
 		
 		// Add metronome
+		if (StartMeasure != 0) return;
+		
 		AddMeasure(-2, new MidiMeasure([
 			new MidiNote(OutputName.Metronome, 0.0, 0.2, 22, 48),
 			new MidiNote(OutputName.Metronome, 0.5, 0.2, 22, 48),
@@ -110,8 +113,11 @@ public partial class MidiScheduler : Node
 		});
 	}
 
-	public void InitializePlaybackPerformance(string notesPath)
+	public void InitializePlaybackPerformance(Node init)
 	{
+		var notesPath = (string)init.Get("notes_path");
+		var startMeasure = (int)init.Get("start_measure");
+		
 		// Disable recording
 		// TODO: might want to leave that on?
 		Recorder.Active = false;
@@ -126,6 +132,7 @@ public partial class MidiScheduler : Node
 		// Add component
 		SongLength = 32;
 		Repetitions = 2;
+		
 		Components.Add(new SongMidiSchedulerComponent
 		{
 			Scheduler = this,
@@ -133,6 +140,8 @@ public partial class MidiScheduler : Node
 			Song = track,
 			Repetitions = Repetitions,
 		});
+
+		StartMeasure = startMeasure;
 	}
 
 	public void Start()
@@ -167,7 +176,7 @@ public partial class MidiScheduler : Node
 		double currentTimeMs = elapsed.TotalMilliseconds;
 		var currentMeasure = currentTimeMs / 1000.0 / (60.0 / Bpm) / 4.0;
 		
-		return currentMeasure - 2;
+		return currentMeasure - 2 + StartMeasure;
 	}
     
 	public void Tick(double currentTime)

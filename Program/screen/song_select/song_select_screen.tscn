@@ -87,6 +87,7 @@ script = ExtResource("7_rrl48")
 
 [node name="TabBar" type="TabBar" parent="OptionsPanel"]
 unique_name_in_owner = true
+layout_mode = 0
 offset_top = -38.0
 offset_right = 256.0
 focus_mode = 0

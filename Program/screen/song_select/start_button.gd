@@ -26,7 +26,10 @@ func goto_performance() -> void:
 
 func goto_recording() -> void:
 	var performance_index: String = %IndexTextEdit.text
-	var start_measure := int(%StartMeasureTextEdit.text)
+	
+	var start_measure_str: String = %StartMeasureTextEdit.text
+	if not start_measure_str.is_valid_int(): return
+	var start_measure := int(start_measure_str)
 	
 	PerformanceScreenInit.notes_path = "res://recordings/" + performance_index + ".notes"
 	PerformanceScreenInit.start_measure = start_measure
