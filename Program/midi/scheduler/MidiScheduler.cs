@@ -10,6 +10,7 @@ using Godot;
 using Program.midi.recorder;
 using Program.midi.scheduler.component;
 using Program.midi.scheduler.component.solo;
+using Program.midi.scheduler.component.solo.v2;
 using Program.screen.performance;
 using Program.util;
 using static Godot.FileAccess.ModeFlags;
@@ -102,6 +103,7 @@ public partial class MidiScheduler : Node
 			5 => new TokenMarkovSoloist(standardPath),
 			6 => new TokenShuffleSoloist(),
 			7 => new TokenTransformerSoloist(),
+			8 => new TokenFactorOracleSoloistV2(),
 			_ => throw new ArgumentOutOfRangeException()
 		};
         

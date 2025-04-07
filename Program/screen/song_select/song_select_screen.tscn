@@ -177,7 +177,7 @@ theme_override_fonts/font = ExtResource("4_a108o")
 theme_override_font_sizes/font_size = 30
 alignment = 1
 selected = 0
-item_count = 8
+item_count = 9
 popup/item_0/text = "Note Random"
 popup/item_1/text = "Note Retrieval"
 popup/item_1/id = 1
@@ -193,6 +193,8 @@ popup/item_6/text = "Token Shuffle"
 popup/item_6/id = 6
 popup/item_7/text = "Token Transformer"
 popup/item_7/id = 7
+popup/item_8/text = "Token Factor Oracle V2"
+popup/item_8/id = 8
 
 [node name="RecordingPanel" type="Panel" parent="OptionsPanel"]
 visible = false
@@ -276,7 +278,7 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_fonts/font = ExtResource("4_a108o")
 theme_override_font_sizes/font_size = 30
-text = "0"
+text = "49"
 placeholder_text = "-"
 alignment = 1
 

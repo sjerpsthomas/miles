@@ -26,7 +26,7 @@ func update_current_standard(text: String) -> void:
 	if params.size() != 3: return
 	
 	var pupil = int(params[0])
-	if pupil < 1 or pupil > 3: return
+	if pupil < 1 or pupil > 5: return
 	
 	var session = int(params[1])
 	if session < 1 or session > 4: return
