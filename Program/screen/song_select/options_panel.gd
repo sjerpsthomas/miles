@@ -9,8 +9,8 @@ func _ready() -> void:
 	var notes_path := PerformanceScreenInit.notes_path
 	if notes_path == "": notes_path = "1/1/1"
 	
-	%TabBar.current_tab = 1
-	_on_tab_bar_tab_changed(1)
+	#%TabBar.current_tab = 1
+	#_on_tab_bar_tab_changed(1)
 	
 	notes_path = notes_path.replace("res://recordings/", "")
 	notes_path = notes_path.replace(".notes", "")

@@ -9,14 +9,6 @@ namespace Program.midi.scheduler.component.solo.v2;
 
 public class TokenFactorOracleSoloistV2 : Soloist
 {
-    private class TokenListComparer : IEqualityComparer<List<Token>>
-    {
-        public bool Equals(List<Token> x, List<Token> y) => x!.SequenceEqual(y!);
-
-        public int GetHashCode(List<Token> list) =>
-            list.Aggregate(17, (hash, token) => hash * 31 + token.GetHashCode());
-    }
-    
     // ReSharper disable once InconsistentNaming
     public FactorOracle<List<Token>> FO;
     public LeadSheet LeadSheet;
@@ -45,7 +37,7 @@ public class TokenFactorOracleSoloistV2 : Soloist
         // Get tokens, add to factor oracle
         var tokens = Conversion.TokenizeV2(notes, LeadSheet, startMeasureNum);
 
-        const int n = 10;
+        const int n = 20;
         var chunks = tokens.TakeLast((tokens.Count / n) * n).Chunk(n).Select(it => it.ToList());
         FO.AddValues(chunks);
     }
