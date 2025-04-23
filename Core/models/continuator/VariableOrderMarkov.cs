@@ -202,8 +202,8 @@ public class VariableOrderMarkov<T> where T : notnull
         for (var i = 1; i < vpSequence.Length - 1; i++)
         {
             var vp = vpSequence[i];
-            if (ViewpointsRealizations.ContainsKey(vp))
-                ViewpointsRealizations[vp] = new List<(int, int)>();
+            if (!ViewpointsRealizations.ContainsKey(vp))
+                ViewpointsRealizations[vp] = [];
             
             AddViewpointRealization(i, sequenceIndex, vp);
         }
@@ -306,7 +306,9 @@ public class VariableOrderMarkov<T> where T : notnull
         for (var iVp = 0; iVp < keys.Count; iVp++)
         {
             var vp = keys[iVp];
-            var conts = k0[[vp]];
+            // TODO this was changed
+            if (!k0.TryGetValue([vp], out var conts))
+                continue;
             var occurrences = new Counter<VpType>(conts);
             foreach (var (vp2, v) in occurrences.Counts)
             {
@@ -385,15 +387,9 @@ public class VariableOrderMarkov<T> where T : notnull
                 startVp = constraints[0];
         }
 
-        try
-        {
-            var vpSeq = SampleVpSequenceWithBp(length, startVp, pgm);
-            return vpSeq;
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        // TODO: this used to be in a try-block
+        var vpSeq = SampleVpSequenceWithBp(length, startVp, pgm);
+        return vpSeq;
     }
 
     public PGM BuildBpGraph(int length)

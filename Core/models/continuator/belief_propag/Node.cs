@@ -4,7 +4,7 @@ namespace Core.models.continuator.belief_propag;
 public abstract class Node(string name)
 {
     public string Name = name;
-    public List<dynamic> Neighbors = [];
+    public List<Node> Neighbors = [];
 
     public abstract bool IsValidNeighbor(Node neighbor);
 

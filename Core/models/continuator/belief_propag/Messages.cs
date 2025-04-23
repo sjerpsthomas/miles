@@ -2,7 +2,7 @@
 
 public class Messages
 {
-    public List<double> Marginal(dynamic variable)
+    public List<double> Marginal(Variable variable)
     {
         // TODO
         return null;

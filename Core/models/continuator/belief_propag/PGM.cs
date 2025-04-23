@@ -26,23 +26,16 @@ public class PGM
         {
             var factorData = data[factor.Name];
 
-            if (factorData.AxesLabels.Distinct().Count() != factor.Neighbors.Select(it => it.name).Distinct().Count())
+            if (factorData.AxesLabels.Distinct().Count() != factor.Neighbors.Select(it => it.Name).Distinct().Count())
             {
                 // TODO: add set difference (not really necessary)
 
                 throw new Exception("ValueError: data is missing axes");
             }
 
-            List<int> shape = factorData switch
+            foreach (var (varName, dim) in factorData.AxesLabels.Zip(factorData.Shape))
             {
-                LabeledArray1D<object>(var array, _) => [array.Length],
-                LabeledArray2D<object>(var array, _) => [array.GetLength(0), array.GetLength(1)],
-                _ => throw new Exception("Unknown labeled array")
-            };
-
-            foreach (var (varName, dim) in factorData.AxesLabels.Zip(shape))
-            {
-                if (varDims.ContainsKey(varName))
+                if (!varDims.ContainsKey(varName))
                     varDims[varName] = dim;
 
                 if (varDims[varName] != dim)
@@ -84,12 +77,7 @@ public class PGM
     {
         var factor = FactorFromName($"p({varName})");
 
-        var data = Enumerable.Range(0, factor?.Data switch
-        {
-            LabeledArray1D<object>(var array) => array.Count,
-            LabeledArray2D<object>(var array) => array.Count,
-            _ => throw new Exception("Unknown labeled array")
-        }).Select(_ => 0).ToArray();
+        var data = Enumerable.Range(0, factor?.Data?.Shape[0] ?? throw new Exception("Unknown labeled array")).Select(_ => 0).ToArray();
 
         data[valueIdx] = 1;
         factor.Data = new LabeledArray1D<int>(data, [varName]);
