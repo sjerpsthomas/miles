@@ -37,22 +37,30 @@ public class Counter<T> where T : notnull
 }
 
 
-public class VariableOrderMarkov
+public class VariableOrderMarkov<T> where T : notnull
 {
-    public Func<VpType, dynamic>? ViewpointLambda;
+    public class VpListEqualityComparer : IEqualityComparer<List<VpType>>
+    {
+        public bool Equals(List<VpType>? x, List<VpType>? y) => x!.SequenceEqual(y!);
+
+        public int GetHashCode(List<VpType> list) =>
+            list.Aggregate(17, (hash, vp) => hash * 31 + vp.GetHashCode());
+    }
+    
+    public Func<T, VpType>? ViewpointLambda;
 
     public const VpType StartPadding = -1000;
     public const VpType EndPadding = -1001;
 
     public int KMax;
-    public List<List<VpType>> InputSequences;
+    public List<List<T>> InputSequences;
     public List<VpType> AllUniqueViewpoints;
     public Dictionary<VpType, List<(int, int)>> ViewpointsRealizations;
     public List<Dictionary<List<VpType>, List<VpType>>> PrefixesToContinuations;
 
     public Random Rng = new();
     
-    public VariableOrderMarkov(List<VpType> sequenceOfStuff, Func<VpType, dynamic> vpLambda, int kMax = 5)
+    public VariableOrderMarkov(List<T> sequenceOfStuff, Func<T, VpType>? vpLambda, int kMax = 5)
     {
         ViewpointLambda = vpLambda;
         KMax = kMax;
@@ -70,7 +78,7 @@ public class VariableOrderMarkov
 
         PrefixesToContinuations = [];
         for (var k = 0; k < KMax; k++)
-            PrefixesToContinuations.Add([]);
+            PrefixesToContinuations.Add(new(new VpListEqualityComparer()));
     }
 
     public void ClearFirstNPhrases(int n)
@@ -107,13 +115,13 @@ public class VariableOrderMarkov
             LearnSequence(seq);
     }
 
-    public void LearnSequence(List<VpType> sequenceOfStuff)
+    public void LearnSequence(List<T> sequenceOfStuff)
     {
         InputSequences.Add(sequenceOfStuff);
         BuildVoMarkovModel(sequenceOfStuff);
     }
 
-    public VpType GetInputObject((int, int) objAddress)
+    public T GetInputObject((int, int) objAddress)
     {
         return InputSequences[objAddress.Item1][objAddress.Item2];
     }
@@ -139,14 +147,14 @@ public class VariableOrderMarkov
         return AllUniqueViewpoints.Count;
     }
 
-    public dynamic RandomInitialVp()
+    public VpType RandomInitialVp()
     {
         // returns a random initial vp, which are continuations of start paddings
         var allInitialVps = PrefixesToContinuations[0][[StartPadding]];
         return allInitialVps.RandomElement();
     }
 
-    public dynamic RandomVpWithProbs(double[] probs)
+    public VpType RandomVpWithProbs(double[] probs)
     {
         var idx = RandomChoices.Choice(Enumerable.Range(0, probs.Length), probs);
         return GetAllUniqueViewpoints()[idx];
@@ -172,7 +180,7 @@ public class VariableOrderMarkov
         return AllUniqueViewpoints.IndexOf(vp);
     }
 
-    public void BuildVoMarkovModel(List<VpType> realSequence)
+    public void BuildVoMarkovModel(List<T> realSequence)
     {
         // Builds a variable-order Markov model for max K order
         // accumulates with existing model
@@ -226,16 +234,16 @@ public class VariableOrderMarkov
             PrefixesToContinuations[0][endTuple] = [EndPadding];
     }
 
-    public dynamic GetPriors()
+    public List<double> GetPriors()
     {
         // There is no start and end vps in this list
-        Dictionary<dynamic, int> keyCounts = [];
+        Dictionary<VpType, int> keyCounts = [];
         foreach (var (key, continuations) in ViewpointsRealizations)
             keyCounts[key] = continuations.Count;
         
         var totalCount = keyCounts.Values.Sum();
         
-        Dictionary<dynamic, double> priors = [];
+        Dictionary<VpType, double> priors = [];
         foreach (var (key, count) in keyCounts)
             priors[key] = (double)count / totalCount;
         
@@ -248,20 +256,20 @@ public class VariableOrderMarkov
         return probabilityVector;
     }
 
-    public dynamic SampleZeroOrder(int k)
+    public List<VpType> SampleZeroOrder(int k)
     {
         var priors = GetPriors();
-        return RandomChoices.Choices(GetAllUniqueViewpointsExceptPaddings(), priors, k);
+        return RandomChoices.Choices(GetAllUniqueViewpointsExceptPaddings(), priors, k).ToList();
     }
 
-    public void AddViewpointRealisationOld(int i, int sequenceIndex, dynamic vp)
+    public void AddViewpointRealisationOld(int i, int sequenceIndex, VpType vp)
     {
         // Attention! VP sequence has extra start_vp, so i should be decreased by 1!
         var newAddress = (sequenceIndex, i);
         ViewpointsRealizations[vp].Add(newAddress);
     }
 
-    public void AddViewpointRealisationNew(int i, int sequenceIndex, dynamic vp)
+    public void AddViewpointRealisationNew(int i, int sequenceIndex, VpType vp)
     {
         // Adds only if different from existing ones, to avoid inflation in case of monotonous pieces
         var newAddress = (sequenceIndex, i);
@@ -278,14 +286,14 @@ public class VariableOrderMarkov
         {
             var realNote = GetInputObject(real);
             // TODO: IsSimilarRealization is defined in Note
-            if (realNote.IsSimilarRealization(newNote))
-                return;
+            // if (realNote.IsSimilarRealization(newNote))
+            //     return;
         }
         
         ViewpointsRealizations[vp].Add(newAddress);
     }
 
-    public void AddViewpointRealization(int i, int sequenceIndex, dynamic vp) =>
+    public void AddViewpointRealization(int i, int sequenceIndex, VpType vp) =>
         AddViewpointRealisationOld(i, sequenceIndex, vp);
 
     public DenseMatrix GetFirstOrderMatrix()
@@ -317,24 +325,25 @@ public class VariableOrderMarkov
     public VpType GetViewpoint(dynamic realObject)
     {
         if (ViewpointLambda is null)
-            return realObject;
-        return ViewpointLambda(realObject);
+            return (VpType)realObject;
+        return ViewpointLambda((T)realObject);
     }
 
-    public List<(int, int)> GetRealisationsForVp(dynamic vp)
+    public List<(int, int)> GetRealisationsForVp(VpType vp)
     {
         return ViewpointsRealizations[vp];
     }
 
-    public dynamic RandomStartingNote()
-    {
-        var startingVp = (-1, 0);
-        var startingConts = GetRealisationsForVp(startingVp);
-        var start = startingConts.RandomElement();
-        return start;
-    }
+    // Removed RandomStartingNote: not used
+    // public dynamic RandomStartingNote()
+    // {
+    //     var startingVp = (-1, 0);
+    //     var startingConts = GetRealisationsForVp(startingVp);
+    //     var start = startingConts.RandomElement();
+    //     return start;
+    // }
 
-    public dynamic? SampleSequenceThatEnds(dynamic startVp, int length = 50)
+    public dynamic? SampleSequenceThatEnds(VpType startVp, int length = 50)
     {
         // If length is negative, stops when reaching the provided end_viewpoint
         // If nb_sequence is positive, stops after nb_sequences occurrences of the end_vp
@@ -355,7 +364,7 @@ public class VariableOrderMarkov
         }
     }
 
-    public dynamic? SampleSequence(int length, Dictionary<int, dynamic>? constraints = null)
+    public List<int>? SampleSequence(int length, Dictionary<int, VpType>? constraints = null)
     {
         // If length is negative, stops when reaching the provided end_viewpoint
         // If nb_sequence is positive, stops after nb_sequences occurrences of the end_vp
@@ -363,7 +372,7 @@ public class VariableOrderMarkov
             return null;
 
         var pgm = BuildBpGraph(length);
-        dynamic? startVp = null;
+        VpType? startVp = null;
         if (constraints != null)
         {
             foreach (var (ctPos, ctVp) in constraints)
@@ -484,7 +493,7 @@ public class VariableOrderMarkov
         return currentSeq;
     }
 
-    public dynamic SampleVpSequence(dynamic startVp, int length, VpType endVp)
+    public List<VpType> SampleVpSequence(VpType startVp, int length, VpType endVp)
     {
         // Generates a new sequence of vps from the Markov model
         List<VpType> currentSeq = [startVp];
@@ -526,7 +535,7 @@ public class VariableOrderMarkov
         }
     }
 
-    public int GetContinuation(List<VpType> currentSeq)
+    public VpType GetContinuation(List<VpType> currentSeq)
     {
         VpType? vpToSkip = null;
         for (var k = KMax; k > 0; k--)
@@ -570,7 +579,7 @@ public class VariableOrderMarkov
         return -1;
     }
 
-    public int GetContinuationWithBp(List<VpType> currentSeq, List<double> probs)
+    public VpType GetContinuationWithBp(List<VpType> currentSeq, List<double> probs)
     {
         VpType? vpToSkip = null;
         for (var k = KMax; k > 0; k--)
