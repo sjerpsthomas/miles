@@ -9,8 +9,8 @@ namespace Console.routine;
 public class WJDToTokens
 {
     const int NumSolos = 456;
-    
-    void Run(int melId, string exportFolderName)
+
+    public void Run(int melId, string exportFolderName)
     {
         using var connection = new SqliteConnection("Filename=wjazzd.db");
         connection.Open();
@@ -42,7 +42,7 @@ public class WJDToTokens
         }
         catch (Exception e)
         {
-            System.Console.WriteLine($"Skipped key: {e}");
+            System.Console.WriteLine($"Skipped key: {e.Message}");
             key = Chord.CMajor;
         }
         
