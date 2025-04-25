@@ -177,7 +177,7 @@ theme_override_fonts/font = ExtResource("4_a108o")
 theme_override_font_sizes/font_size = 30
 alignment = 1
 selected = 0
-item_count = 11
+item_count = 12
 popup/item_0/text = "Note Random"
 popup/item_1/text = "Note Retrieval"
 popup/item_1/id = 1
@@ -199,6 +199,8 @@ popup/item_9/text = "Token Markov V2"
 popup/item_9/id = 9
 popup/item_10/text = "Note Markov V2"
 popup/item_10/id = 10
+popup/item_11/text = "Token Neural Net"
+popup/item_11/id = 11
 
 [node name="RecordingPanel" type="Panel" parent="OptionsPanel"]
 visible = false

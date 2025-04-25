@@ -106,6 +106,7 @@ public partial class MidiScheduler : Node
 			8 => new TokenFactorOracleSoloistV2(),
 			9 => new TokenMarkovSoloistV2(standardPath),
 			10 => new NoteMarkovSoloistV2(),
+			11 => new TokenNeuralNetSoloist(),
 			_ => throw new ArgumentOutOfRangeException()
 		};
         
