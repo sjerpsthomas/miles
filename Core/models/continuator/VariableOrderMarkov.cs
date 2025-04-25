@@ -17,13 +17,19 @@ public class VariableOrderMarkov<T>
     private const VpType StartPadding = -1000;
     private const VpType EndPadding = -1001;
 
+    public Func<T, VpType> Map;
+    public Dictionary<VpType, T> Mapping;
+    
     public int KMax;
     private List<Dictionary<VpType[], List<VpType>>> PrefixesToContinuations;
 
     private Random Rng = new();
     
-    public VariableOrderMarkov(int kMax = 5)
+    public VariableOrderMarkov(Func<T, VpType> map, int kMax = 5)
     {
+        Map = map;
+        Mapping = [];
+        
         // Initialize KMax
         KMax = kMax;
 
@@ -39,8 +45,15 @@ public class VariableOrderMarkov<T>
         return allInitialVps.RandomElement();
     }
 
-    public void LearnSequence(IEnumerable<VpType> vps)
+    public void LearnSequence(List<T> items)
     {
+        var vps = items
+            .Select(it => Map(it))
+            .ToList();
+
+        foreach (var (item, vp) in items.Zip(vps))
+            Mapping[vp] = item;
+        
         // Builds a variable-order Markov model for max K order
         // accumulates with existing model
         
@@ -68,7 +81,7 @@ public class VariableOrderMarkov<T>
         }
     }
 
-    public List<VpType> Generate(int maxLength)
+    public List<T> Generate(int maxLength)
     {
         // Generates a new sequence of vps from the Markov model
         List<VpType> currentSeq = [GetRandomVp()];
@@ -86,10 +99,10 @@ public class VariableOrderMarkov<T>
             currentSeq.Add(cont);
         }
 
-        return currentSeq;
+        return currentSeq.Select(it => Mapping[it]).ToList();
     }
 
-    public List<VpType> GenerateChunks(int delimVp, int chunkCount, int maxChunkSize)
+    public List<T> GenerateChunks(int delimVp, int chunkCount, int maxChunkSize)
     {
         // Generates a new sequence of vps from the Markov model
         List<VpType> currentSeq = [GetRandomVp()];
@@ -123,7 +136,7 @@ public class VariableOrderMarkov<T>
             }
         }
 
-        return currentSeq;
+        return currentSeq.Select(it => Mapping[it]).ToList();
     }
 
     private VpType GetContinuation(List<VpType> currentSeq)
