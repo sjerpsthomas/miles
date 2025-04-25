@@ -19,33 +19,8 @@ public class PGM
 
     public void SetData(Dictionary<string, LabeledArray> data)
     {
-        // Keep track of variable dimensions to check for shape mistakes
-        Dictionary<string, int> varDims = [];
-        
         foreach (var factor in Factors)
-        {
-            var factorData = data[factor.Name];
-
-            if (factorData.AxesLabels.Distinct().Count() != factor.Neighbors.Select(it => it.Name).Distinct().Count())
-            {
-                // TODO: add set difference (not really necessary)
-
-                throw new Exception("ValueError: data is missing axes");
-            }
-
-            foreach (var (varName, dim) in factorData.AxesLabels.Zip(factorData.Shape))
-            {
-                if (!varDims.ContainsKey(varName))
-                    varDims[varName] = dim;
-
-                if (varDims[varName] != dim)
-                {
-                    throw new Exception("ValueError: data axes is wrong size.");
-                }
-            }
-
             factor.Data = data[factor.Name];
-        }
     }
 
     public dynamic? VariableFromName(string varName)
@@ -77,10 +52,10 @@ public class PGM
     {
         var factor = FactorFromName($"p({varName})");
 
-        var data = Enumerable.Range(0, factor?.Data?.Shape[0] ?? throw new Exception("Unknown labeled array")).Select(_ => 0).ToArray();
+        var data = Enumerable.Range(0, (int)factor?.Data!.Array.shape[0]!).Select(_ => 0).ToArray();
 
         data[valueIdx] = 1;
-        factor.Data = new LabeledArray1D<int>(data, [varName]);
+        factor.Data = new LabeledArray(data, [varName]); // 2D
     }
 }
 

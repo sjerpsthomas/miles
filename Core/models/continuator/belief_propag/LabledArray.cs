@@ -1,15 +1,21 @@
-﻿namespace Core.models.continuator.belief_propag;
+﻿using NumSharp;
 
-public abstract record LabeledArray(List<string> AxesLabels)
-{
-    public abstract List<int> Shape { get; }
-};
-public record LabeledArray1D<T>(T[] Array, List<string> AxesLabels) : LabeledArray(AxesLabels)
-{
-    public override List<int> Shape => [Array.Length];
-}
+namespace Core.models.continuator.belief_propag;
 
-public record LabeledArray2D<T>(T[,] Array, List<string> AxesLabels) : LabeledArray(AxesLabels)
+public record LabeledArray
 {
-    public override List<int> Shape => [Array.GetLength(0), Array.GetLength(1)];
+    public LabeledArray(NDArray Array, List<string> AxesLabels)
+    {
+        this.Array = Array;
+        this.AxesLabels = AxesLabels;
+    }
+
+    public NDArray Array { get; init; }
+    public List<string> AxesLabels { get; init; }
+
+    public void Deconstruct(out NDArray Array, out List<string> AxesLabels)
+    {
+        Array = this.Array;
+        AxesLabels = this.AxesLabels;
+    }
 }

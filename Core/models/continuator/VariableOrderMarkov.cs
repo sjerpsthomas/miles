@@ -400,9 +400,10 @@ public class VariableOrderMarkov<T> where T : notnull
         for (var i = 2; i < length + 1; i++)
             str = str + $"p(x{i}|x{i - 1})";
 
+        var mat = GetFirstOrderMatrix().Transpose().ToArray();
+
         var pgm = PGM.FromString(str);
-        // TODO: 1D and 2D arrays are interspersed
-        var mat = new LabeledArray2D<double>(GetFirstOrderMatrix().Transpose().ToArray(), ["x2", "x1"]);
+        
         // assert is_conditional_prob(mat, "x2")
         var m = VocSize();
         Dictionary<string, LabeledArray> dataDict = [];
@@ -418,8 +419,9 @@ public class VariableOrderMarkov<T> where T : notnull
             for (var j = 0; j < m; j++)
                 variableDist[j] /= sum;
 
-            dataDict[$"p(x{i + 1})"] = new LabeledArray1D<double>(variableDist, [$"x{i + 1}"]);
-            dataDict[$"p(x{i + 2}|x{i + 1})"] = new LabeledArray2D<double>(mat.Array, [$"x{i + 2}", $"x{i + 1}"]);
+            // TODO: 1D and 2D arrays are interspersed
+            dataDict[$"p(x{i + 1})"] = new LabeledArray(variableDist, [$"x{i + 1}"]); // 1D
+            dataDict[$"p(x{i + 2}|x{i + 1})"] = new LabeledArray(mat, [$"x{i + 2}", $"x{i + 1}"]); // 2D
         }
 
         pgm.SetData(dataDict);
@@ -462,15 +464,9 @@ public class VariableOrderMarkov<T> where T : notnull
         {
             var pgmVariable = pgm.VariableFromName($"x{i + 2}");
             List<double> marginalI;
-            try
-            {
-                marginalI = new Messages().Marginal(pgmVariable);
-                // if not IsOk(marginalI):
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            
+            // TODO: this was previously in a try-block, returning null if throwing
+            marginalI = new Messages().Marginal(pgmVariable);
             
             // Compare with the markov transition matrix
             // TODO: I assume that indexing the matrix with an int returns its ith row?
