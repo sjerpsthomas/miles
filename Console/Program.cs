@@ -1,10 +1,5 @@
 ﻿using System.Diagnostics;
-using Console.routine;
-using Core.conversion;
-using Core.midi.token;
-using Core.ml;
 using Core.models.continuator;
-using Fastenshtein;
 
 
 // new LakhTokenizer().Run(@"C:\Users\thoma\Desktop\lmd_full", @"C:\Users\thoma\Desktop\tokens_temp_2", false);
@@ -29,19 +24,26 @@ using Fastenshtein;
 
 
 var recherche = File.ReadAllText(@"C:\Users\thoma\Desktop\proust_debut.txt").TrimEnd();
-var charSeq = recherche.ToCharArray().ToList();
+var vps = recherche.Select(it => (int)it).ToList();
+
+var vo = new VariableOrderMarkov(3);
+
 
 var stopWatch = new Stopwatch();
 stopWatch.Start();
 
-var vo = new VariableOrderMarkov<char>(charSeq, it => (int)it, 3);
-var seq = vo.SampleSequence(140, constraints: new() { [0] = vo.GetViewpoint('.'), [1] = vo.GetViewpoint('.') });
-var result = new string(seq!.Select(it => (char)it).ToArray());
+for (var i = 0; i < 100; i++)
+{
+    vo.LearnSequence(vps);
+    // System.Console.WriteLine(vo);
+    var seq = vo.SampleVpSequence(140);
+    var result = new string(seq.Select(it => (char)it).ToArray());
+    System.Console.WriteLine(result);
+}
 
 stopWatch.Stop();
-System.Console.WriteLine(stopWatch.ElapsedMilliseconds);
+System.Console.WriteLine(stopWatch.ElapsedMilliseconds / 10);
 
-System.Console.WriteLine(result);
 
 // with open('../data/proust_debut.txt', 'r') as file:
 // recherche = file.read().rstrip()
