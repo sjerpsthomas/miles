@@ -19,30 +19,49 @@ public class VariableOrderMarkov<T>
 
     public Func<T, VpType> Map;
     public Dictionary<VpType, T> Mapping;
+
+    public Func<T, T, double>? Distance;
     
     public int KMax;
-    private List<Dictionary<VpType[], List<VpType>>> PrefixesToContinuations;
+    private List<Dictionary<VpType[], List<VpType>>> _prefixesToContinuations;
 
     private Random Rng = new();
     
-    public VariableOrderMarkov(Func<T, VpType> map, int kMax = 5)
+    public VariableOrderMarkov(Func<T, VpType> map, Func<T, T, double>? distance = null, int kMax = 5)
     {
+        // Initialize map and mapping
         Map = map;
         Mapping = [];
+    
+        // Initialize distance
+        Distance = distance;
         
         // Initialize KMax
         KMax = kMax;
 
-        PrefixesToContinuations = [];
+        // Initialize prefixes to continuations
+        _prefixesToContinuations = [];
         for (var k = 0; k < KMax; k++)
-            PrefixesToContinuations.Add(new(new VpArrEqualityComparer()));
+            _prefixesToContinuations.Add(new(new VpArrEqualityComparer()));
     }
 
-    private VpType GetRandomVp()
+    private VpType GetRandomVp(VpType? previousVp = null)
     {
-        // returns a random initial vp, which are continuations of start paddings
-        var allInitialVps = PrefixesToContinuations[0][[StartPadding]];
-        return allInitialVps.RandomElement();
+        // Return random element
+        if (previousVp is not { } previousVpNotNull || Distance is not { } distanceNotNull)
+            return Mapping.Keys.RandomElement();
+        
+        // Get item from vp
+        var previousItem = Mapping[previousVpNotNull];
+
+        // Get random item, weighted by distance
+        var randomItem = Mapping
+            .Select(it => it.Value)
+            .ToWeightedList(it => distanceNotNull(it, previousItem))
+            .RandomElement().Value;
+
+        // Get vp from item
+        return Map(randomItem);
     }
 
     public void LearnSequence(List<T> items)
@@ -67,7 +86,7 @@ public class VariableOrderMarkov<T>
         // Populate the prefixes-to-continuations with vp contexts to vps
         for (var k = 0; k < KMax; k++)
         {
-            var prefixesToContK = PrefixesToContinuations[k];
+            var prefixesToContK = _prefixesToContinuations[k];
             for (var i = 0; i < vpSequence.Length - k; i++)
             {
                 if (i <= k) continue;
@@ -139,6 +158,9 @@ public class VariableOrderMarkov<T>
         return currentSeq.Select(it => Mapping[it]).ToList();
     }
 
+    public int A = 0;
+    
+    
     private VpType GetContinuation(List<VpType> currentSeq)
     {
         VpType? vpToSkip = null;
@@ -146,35 +168,36 @@ public class VariableOrderMarkov<T>
         {
             if (k > currentSeq.Count) continue;
 
-            var continuationsDict = PrefixesToContinuations[k - 1];
-            var viewpointCtx = currentSeq.ToArray()[^k..];
+            var continuationsDict = _prefixesToContinuations[k - 1];
+            var viewpointCtx = currentSeq.TakeLast(k).ToArray();
             
             if (!continuationsDict.TryGetValue(viewpointCtx, out var allContVps)) continue;
 
             // considers the number of different viewpoints, not the number of continuations as they are repeated
-            if (allContVps.Distinct().Count() == 1 && k > 1)
+            if (k > 1)
             {
-                // proba to skip is proportional to order
-                if (Rng.NextDouble() > 1.0 / (k + 1))
+                var first = allContVps[0];
+                var allTheSame = allContVps.All(it => it == first);
+            
+                if (allTheSame)
                 {
-                    vpToSkip = allContVps[0];
-                    continue;
-                }
+                    // proba to skip is proportional to order
+                    if (Rng.NextDouble() > 1.0 / (k + 1))
+                    {
+                        vpToSkip = allContVps[0];
+                        continue;
+                    }
                     
-                vpToSkip = null;
+                    vpToSkip = null;
+                }
+                
+                if (vpToSkip is { } vpToSkipNotNull )
+                    return allContVps.Where(c => c != vpToSkipNotNull).RandomElement();
             }
-
-            List<VpType> contsToUse;
-            if (vpToSkip is { } vpToSkipNotNull && k > 1)
-                contsToUse = allContVps.Where(c => c != vpToSkipNotNull).ToList();
-            else
-                contsToUse = allContVps;
-
-            var nextContinuation = contsToUse.RandomElement();
-            return nextContinuation;
+            
+            return allContVps.RandomElement();
         }
 
-        Console.WriteLine("no continuation found");
         return -1;
     }
 }

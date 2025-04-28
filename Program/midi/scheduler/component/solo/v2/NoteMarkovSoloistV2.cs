@@ -93,7 +93,11 @@ public class NoteMarkovSoloistV2: Soloist
         return res;
     }
 
-    public VariableOrderMarkov<NoteRepresentation> Model = new(it => it.GetHashCode(), 3);
+    public VariableOrderMarkov<NoteRepresentation> Model = new(
+        it => it.GetHashCode(),
+        (a, b) => Math.Abs(a.Note - b.Note),
+        3
+    );
 
     public LeadSheet LeadSheet;
     

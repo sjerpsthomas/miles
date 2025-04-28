@@ -24,25 +24,25 @@ using Core.models.continuator;
 
 
 var recherche = File.ReadAllText(@"C:\Users\thoma\Desktop\proust_debut.txt").TrimEnd();
-var vps = recherche.Select(it => (int)it).ToList();
+var items = recherche.ToCharArray().ToList();
 
-var vo = new VariableOrderMarkov(3);
+var vo = new VariableOrderMarkov<char>(it => (int)it, 3);
 
 
 var stopWatch = new Stopwatch();
 stopWatch.Start();
 
-for (var i = 0; i < 100; i++)
+for (var i = 0; i < 1000; i++)
 {
-    vo.LearnSequence(vps);
+    vo.LearnSequence(items);
     // System.Console.WriteLine(vo);
-    var seq = vo.SampleVpSequence(140);
-    var result = new string(seq.Select(it => (char)it).ToArray());
+    var seq = vo.Generate(140);
+    var result = new string(seq.ToArray());
     System.Console.WriteLine(result);
 }
 
 stopWatch.Stop();
-System.Console.WriteLine(stopWatch.ElapsedMilliseconds / 10);
+System.Console.WriteLine(stopWatch.ElapsedMilliseconds / 1000.0);
 
 
 // with open('../data/proust_debut.txt', 'r') as file:

@@ -13,7 +13,7 @@ public class TokenMarkovSoloistV2 : Soloist
 {
     public LeadSheet LeadSheet;
 
-    public VariableOrderMarkov<Token> Model = new(it => (int)it, 6);
+    public VariableOrderMarkov<Token> Model = new(it => (int)it, kMax: 6);
 
     public string StandardPath;
     
