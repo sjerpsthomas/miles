@@ -71,7 +71,7 @@ public class TokenNeuralNetSoloist: Soloist
         }
 
         // Get notes from tokens, print
-        var notes = Conversion.Reconstruct(res, LeadSheet, startMeasureNum);
+        var notes = Conversion.ReconstructV2(res, LeadSheet, startMeasureNum);
 
         // Return
         return MidiSong.FromNotes(notes).Measures;
