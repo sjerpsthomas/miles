@@ -58,7 +58,7 @@ public static class TimingStageV2
             for (var j = 0; j < n; j++)
             {
                 // As many onsets need to fall close to a half-note
-                halfNoteScore += Sqr(onset - (int)(onset * 8) / 8.0);
+                halfNoteScore += Sqr(onset - (int)Math.Round(onset * 8) / 8.0);
 
                 // Neighbors should have the same length
                 if (j != n - 1)
