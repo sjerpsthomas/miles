@@ -68,19 +68,19 @@ public static class TokenMethods
     
     public static double ToDouble(this TokenSpeed tokenSpeed) => tokenSpeed switch
     {
-        TokenSpeed.SuperFast => 0.0625,
-        TokenSpeed.Fast => 0.125,
-        TokenSpeed.Slow => 0.25,
-        TokenSpeed.SuperSlow => 0.5,
+        TokenSpeed.SuperFast => 0.03125,
+        TokenSpeed.Fast => 0.0625,
+        TokenSpeed.Slow => 0.125,
+        TokenSpeed.SuperSlow => 0.25,
         _ => throw new ArgumentOutOfRangeException()
     };
 
     public static TokenSpeed ToSpeed(this double speed) =>
         (int)Math.Round(Math.Log2(speed)) switch
         {
-            <= -4 => TokenSpeed.SuperFast,
-            -3 => TokenSpeed.Fast,
-            -2 => TokenSpeed.Slow,
+            <= -5 => TokenSpeed.SuperFast,
+            -4 => TokenSpeed.Fast,
+            -3 => TokenSpeed.Slow,
             _ => TokenSpeed.SuperSlow,
         };
 

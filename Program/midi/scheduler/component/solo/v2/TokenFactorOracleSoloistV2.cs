@@ -37,7 +37,7 @@ public class TokenFactorOracleSoloistV2 : Soloist
         // Get tokens, add to factor oracle
         var tokens = Conversion.TokenizeV2(notes, LeadSheet, startMeasureNum);
 
-        const int n = 20;
+        const int n = 8;
         var chunks = tokens.TakeLast((tokens.Count / n) * n).Chunk(n).Select(it => it.ToList());
         FO.AddValues(chunks);
     }
