@@ -1,10 +1,67 @@
-﻿using Accord.Math.Optimization;
+﻿using System.Diagnostics;
+using Quipu;
 using static Core.midi.token.conversion.TimedTokenMelody;
 
 namespace Core.midi.token.conversion.stage.v2;
 
 public static class TimingStageV2
 {
+    private class ReconstructProblem: IVectorFunction, IStartingPoint
+    {
+        const double HalfNoteWeight = 5.0;
+        const double LengthWeight = 1.0;
+        const double OvertimeWeight = 0.3;
+        const double NeighborWeight = 0.5;
+
+        public int M;
+        public int N;
+        public List<TokenMethods.TokenSpeed> S;
+
+        public ReconstructProblem(int m, int n, List<TokenMethods.TokenSpeed> s)
+        {
+            M = m;
+            N = n;
+            S = s;
+        }
+
+        public double Value(double[] x)
+        {
+            var halfNoteScore = 0.0;
+            var lengthScore = 0.0;
+            var neighborScore = 0.0;
+            
+            var onset = 0.0;
+            for (var j = 0; j < N; j++)
+            {
+                // As many onsets need to fall close to a half-note
+                halfNoteScore += Sqr(onset - (int)Math.Round(onset * 8) / 8.0);
+
+                // Neighbors should have the same length
+                if (j != N - 1)
+                    neighborScore += Sqr(x[j] - x[j + 1]);
+                
+                // As many notes should have their specified length
+                lengthScore += Sqr(x[j] - S[j].ToDouble());
+                
+                onset += x[j];
+            }
+
+            // The phrase should fit in the measures
+            var overtimeScore = Sqr(onset - M);
+
+            // Multiply scores by weights, normalize, return
+            return
+                HalfNoteWeight * halfNoteScore / N +
+                LengthWeight * lengthScore / N +
+                neighborScore * NeighborWeight / N +
+                OvertimeWeight * overtimeScore;
+        }
+
+        public int Dimension => N;
+        
+        public double[][] create(int obj0) => [Enumerable.Range(0, N).Select(_ => (double)M / N).ToArray()];
+    }
+
     public static TimedTokenMelody TokenizeTiming(TokenMelody tokenMelody, LeadSheet? leadSheet) =>
         TimingStage.TokenizeTiming(tokenMelody, leadSheet);
 
@@ -43,54 +100,14 @@ public static class TimingStageV2
             }
         }
 
-        const double halfNoteWeight = 5.0;
-        const double lengthWeight = 1.0;
-        const double overtimeWeight = 0.3;
-        const double neighborWeight = 0.5;
-        
-        var objective = new NonlinearObjectiveFunction(n, x =>
-        {
-            var halfNoteScore = 0.0;
-            var lengthScore = 0.0;
-            var neighborScore = 0.0;
-            
-            var onset = 0.0;
-            for (var j = 0; j < n; j++)
-            {
-                // As many onsets need to fall close to a half-note
-                halfNoteScore += Sqr(onset - (int)Math.Round(onset * 8) / 8.0);
+        var problem = new ReconstructProblem(m, n, S);
+        var result = Quipu.CSharp.NelderMead
+            .Objective(problem)
+            .WithMaximumIterations(50)
+            .StartFrom(problem)
+            .Minimize();
 
-                // Neighbors should have the same length
-                if (j != n - 1)
-                    neighborScore += Sqr(x[j] - x[j + 1]);
-                
-                // As many notes should have their specified length
-                lengthScore += Sqr(x[j] - S[j].ToDouble());
-                
-                onset += x[j];
-            }
-
-            // The phrase should fit in the measures
-            var overtimeScore = Sqr(onset - m);
-
-            // Multiply scores by weights, normalize, return
-            return
-                halfNoteWeight * halfNoteScore / n +
-                lengthWeight * lengthScore / n +
-                neighborScore * neighborWeight / n +
-                overtimeWeight * overtimeScore;
-        });
-
-        var cobyla = new Cobyla(objective);
-        
-        var initialGuess = Enumerable.Range(0, n).Select(_ => (double)m / n).ToArray();
-
-        cobyla.MaxIterations = 150;
-        cobyla.Minimize(initialGuess);
-
-        Console.WriteLine($"Took {cobyla.Iterations} iterations");
-        
-        var solution = cobyla.Solution;
+        var solution = (result as SolverResult.Abnormal)!.Item[0];
         
         var i = 0;
         var t = 0.0;
