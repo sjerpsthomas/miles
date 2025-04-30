@@ -160,15 +160,19 @@ public static class TimingStageV2
         const double OvertimeWeight = 0.3;
         const double NeighborWeight = 0.5;
 
-        public int M;
-        public int N;
-        public double[] S;
-
-        public ReconstructProblem(int m, int n, List<TokenSpeed> s)
+        public int MeasureCount;
+        public int VariableCount;
+        public double[] Speeds;
+        public List<bool> IsTone;
+        public int ToneCount;
+        
+        public ReconstructProblem(int measureCount, int variableCount, List<TokenSpeed> s, List<bool> isTone)
         {
-            M = m;
-            N = n;
-            S = s.Select(it => it.ToDouble()).ToArray();
+            MeasureCount = measureCount;
+            VariableCount = variableCount;
+            Speeds = s.Select(it => it.ToDouble()).ToArray();
+            IsTone = isTone;
+            ToneCount = IsTone.Count(it => it);
         }
 
         public double Value(double[] x)
@@ -178,35 +182,37 @@ public static class TimingStageV2
             var neighborScore = 0.0;
             
             var onset = 0.0;
-            for (var j = 0; j < N; j++)
+            for (var j = 0; j < VariableCount; j++)
             {
-                // As many onsets need to fall close to a half-note
-                halfNoteScore += onset - (int)Math.Round(onset * 8) / 8.0;
+                // As many (note) onsets need to fall close to a half-note
+                if (IsTone[j])
+                    halfNoteScore += onset - (int)Math.Round(onset * 8) / 8.0;
 
                 // Neighbors should have the same length
-                if (j != N - 1)
+                if (j != VariableCount - 1)
                     neighborScore += x[j] - x[j + 1];
                 
                 // As many notes should have their specified length
-                lengthScore += x[j] - S[j];
+                lengthScore += x[j] - Speeds[j];
                 
                 onset += x[j];
             }
 
             // The phrase should fit in the measures
-            var overtimeScore = onset - M;
+            var overtimeScore = onset - MeasureCount;
 
             // Multiply scores by weights, normalize, return
             return
-                HalfNoteWeight * halfNoteScore / N +
-                LengthWeight * lengthScore / N +
-                neighborScore * NeighborWeight / N +
+                HalfNoteWeight * halfNoteScore / ToneCount +
+                LengthWeight * lengthScore / VariableCount +
+                neighborScore * NeighborWeight / VariableCount +
                 OvertimeWeight * overtimeScore;
         }
 
-        public int Dimension => N;
+        public int Dimension => VariableCount;
         
-        public double[][] create(int obj0) => [Enumerable.Range(0, N).Select(_ => (double)M / N).ToArray()];
+        public double[][] create(int obj0) =>
+            [Enumerable.Range(0, VariableCount).Select(_ => (double)MeasureCount / VariableCount).ToArray()];
     }
     public static TokenMelody ReconstructTiming(TimedTokenMelody timedTokenMelody, LeadSheet leadSheet)
     {
@@ -217,31 +223,41 @@ public static class TimingStageV2
         if (tokens[^1] is not TimedTokenMelodyMeasure) tokens.Add(new TimedTokenMelodyMeasure());
         
         // Count measures, tokens, measure per token
-        var m = 0;
-        var n = 0;
+        var measureCount = 0;
+        var variableCount = 0;
         var currentSpeed = TokenSpeed.Fast;
         List<int> M = new(tokens.Count);
-        List<TokenSpeed> S = new(tokens.Count);
+        List<TokenSpeed> tokenSpeeds = new(tokens.Count);
+        List<bool> isTone = new(tokens.Count);
         
         foreach (var token in tokens)
         {
             switch (token)
             {
-                case TimedTokenMelodyNote or TimedTokenMelodyPassingTone or TimedTokenMelodyRest:
-                    M.Add(m);
-                    S.Add(currentSpeed);
-                    n++;
+                case TimedTokenMelodyNote or TimedTokenMelodyPassingTone:
+                    isTone.Add(true);
+                    goto cont;
+                    
+                case TimedTokenMelodyRest:
+                    isTone.Add(false);
+                    
+                    cont:
+                    M.Add(measureCount);
+                    tokenSpeeds.Add(currentSpeed);
+                    variableCount++;
                     break;
+                
                 case TimedTokenMelodySpeed(var speed):
                     currentSpeed = speed;
                     break;
+                
                 case TimedTokenMelodyMeasure:
-                    m++;
+                    measureCount++;
                     break;
             }
         }
 
-        var problem = new ReconstructProblem(m, n, S);
+        var problem = new ReconstructProblem(measureCount, variableCount, tokenSpeeds, isTone);
         var result = Quipu.CSharp.NelderMead
             .Objective(problem)
             .WithMaximumIterations(50)
