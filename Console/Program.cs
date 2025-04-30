@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Console.routine;
 using Core.models.continuator;
 
 
@@ -22,27 +23,29 @@ using Core.models.continuator;
 //
 // System.Console.WriteLine("Done!");
 
-
-var recherche = File.ReadAllText(@"C:\Users\thoma\Desktop\proust_debut.txt").TrimEnd();
-var items = recherche.ToCharArray().ToList();
-
-var vo = new VariableOrderMarkov<char>(it => (int)it, 3);
+new WJDToNotes().RunAllStandards(@"C:\Users\thoma\Desktop\new_extra");
 
 
-var stopWatch = new Stopwatch();
-stopWatch.Start();
-
-for (var i = 0; i < 1000; i++)
-{
-    vo.LearnSequence(items);
-    // System.Console.WriteLine(vo);
-    var seq = vo.Generate(140);
-    var result = new string(seq.ToArray());
-    System.Console.WriteLine(result);
-}
-
-stopWatch.Stop();
-System.Console.WriteLine(stopWatch.ElapsedMilliseconds / 1000.0);
+// var recherche = File.ReadAllText(@"C:\Users\thoma\Desktop\proust_debut.txt").TrimEnd();
+// var items = recherche.ToCharArray().ToList();
+//
+// var vo = new VariableOrderMarkov<char>(it => (int)it, 3);
+//
+//
+// var stopWatch = new Stopwatch();
+// stopWatch.Start();
+//
+// for (var i = 0; i < 1000; i++)
+// {
+//     vo.LearnSequence(items);
+//     // System.Console.WriteLine(vo);
+//     var seq = vo.Generate(140);
+//     var result = new string(seq.ToArray());
+//     System.Console.WriteLine(result);
+// }
+//
+// stopWatch.Stop();
+// System.Console.WriteLine(stopWatch.ElapsedMilliseconds / 1000.0);
 
 
 // with open('../data/proust_debut.txt', 'r') as file:

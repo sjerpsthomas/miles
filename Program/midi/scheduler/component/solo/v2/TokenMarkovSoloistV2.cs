@@ -55,8 +55,9 @@ public class TokenMarkovSoloistV2 : Soloist
         for (var i = 1; i <= 4; i++)
         {
             // Get from file
-            var fileAccessStream = new FileAccessStream(StandardPath + $"_extra_{i}.tokens", Read);
-            var extraSongTokens = TokenMethods.FromTokensFileStream(fileAccessStream);
+            var fileAccessStream = new FileAccessStream(StandardPath + $"_extra_{i}.notes", Read);
+            var extraSong = MidiSong.FromNotesFileStream(fileAccessStream);
+            var extraSongTokens = Conversion.TokenizeV2(extraSong.ToNotes(), LeadSheet, 0);
             
             Learn(extraSongTokens);
         }
@@ -71,7 +72,7 @@ public class TokenMarkovSoloistV2 : Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Generate tokens
-        var res = Model.GenerateChunks((int)Token.Measure, generateMeasureCount, 10);
+        var res = Model.GenerateChunks((int)Token.Measure, generateMeasureCount, 20);
         
         // Reconstruct, return notes
         var notes = Conversion.ReconstructV2(res, LeadSheet, startMeasureNum);

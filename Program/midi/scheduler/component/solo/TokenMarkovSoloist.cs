@@ -57,8 +57,9 @@ public class TokenMarkovSoloist : Soloist
         for (var i = 1; i <= 4; i++)
         {
             // Get from file
-            var fileAccessStream = new FileAccessStream(StandardPath + $"_extra_{i}.tokens", Read);
-            var extraSongTokens = TokenMethods.FromTokensFileStream(fileAccessStream);
+            var fileAccessStream = new FileAccessStream(StandardPath + $"_extra_{i}.notes", Read);
+            var extraSong = MidiSong.FromNotesFileStream(fileAccessStream);
+            var extraSongTokens = Conversion.Tokenize(extraSong.ToNotes(), LeadSheet);
             
             Learn(extraSongTokens);
         }
