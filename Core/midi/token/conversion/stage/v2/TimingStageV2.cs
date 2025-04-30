@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using Accord.Math.Optimization;
-using Google.OrTools.PDLP;
 using Google.OrTools.Sat;
 using Google.OrTools.Util;
 using MathNet.Numerics;
@@ -160,8 +159,8 @@ public static class TimingStageV2
     {
         private const double HalfNoteWeight = 1.0;
         private const double LengthWeight = 0.1;
-        private const double OvertimeWeight = 100.0;
-        private const double ShortNoteWeight = 10.0;
+        private const double OvertimeWeight = 3.0;
+        private const double ShortNoteWeight = 1.0;
 
         public int MeasureCount;
         public int VariableCount;
@@ -207,8 +206,6 @@ public static class TimingStageV2
 
             // The phrase should fit in the measures
             var overtimeScore = Abs(onset - MeasureCount);
-            if (onset > MeasureCount)
-                overtimeScore += 100;
 
             // Console.WriteLine(string.Join("; ", x.Select(it => $"{it:F2}")));
             
@@ -225,7 +222,7 @@ public static class TimingStageV2
             var speedsSum = Speeds.Sum();
 
             return Speeds
-                .Select(it => it / speedsSum * MeasureCount)
+                .Select(it => it / speedsSum * MeasureCount * 0.75)
                 .ToArray();
         }
     }
@@ -234,9 +231,10 @@ public static class TimingStageV2
     {
         var tokens = timedTokenMelody.Tokens;
 
-        // Early return, add measure if needed
+        // Trim, early return
+        while (tokens is not [] && tokens[^1] is TimedTokenMelodyMeasure or TimedTokenMelodySpeed)
+            tokens.RemoveAt(tokens.Count - 1);
         if (tokens is []) return new TokenMelody();
-        if (tokens[^1] is not TimedTokenMelodyMeasure) tokens.Add(new TimedTokenMelodyMeasure());
         
         // Count measures, tokens, measure per token
         var measureCount = 0;
@@ -271,7 +269,8 @@ public static class TimingStageV2
             }
         }
         
-        var problem = new ReconstructProblem(measureCount, variableCount, tokenSpeeds, isTone);
+        // TODO: measure count is not used
+        var problem = new ReconstructProblem(4, variableCount, tokenSpeeds, isTone);
         
         var cobyla = new Cobyla(variableCount, problem.Value)
         {
