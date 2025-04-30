@@ -72,7 +72,7 @@ public class TokenMarkovSoloistV2 : Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Generate tokens
-        var res = Model.GenerateChunks((int)Token.Measure, generateMeasureCount, 20);
+        var res = Model.GenerateChunks((int)Token.Measure, generateMeasureCount, 10);
         
         // Reconstruct, return notes
         var notes = Conversion.ReconstructV2(res, LeadSheet, startMeasureNum);
