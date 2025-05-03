@@ -15,11 +15,40 @@ position = Vector2(640, 320)
 [node name="Logic" type="Node" parent="."]
 unique_name_in_owner = true
 
+[node name="Label" type="Label" parent="."]
+offset_top = 8.0
+offset_right = 1280.0
+offset_bottom = 176.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/shadow_offset_x = 5
+theme_override_constants/shadow_offset_y = 5
+theme_override_constants/outline_size = 8
+theme_override_constants/shadow_outline_size = 8
+theme_override_fonts/font = ExtResource("2_7jmhx")
+theme_override_font_sizes/font_size = 106
+text = "MILES"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="."]
+offset_top = 130.0
+offset_right = 1280.0
+offset_bottom = 293.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/line_spacing = -27
+theme_override_constants/shadow_offset_x = 5
+theme_override_constants/shadow_offset_y = 5
+theme_override_fonts/font = ExtResource("2_7jmhx")
+theme_override_font_sizes/font_size = 60
+text = "Evaluating Trading Fours with an Improvisational Musical System"
+horizontal_alignment = 1
+autowrap_mode = 2
+
 [node name="StartButton" type="Button" parent="."]
 offset_left = 400.0
-offset_top = 232.0
+offset_top = 312.0
 offset_right = 880.0
-offset_bottom = 328.0
+offset_bottom = 396.0
 theme_override_fonts/font = ExtResource("2_7jmhx")
 theme_override_font_sizes/font_size = 40
 text = "Start (CΔ)"
@@ -28,9 +57,9 @@ chord = "100010010000"
 
 [node name="PupilInfoLabel" type="Label" parent="."]
 offset_left = 416.0
-offset_top = 348.0
+offset_top = 412.0
 offset_right = 608.0
-offset_bottom = 384.0
+offset_bottom = 448.0
 theme_override_fonts/font = ExtResource("5_ku68l")
 theme_override_font_sizes/font_size = 30
 text = "(Optional) Pupil info"
@@ -39,9 +68,9 @@ vertical_alignment = 1
 [node name="PupilInfoLineEdit" type="LineEdit" parent="."]
 unique_name_in_owner = true
 offset_left = 608.0
-offset_top = 344.0
+offset_top = 408.0
 offset_right = 864.0
-offset_bottom = 388.0
+offset_bottom = 452.0
 theme_override_fonts/font = ExtResource("5_ku68l")
 theme_override_font_sizes/font_size = 30
 placeholder_text = "(...)"
@@ -49,9 +78,9 @@ alignment = 1
 
 [node name="QuitButton" type="Button" parent="."]
 offset_left = 400.0
-offset_top = 416.0
+offset_top = 464.0
 offset_right = 880.0
-offset_bottom = 512.0
+offset_bottom = 548.0
 theme_override_fonts/font = ExtResource("2_7jmhx")
 theme_override_font_sizes/font_size = 40
 text = "Quit (C-)"
@@ -75,18 +104,6 @@ theme_override_colors/font_color = Color(0.25, 1, 0.25, 1)
 theme_override_fonts/font = ExtResource("5_ku68l")
 theme_override_font_sizes/font_size = 30
 text = "Configuration"
-
-[node name="Label" type="Label" parent="."]
-offset_top = 72.0
-offset_right = 1280.0
-offset_bottom = 199.0
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 5
-theme_override_constants/shadow_offset_y = 5
-theme_override_fonts/font = ExtResource("2_7jmhx")
-theme_override_font_sizes/font_size = 80
-text = "Real-Time Jazz Solo Generation"
-horizontal_alignment = 1
 
 [connection signal="Press" from="." to="StartButton" method="_on_screen_press"]
 [connection signal="Press" from="." to="QuitButton" method="_on_screen_press"]
