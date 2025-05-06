@@ -47,7 +47,7 @@ NUM_PUPILS = 5
 NUM_PERFORMANCES = 3
 NUM_SONGS = 3
 NUM_ALGORITHMS = 3
-NUM_SESSIONS = 3
+NUM_SESSIONS = 4
 NUM_QUESTIONS = 4
 
 @dataclass
@@ -96,11 +96,13 @@ def get_all_pupil_info(file_name: str = "recordings/info.json") -> list[PupilInf
                 recording: Recording = Recording(recording_path)
 
                 # Get edit distances
-                edit_distances: list[int]
-                edit_distances_path: str = f"recordings/edit_distance/{pupil + 1}/{session + 1}/{performance + 1}.txt"
-                with open(edit_distances_path, 'r') as f:
-                    edit_distances = [ int(line) for line in f ]
-                
+                edit_distances: list[int] = []
+                try:
+                    edit_distances_path: str = f"recordings/edit_distance/{pupil + 1}/{session + 1}/{performance + 1}.txt"
+                    with open(edit_distances_path, 'r') as f:
+                        edit_distances = [ int(line) for line in f ]
+                except: pass
+
                 # Create performance info, add
                 performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, reports, edit_distances)
                 session_info.performances.append(performance_info)
