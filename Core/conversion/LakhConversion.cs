@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Core.midi;
-using Core.midi.token;
+using Core.tokens.v1;
 using NAudio.Midi;
 
 namespace Core.conversion;
@@ -33,10 +33,9 @@ public static partial class Conversion
         }
     }
     
-    public static IEnumerable<List<Token>> LakhToTokens(string fileName, bool printAllow = false)
+    public static IEnumerable<List<V1_Token>> LakhToTokens(string fileName, bool printAllow = false)
     {
-        foreach (var track in LakhToMidiNotes(fileName, printAllow))
-            yield return Tokenize(track);
+        return LakhToMidiNotes(fileName, printAllow).Select(track => V1_TokenMethods.V1_Tokenize(track));
     }
 
     private static bool ValidateTrack(IList<MidiEvent> events, out List<MidiNote> notes, int ticksPerQuarterNote, bool printAllow)

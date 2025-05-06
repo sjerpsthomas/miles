@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.midi;
+using Core.models;
 
 namespace Program.midi.scheduler.component.solo;
 

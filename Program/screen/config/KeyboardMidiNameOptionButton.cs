@@ -1,6 +1,8 @@
 using Godot;
 using NAudio.Midi;
 
+namespace Program.screen.config;
+
 public partial class KeyboardMidiNameOptionButton : OptionButton
 {
 	public string KeyboardMidiName
