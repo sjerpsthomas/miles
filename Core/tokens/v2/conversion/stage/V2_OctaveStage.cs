@@ -1,10 +1,25 @@
-﻿namespace Core.tokens.v2.conversion.stage;
+﻿using static Core.tokens.v2.conversion.V2_RelativeMelody;
+using static Core.tokens.v2.conversion.V2_TokenMelody;
+
+namespace Core.tokens.v2.conversion.stage;
 
 public static class V2_OctaveStage
 {
     public static V2_TokenMelody TokenizeOctaves(V2_RelativeMelody relativeMelody)
     {
-        throw new Exception("TODO: copy-paste!");
+        return new V2_TokenMelody
+        {
+            Tokens = relativeMelody.Tokens.Select(token =>
+                (V2_TokenMelodyToken)(token switch
+                    {
+                        V2_RelativeMelodyNote(var octaveScaleNote, var time, var length, var velocity) =>
+                            new V2_TokenMelodyNote(octaveScaleNote % 7, time, length, velocity),
+                        V2_RelativeMelodyPassingTone(var time, var length, var velocity) =>
+                            new V2_TokenMelodyPassingTone(time, length, velocity),
+                        _ => throw new ArgumentOutOfRangeException()
+                    }
+                )).ToList()
+        };
     }
     
     private enum OctaveDirection { Up, Down };
@@ -23,7 +38,7 @@ public static class V2_OctaveStage
         {
             // Get token, skip if not note
             var token = tokens[index];
-            if (token is not V2_TokenMelody.V2_TokenMelodyNote(var scaleNote, _, var length, _)) continue;
+            if (token is not V2_TokenMelodyNote(var scaleNote, _, var length, _)) continue;
                 
             // Skip when note not leading to octave break
             if (scaleNote is > 2 and < 6) continue;
@@ -31,11 +46,11 @@ public static class V2_OctaveStage
             // Find second note
             var secondIndex = index;
             do secondIndex++;
-            while (secondIndex < tokens.Count - 1 && tokens[secondIndex] is not V2_TokenMelody.V2_TokenMelodyNote);
+            while (secondIndex < tokens.Count - 1 && tokens[secondIndex] is not V2_TokenMelodyNote);
 
             if (secondIndex >= tokens.Count)
                 continue;
-            if (tokens[secondIndex] is not V2_TokenMelody.V2_TokenMelodyNote(var scaleNote2, _, var length2, _))
+            if (tokens[secondIndex] is not V2_TokenMelodyNote(var scaleNote2, _, var length2, _))
                 continue;
 
             // Skip when note not leading to octave break
@@ -86,10 +101,10 @@ public static class V2_OctaveStage
                 }
 
                 res.Tokens.Add(tokens[index] switch {
-                    V2_TokenMelody.V2_TokenMelodyNote(var scaleNote, var time, var length, var velocity) =>
-                        new V2_RelativeMelody.V2_RelativeMelodyNote(scaleNote + 7 * currentOctave, time, length, velocity),
-                    V2_TokenMelody.V2_TokenMelodyPassingTone(var time, var length, var velocity) =>
-                        new V2_RelativeMelody.V2_RelativeMelodyPassingTone(time, length, velocity),
+                    V2_TokenMelodyNote(var scaleNote, var time, var length, var velocity) =>
+                        new V2_RelativeMelodyNote(scaleNote + 7 * currentOctave, time, length, velocity),
+                    V2_TokenMelodyPassingTone(var time, var length, var velocity) =>
+                        new V2_RelativeMelodyPassingTone(time, length, velocity),
                     _ => throw new ArgumentOutOfRangeException()
                 });
             }
