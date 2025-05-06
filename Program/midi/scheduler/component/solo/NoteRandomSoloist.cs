@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.midi;
+using Core.tokens.v1;
 
 namespace Program.midi.scheduler.component.solo;
 
@@ -38,7 +39,7 @@ public class NoteRandomSoloist : Soloist
             var measureNum = (int)Math.Truncate(time);
             var measure = measures[measureNum];
 
-            var absoluteNote = _leadSheet.ChordAtTime(startMeasureNum + time).GetAbsoluteNote(note);
+            var absoluteNote = _leadSheet.ChordAtTime(startMeasureNum + time).V1_GetAbsoluteNote(note);
             var newNote = new MidiNote(OutputName.Algorithm, time - measureNum, length, absoluteNote, velocity);
             measure.Notes.Add(newNote);
             

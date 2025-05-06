@@ -55,7 +55,7 @@ public static class V1_TokenMethods
     public static bool V1_IsNote(this V1_Token token)
     {
         var intToken = (int)token;
-        return intToken is >= 1 and <= 7;
+        return intToken is >= 1 and <= V1_ChordMethods.OctaveSize;
     }
 
     public static bool V1_HasSpeed(this V1_Token token, out V1_TokenSpeed speed)

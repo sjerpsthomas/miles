@@ -30,7 +30,7 @@ public static class V1_PitchStage
             else
             {
                 // note - 36 omitted; octaves are removed during DeduceOctaves anyway
-                var octaveScaleNote = key.GetRelativeNote(note);
+                var octaveScaleNote = key.V1_GetOctaveScaleNote(note);
                 resArr[i] = new V1_RelativeMelodyNote(octaveScaleNote, time, length, velocity);
             }
             
@@ -41,7 +41,7 @@ public static class V1_PitchStage
         {
             var (_, time, length, note, velocity) = midiNotes[^1];
             // note - 36 omitted; octaves are removed during DeduceOctaves anyway
-            var octaveScaleNote = key.GetRelativeNote(note);
+            var octaveScaleNote = key.V1_GetOctaveScaleNote(note);
             resArr[^1] = new V1_RelativeMelodyNote(octaveScaleNote, time, length, velocity);
         }
 
@@ -62,7 +62,7 @@ public static class V1_PitchStage
             var token = tokens[index];
             if (token is not V1_RelativeMelodyNote(var octaveScaleNote, var time, var length, var velocity)) continue;
 
-            var note = leadSheet.ChordAtTime(time + startMeasureNum).GetAbsoluteNote(octaveScaleNote) + 36;
+            var note = leadSheet.ChordAtTime(time + startMeasureNum).V1_GetAbsoluteNote(octaveScaleNote) + 36;
             resArr[index] = new MidiNote(outputName, time, length, note, velocity);
         }
         

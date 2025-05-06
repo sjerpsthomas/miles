@@ -4,8 +4,6 @@ namespace Core.midi;
 
 public class LeadSheet
 {
-    public enum SoloType { Learner, Algorithm }
-
     public enum StyleEnum { Straight, Swing }
 
     public int Bpm;

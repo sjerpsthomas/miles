@@ -13,7 +13,7 @@ public static class V1_OctaveStage
                 (V1_TokenMelodyToken)(token switch
                     {
                         V1_RelativeMelodyNote(var octaveScaleNote, var time, var length, var velocity) =>
-                            new V1_TokenMelodyNote(octaveScaleNote % 7, time, length, velocity),
+                            new V1_TokenMelodyNote(octaveScaleNote % V1_ChordMethods.OctaveSize, time, length, velocity),
                         V1_RelativeMelodyPassingTone(var time, var length, var velocity) =>
                             new V1_TokenMelodyPassingTone(time, length, velocity),
                         _ => throw new ArgumentOutOfRangeException()
@@ -98,7 +98,7 @@ public static class V1_OctaveStage
 
                 res.Tokens.Add(tokens[index] switch {
                     V1_TokenMelodyNote(var scaleNote, var time, var length, var velocity) =>
-                        new V1_RelativeMelodyNote(scaleNote + 7 * currentOctave, time, length, velocity),
+                        new V1_RelativeMelodyNote(scaleNote + V1_ChordMethods.OctaveSize * currentOctave, time, length, velocity),
                     V1_TokenMelodyPassingTone(var time, var length, var velocity) =>
                         new V1_RelativeMelodyPassingTone(time, length, velocity),
                     _ => throw new ArgumentOutOfRangeException()

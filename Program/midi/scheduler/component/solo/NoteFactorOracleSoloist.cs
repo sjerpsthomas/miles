@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Core.midi;
 using Core.models;
+using Core.tokens.v1;
 
 namespace Program.midi.scheduler.component.solo;
 
@@ -60,7 +61,7 @@ public class NoteFactorOracleSoloist : Soloist
             var measureNum = (int)Math.Truncate(time);
             var measure = measures[measureNum];
 
-            var absoluteNote = _leadSheet.ChordAtTime(startMeasureNum + time).GetAbsoluteNote(note.Note);
+            var absoluteNote = _leadSheet.ChordAtTime(startMeasureNum + time).V1_GetAbsoluteNote(note.Note);
             var newNote = new MidiNote(OutputName.Algorithm, time - measureNum, note.Length, absoluteNote, note.Velocity);
             measure.Notes.Add(newNote);
             

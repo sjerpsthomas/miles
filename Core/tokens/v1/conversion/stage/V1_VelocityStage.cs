@@ -13,7 +13,7 @@ public static class V1_VelocityStage
         var currentVelocity = V1_TokenMethods.V1_TokenVelocity.Quiet;
         void HandleVelocity(int velocity)
         {
-            var newVelocity = velocity <= 96 ? V1_TokenMethods.V1_TokenVelocity.Quiet : V1_TokenMethods.V1_TokenVelocity.Loud;
+            var newVelocity = velocity <= 90 ? V1_TokenMethods.V1_TokenVelocity.Quiet : V1_TokenMethods.V1_TokenVelocity.Loud;
             if (newVelocity != currentVelocity)
             {
                 res.Add(newVelocity == V1_TokenMethods.V1_TokenVelocity.Quiet ? Quiet : Loud);
@@ -79,11 +79,11 @@ public static class V1_VelocityStage
                 case Note5:
                 case Note6:
                 case Note7:
-                    resTokens.Add(new V1_TimedTokenMelodyNote((int)token - 1, currentVelocity == V1_TokenMethods.V1_TokenVelocity.Quiet ? 96 : 127));
+                    resTokens.Add(new V1_TimedTokenMelodyNote((int)token - 1, currentVelocity == V1_TokenMethods.V1_TokenVelocity.Quiet ? 80 : 100));
                     break;
 
                 case PassingTone:
-                    resTokens.Add(new V1_TimedTokenMelodyPassingTone(currentVelocity == V1_TokenMethods.V1_TokenVelocity.Quiet ? 96 : 127));
+                    resTokens.Add(new V1_TimedTokenMelodyPassingTone(currentVelocity == V1_TokenMethods.V1_TokenVelocity.Quiet ? 80 : 100));
                     break;
 
                 case SuperFast:

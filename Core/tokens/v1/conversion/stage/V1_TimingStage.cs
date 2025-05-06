@@ -1,4 +1,5 @@
-﻿using Core.midi;
+﻿using System.Diagnostics;
+using Core.midi;
 using static Core.tokens.v1.conversion.V1_TokenMelody;
 
 namespace Core.tokens.v1.conversion.stage;
@@ -211,8 +212,7 @@ public static class V1_TimingStage
         var trunc = (int)Math.Truncate(time);
         time -= trunc;
 
-        if (time < 0.0 || time > 1.0)
-            throw new Exception("asdfhiuoerhtuoi");
+        Debug.Assert(time is >= 0.0 and <= 1.0);
 
         if (time < 0.5)
             time = time / 0.5 * 0.66;

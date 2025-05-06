@@ -95,7 +95,7 @@ public class V1_TokenShuffleModel
     public V1_Token[] Flip(IEnumerable<V1_Token> tokens)
     {
         return tokens.Select(token =>
-            token is Note1 or Note2 or Note3 or Note4 or Note5 or Note6 or Note7
+            token is >= Note1 and <= Note7
                 ? (V1_Token)(8 - (int)token)
                 : token
         ).ToArray();
@@ -104,8 +104,8 @@ public class V1_TokenShuffleModel
     public V1_Token[] Transpose(IEnumerable<V1_Token> tokens, int by)
     {
         return tokens.Select(token =>
-            token is Note1 or Note2 or Note3 or Note4 or Note5 or Note6 or Note7
-                ? (V1_Token)(Chord.PosMod((int)token + by - 1, 7) + 1)
+            token is >= Note1 and <= Note7
+                ? (V1_Token)(V1_ChordMethods.PosMod((int)token + by - 1, V1_ChordMethods.OctaveSize) + 1)
                 : token
         ).ToArray();
     }
