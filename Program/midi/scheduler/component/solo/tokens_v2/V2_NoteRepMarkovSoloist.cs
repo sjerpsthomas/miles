@@ -13,7 +13,7 @@ public record NoteRepresentation(
     int Ioi // [0, 3]
 );
 
-public class V2_TokenRepMarkovSoloist: Soloist
+public class V2_NoteRepMarkovSoloist: Soloist
 {
     public List<NoteRepresentation> RepsFromNotes(List<MidiNote> notes)
     {

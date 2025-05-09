@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.midi;
 using Core.models.tokens_v2;
@@ -71,7 +72,7 @@ public class V2_TokenMarkovSoloist : Soloist
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Generate tokens
-        var res = Model.GenerateChunks((int)V2_Token.Measure, generateMeasureCount, 5);
+        var res = Model.GenerateChunks((int)V2_Token.Measure, generateMeasureCount, 7);
         
         // Reconstruct, return notes
         var notes = V2_TokenMethods.V2_Reconstruct(res, LeadSheet, startMeasureNum);

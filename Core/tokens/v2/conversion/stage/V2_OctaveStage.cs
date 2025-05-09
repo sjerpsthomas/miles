@@ -83,7 +83,7 @@ public static class V2_OctaveStage
         // Create tokens
         var res = new V2_RelativeMelody { Tokens = new(tokens.Count) };
         {
-            var currentOctave = 2;
+            var currentOctave = 3;
             var octaveEventIndex = 0;
 
             for (var index = 0; index < tokens.Count; index++)
@@ -95,7 +95,7 @@ public static class V2_OctaveStage
                     if (octaveEvent.Index == index)
                     {
                         currentOctave += octaveEvent.Direction == OctaveDirection.Up ? 1 : -1;
-                        currentOctave = Math.Clamp(currentOctave, 0, 3);
+                        currentOctave = Math.Clamp(currentOctave, 2, 4);
                         octaveEventIndex++;
                     }
                 }

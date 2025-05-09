@@ -137,14 +137,12 @@ public class GenericContinuator<T>
             
             currentSeq.Add(cont);
             currentChunkSize++;
-
-            if (cont == delimVp)
-                Console.WriteLine("Measure!");
             
             if (currentChunkSize == maxChunkSize)
             {
                 currentSeq.Add(delimVp);
                 cont = delimVp;
+                currentChunkSize = 0;
             }
             
             if (cont == delimVp)
@@ -158,9 +156,6 @@ public class GenericContinuator<T>
         return currentSeq.Select(it => Mapping[it]).ToList();
     }
 
-    public int A = 0;
-    
-    
     private VpType GetContinuation(List<VpType> currentSeq)
     {
         VpType? vpToSkip = null;

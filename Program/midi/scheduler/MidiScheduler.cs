@@ -103,7 +103,7 @@ public partial class MidiScheduler : Node
 			7 => new TokenTransformerSoloist(),
 			8 => new V2_TokenFOSoloist(),
 			9 => new V2_TokenMarkovSoloist(standardPath),
-			10 => new V2_TokenRepMarkovSoloist(),
+			10 => new V2_NoteRepMarkovSoloist(),
 			11 => new V2_TokenNeuralNetSoloist(),
 			_ => throw new ArgumentOutOfRangeException()
 		};
