@@ -19,6 +19,7 @@ public static class V2_ChordMethods
                 break;
             case Minor:
                 if (note == 4) return 3;
+                if (note == 11) return 10;
                 break;
             case HalfDim7:
                 if (note == 4) return 3;
