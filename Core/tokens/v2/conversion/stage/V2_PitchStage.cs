@@ -18,7 +18,7 @@ public static class V2_PitchStage
             var (_, time, length, note, velocity) = midiNotes[i];
 
             var octaveScaleNote = V2_ChordMethods.GetOctaveScaleNote(leadSheet, time + startMeasureNum, note);
-            resArr[i] = new V2_RelativeMelodyNote(octaveScaleNote, time, length, velocity);
+            resArr[i] = new V2_RelativeMelodyToken(octaveScaleNote, time, length, velocity);
         }
 
         return new V2_RelativeMelody { Tokens = resArr.Select(it => it!).ToList() };
@@ -29,22 +29,17 @@ public static class V2_PitchStage
         var outputName = OutputName.Algorithm;
         
         var tokens = relativeMelody.Tokens;
-        var resArr = new MidiNote?[tokens.Count];
+        List<MidiNote> res = new(tokens.Count);
 
         // First convert all note tokens
-        for (var index = 0; index < tokens.Count; index++)
+        foreach (var token in tokens)
         {
-            var token = tokens[index];
-            if (token is not V2_RelativeMelodyNote(var octaveScaleNote, var time, var length, var velocity)) continue;
+            var (octaveScaleNote, time, length, velocity) = token;
 
             var absoluteNote = V2_ChordMethods.GetAbsoluteNote(leadSheet, time + startMeasureNum, octaveScaleNote) + 36;
-            resArr[index] = new MidiNote(outputName, time, length, absoluteNote, velocity);
+            res.Add(new MidiNote(outputName, time, length, absoluteNote, velocity));
         }
         
-        var res = resArr
-            .Where(it => it is not null)
-            .Select(it => (MidiNote)it!)
-            .ToList();
         return res;
     }
 }

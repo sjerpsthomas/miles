@@ -3,7 +3,7 @@ using static Core.tokens.v2.V2_Token;
 
 namespace Core.tokens.v2.conversion.stage;
 
-public class V2_VelocityStage
+public static class V2_VelocityStage
 {
     public static List<V2_Token> TokenizeVelocity(V2_TimedTokenMelody timedTokenMelody)
     {
@@ -28,14 +28,10 @@ public class V2_VelocityStage
                 case V2_TimedTokenMelodyRest:
                     res.Add(Rest);
                     break;
+                
                 case V2_TimedTokenMelodyNote(var scaleNote, var velocity):
                     HandleVelocity(velocity);
                     res.Add((V2_Token)scaleNote + 1);
-                    break;
-
-                case V2_TimedTokenMelodyPassingTone(var velocity):
-                    HandleVelocity(velocity);
-                    res.Add(PassingTone);
                     break;
 
                 case V2_TimedTokenMelodySpeed(var speed):
@@ -74,10 +70,6 @@ public class V2_VelocityStage
 
                 case >= Note1 and <= Note12:
                     resTokens.Add(new V2_TimedTokenMelodyNote((int)token - 1, currentVelocity == V2_TokenMethods.V2_TokenVelocity.Quiet ? 96 : 127));
-                    break;
-
-                case PassingTone:
-                    resTokens.Add(new V2_TimedTokenMelodyPassingTone(currentVelocity == V2_TokenMethods.V2_TokenVelocity.Quiet ? 96 : 127));
                     break;
 
                 case SuperFast:

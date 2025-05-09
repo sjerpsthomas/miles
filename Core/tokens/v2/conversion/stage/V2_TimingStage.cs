@@ -55,7 +55,7 @@ public static class V2_TimingStage
         }
         
         // Add dummy note to end of tokens
-        tokens.Add(new V2_TokenMelodyNote(0, measureCount, 0, 0));
+        tokens.Add(new V2_TokenMelodyToken(0, measureCount, 0, 0));
         
         // Generate tokens
         for (var index = 0; index < tokens.Count - 1; index++)
@@ -81,10 +81,8 @@ public static class V2_TimingStage
             }
             
             // Add token (and maybe rest) to measure
-            if (token is V2_TokenMelodyNote(var nScaleTone, _, _, var nVelocity))
-                res.Add(new V2_TimedTokenMelodyNote(nScaleTone, nVelocity));
-            else if (token is V2_TokenMelodyPassingTone(_, _, var ptVelocity))
-                res.Add(new V2_TimedTokenMelodyPassingTone(ptVelocity));
+            var (nScaleTone, _, _, nVelocity) = token;
+            res.Add(new V2_TimedTokenMelodyNote(nScaleTone, nVelocity));
             
             // Potentially add rest
             if (addRest)
@@ -240,7 +238,7 @@ public static class V2_TimingStage
         {
             switch (token)
             {
-                case V2_TimedTokenMelodyNote or V2_TimedTokenMelodyPassingTone:
+                case V2_TimedTokenMelodyNote:
                     isTone.Add(true);
                     goto cont;
                     
@@ -291,10 +289,7 @@ public static class V2_TimingStage
             switch (token)
             {
                 case V2_TimedTokenMelodyNote(var scaleNote, var velocity):
-                    res.Tokens.Add(new V2_TokenMelodyNote(scaleNote, tokenTime, tokenLength, velocity));
-                    break;
-                case V2_TimedTokenMelodyPassingTone(var velocity):
-                    res.Tokens.Add(new V2_TokenMelodyPassingTone(tokenTime, tokenLength, velocity));
+                    res.Tokens.Add(new V2_TokenMelodyToken(scaleNote, tokenTime, tokenLength, velocity));
                     break;
             }
             
