@@ -11,6 +11,11 @@ public enum V2_Token
     Note5,
     Note6,
     Note7,
+    Note8,
+    Note9,
+    Note10,
+    Note11,
+    Note12,
 
     PassingTone,
 

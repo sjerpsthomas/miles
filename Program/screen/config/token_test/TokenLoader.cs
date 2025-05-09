@@ -1,11 +1,12 @@
 using System;
 using System.IO;
-using Core.conversion;
 using Core.midi;
-using Core.midi.token;
+using Core.tokens.v1;
 using Godot;
 using Program.midi.scheduler;
 using Program.midi.scheduler.component;
+
+namespace Program.screen.config.token_test;
 
 public partial class TokenLoader : Node
 {
@@ -51,11 +52,11 @@ public partial class TokenLoader : Node
 	{
 		// Open file
 		var text = File.ReadAllText(filePath);
-		var tokens = TokenMethods.TokensFromString(text);
+		var tokens = V1_TokenMethods.V1_TokensFromString(text);
 		
 		// Get song from notes
 		var leadSheet = new LeadSheet { Chords = [[Chord.CMajor]] };
-		var notes = Conversion.Reconstruct(tokens, leadSheet, 0);
+		var notes = V1_TokenMethods.V1_Reconstruct(tokens, leadSheet, 0);
 		var song = MidiSong.FromNotes(notes);
 
 		var scheduler = (MidiScheduler)GetNode("%MidiScheduler");
@@ -63,7 +64,7 @@ public partial class TokenLoader : Node
 		scheduler.AddSong(currentMeasure + 1, song);
 
 		// Log
-		var tokensStr = TokenMethods.TokensToString(tokens);
+		var tokensStr = V1_TokenMethods.V1_TokensToString(tokens);
 		SelectedTokensText.Text = $"Tokens from {filePath} loaded successfully!\n{tokensStr.Replace("M", "M\n")}";
 
 		// Show 'stop playing' button

@@ -65,16 +65,16 @@ public static class V2_TokenMethods
         
         switch (token)
         {
-            case V2_Token.SuperFast:
+            case SuperFast:
                 speed = V2_TokenSpeed.SuperFast;
                 break;
-            case V2_Token.Fast:
+            case Fast:
                 speed = V2_TokenSpeed.Fast;
                 break;
-            case V2_Token.Slow:
+            case Slow:
                 speed = V2_TokenSpeed.Slow;
                 break;
-            case V2_Token.SuperSlow:
+            case SuperSlow:
                 speed = V2_TokenSpeed.SuperSlow;
                 break;
             
@@ -134,13 +134,18 @@ public static class V2_TokenMethods
         '5' => Note5,
         '6' => Note6,
         '7' => Note7,
+        '8' => Note8,
+        '9' => Note9,
+        '!' => Note10,
+        '@' => Note11,
+        '#' => Note12,
 
         'p' => PassingTone,
 
-        'F' => V2_Token.SuperFast,
-        'f' => V2_Token.Fast,
-        's' => V2_Token.Slow,
-        'S' => V2_Token.SuperSlow,
+        'F' => SuperFast,
+        'f' => Fast,
+        's' => Slow,
+        'S' => SuperSlow,
         
         'L' => Loud,
         'Q' => Quiet,
@@ -160,13 +165,18 @@ public static class V2_TokenMethods
         Note5 => '5',
         Note6 => '6',
         Note7 => '7',
+        Note8 => '8',
+        Note9 => '9',
+        Note10 => '!',
+        Note11 => '@',
+        Note12 => '#',
 
         PassingTone => 'p',
 
-        V2_Token.SuperFast => 'F',
-        V2_Token.Fast => 'f',
-        V2_Token.Slow => 's',
-        V2_Token.SuperSlow => 'S',
+        SuperFast => 'F',
+        Fast => 'f',
+        Slow => 's',
+        SuperSlow => 'S',
         
         Loud => 'L',
         Quiet => 'Q',

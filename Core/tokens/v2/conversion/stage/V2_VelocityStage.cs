@@ -72,13 +72,7 @@ public class V2_VelocityStage
                     resTokens.Add(new V2_TimedTokenMelodyRest());
                     break;
 
-                case Note1:
-                case Note2:
-                case Note3:
-                case Note4:
-                case Note5:
-                case Note6:
-                case Note7:
+                case >= Note1 and <= Note12:
                     resTokens.Add(new V2_TimedTokenMelodyNote((int)token - 1, currentVelocity == V2_TokenMethods.V2_TokenVelocity.Quiet ? 96 : 127));
                     break;
 

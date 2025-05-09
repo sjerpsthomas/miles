@@ -1,4 +1,6 @@
-﻿namespace Core.midi;
+﻿using Core.tokens.v1;
+
+namespace Core.midi;
 
 public class MidiMelody
 {
@@ -13,7 +15,7 @@ public class MidiMelody
             .SelectMany((measure, i) =>
             {
                 return measure.Notes.Select(note => (
-                    note: leadSheet.ChordAtTime(note.Time + i + measureNum).GetRelativeNote(note.Note),
+                    note: leadSheet.ChordAtTime(note.Time + i + measureNum).V1_GetOctaveScaleNote(note.Note),
                     velocity: note.Velocity,
                     time: note.Time + i,
                     length: note.Length));

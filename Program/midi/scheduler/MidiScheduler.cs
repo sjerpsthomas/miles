@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using Core.midi;
-using Core.midi.token;
 using Godot;
 using Program.midi.recorder;
 using Program.midi.scheduler.component;
 using Program.midi.scheduler.component.solo;
-using Program.midi.scheduler.component.solo.v2;
+using Program.midi.scheduler.component.solo.tokens_v1;
+using Program.midi.scheduler.component.solo.tokens_v2;
 using Program.screen.performance;
 using Program.util;
 using static Godot.FileAccess.ModeFlags;
@@ -26,7 +23,7 @@ public partial class MidiScheduler : Node
 	// Integer part: measure
 	// Fractional part: part within measure
 	public double Time = -2.0;
-	public int StartMeasure = 0;
+	public int StartMeasure;
 	
 	public PriorityQueue<MidiNote, double> NoteQueue = new();
 
@@ -95,7 +92,8 @@ public partial class MidiScheduler : Node
 
 		Soloist soloist = soloistIndex switch
 		{
-			0 => new NoteRandomSoloist(),
+			// 0 => new NoteRandomSoloist(),
+			0 => new V2_TokenReplaySoloist(),
 			1 => new RetrievalSoloist(),
 			2 => new NoteFactorOracleSoloist(),
 			3 => new TokenRandomSoloist(),
@@ -103,10 +101,10 @@ public partial class MidiScheduler : Node
 			5 => new TokenMarkovSoloist(standardPath),
 			6 => new TokenShuffleSoloist(),
 			7 => new TokenTransformerSoloist(),
-			8 => new TokenFactorOracleSoloistV2(),
-			9 => new TokenMarkovSoloistV2(standardPath),
-			10 => new NoteMarkovSoloistV2(),
-			11 => new TokenNeuralNetSoloist(),
+			8 => new V2_TokenFOSoloist(),
+			9 => new V2_TokenMarkovSoloist(standardPath),
+			10 => new V2_TokenRepMarkovSoloist(),
+			11 => new V2_TokenNeuralNetSoloist(),
 			_ => throw new ArgumentOutOfRangeException()
 		};
         
