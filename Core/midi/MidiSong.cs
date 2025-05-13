@@ -10,7 +10,17 @@ public class MidiSong
 
     public const int UnknownBpm = -1;
     
-    public static MidiSong FromMidiFileStream(Stream stream)
+    public static MidiSong FromMidiFileStream(Stream stream) => FromMidiFileStream(stream, i => i switch
+    {
+        0 => OutputName.Algorithm,
+        1 => OutputName.Backing1Bass,
+        2 => OutputName.Backing2Piano,
+        3 => OutputName.Backing3Keyboard,
+        4 => OutputName.Backing4Drums,
+        _ => throw new ArgumentOutOfRangeException()
+    });
+    
+    public static MidiSong FromMidiFileStream(Stream stream, Func<int, OutputName> getOutputName)
     {
         // TODO: how to get BPM from MIDI?
         var song = new MidiSong();
@@ -22,15 +32,7 @@ public class MidiSong
         
         for (var i = 0; i < mf.Tracks; i++)
         {
-            var outputName = i switch
-            {
-                0 => OutputName.Algorithm,
-                1 => OutputName.Backing1Bass,
-                2 => OutputName.Backing2Piano,
-                3 => OutputName.Backing3Keyboard,
-                4 => OutputName.Backing4Drums,
-                _ => throw new ArgumentOutOfRangeException()
-            };
+            var outputName = getOutputName(i);
             
             foreach (var midiEvent in mf.Events[i])
             {

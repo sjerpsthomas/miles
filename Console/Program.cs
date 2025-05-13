@@ -1,5 +1,7 @@
 ﻿using Console.routine;
 
+new MidiToNotes().Run(@"C:\Users\thoma\Music\air.mid");
+
 
 // new LakhTokenizer().Run(@"C:\Users\thoma\Desktop\lmd_full", @"C:\Users\thoma\Desktop\tokens_temp_2", false);
 
@@ -21,7 +23,7 @@
 //
 // System.Console.WriteLine("Done!");
 
-new WJDToNotes().RunAllStandards(@"C:\Users\thoma\Desktop\new_extra");
+// new WJDToNotes().RunAllStandards(@"C:\Users\thoma\Desktop\new_extra");
 
 
 // var recherche = File.ReadAllText(@"C:\Users\thoma\Desktop\proust_debut.txt").TrimEnd();
