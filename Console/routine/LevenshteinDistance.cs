@@ -1,14 +1,12 @@
-﻿using System.Runtime.InteropServices;
-using Core.conversion;
-using Core.midi;
-using Core.midi.token;
+﻿using Core.midi;
+using Core.tokens.v1;
 using Fastenshtein;
 
 namespace Console.routine;
 
 public static class LevenshteinDistance
 {
-    public static List<Token>[] GetFoursTokens(MidiSong song, OutputName outputName)
+    public static List<V1_Token>[] GetFoursTokens(MidiSong song, OutputName outputName)
     {
         // Get notes of fours
         var fours = song.ToNotes()
@@ -24,7 +22,7 @@ public static class LevenshteinDistance
                 return (fours.Find(x => x.Key == i)?.ToList() ?? [])
                     .Select(note => note with { Time = note.Time - i * 4 });
             })
-            .Select(it => Conversion.Tokenize(it.ToList()))
+            .Select(it => V1_TokenMethods.V1_Tokenize(it.ToList()))
             .ToArray();
         
         // Return
@@ -65,10 +63,10 @@ public static class LevenshteinDistance
         }
     }
 
-    public static List<int> GetDistances(List<Token>[] humanFours, List<Token>[] algorithmFours, int measureCount = 64)
+    public static List<int> GetDistances(List<V1_Token>[] humanFours, List<V1_Token>[] algorithmFours, int measureCount = 64)
     {
         // Get consecutive fours
-        List<List<Token>> fours = [];
+        List<List<V1_Token>> fours = [];
         for (var fourIndex = 0; fourIndex < measureCount / 8; fourIndex++)
         {
             // Add human four
@@ -89,8 +87,8 @@ public static class LevenshteinDistance
             var nextFour = fours[i + 1];
             
             // Get strings
-            var fourString = TokenMethods.TokensToString(four);
-            var nextFourString = TokenMethods.TokensToString(nextFour);
+            var fourString = V1_TokenMethods.V1_TokensToString(four);
+            var nextFourString = V1_TokenMethods.V1_TokensToString(nextFour);
             
             // Get Levenshtein distance
             var levenshteinDistance = Levenshtein.Distance(fourString, nextFourString);

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Core.conversion;
-using Core.midi.token;
+using Core.tokens.v1;
 using static System.Console;
 
 namespace Console.routine;
@@ -26,7 +26,7 @@ public class LakhTokenizer
 
             foreach (var track in tracks)
             {
-                var tokensStr = TokenMethods.TokensToString(track);
+                var tokensStr = V1_TokenMethods.V1_TokensToString(track);
                 
                 // Trim measure tokens
                 tokensStr = tokensStr.Trim('M');

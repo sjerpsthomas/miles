@@ -1,6 +1,6 @@
 ﻿using Core.conversion;
 using Core.midi;
-using Core.midi.token;
+using Core.tokens.v1;
 using Microsoft.Data.Sqlite;
 using static Core.midi.LeadSheet;
 
@@ -57,8 +57,8 @@ public class WJDToTokens
         };
         
         // Convert velocity token melody to tokens, get string
-        var tokens = Conversion.Tokenize(midiNotes, leadSheet);
-        var tokensStr = TokenMethods.TokensToString(tokens);
+        var tokens = V1_TokenMethods.V1_Tokenize(midiNotes, leadSheet);
+        var tokensStr = V1_TokenMethods.V1_TokensToString(tokens);
                 
         // Trim measure tokens
         tokensStr = tokensStr.Trim('M');

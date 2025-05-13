@@ -1,5 +1,5 @@
-﻿using Core.midi.token;
-using Core.ml;
+﻿using Core.models.tokens_v1;
+using Core.tokens.v1;
 
 namespace Console.routine;
 
@@ -7,16 +7,16 @@ public static class ONNXTest
 {
     public static void Run()
     {
-        using var transformer = new Transformer("onnx_transformer.onnx");
+        using var transformer = new GenericTransformer("onnx_transformer.onnx");
         
-        transformer.SetTokens(TokenMethods.TokensFromString("Mf1564.M23453.12"));
+        transformer.SetTokens(V1_TokenMethods.V1_TokensFromString("Mf1564.M23453.12"));
 
-        List<Token> res = [];
+        List<V1_Token> res = [];
         for (int i = 0; i < 10; i++)
         {
             res.Add(transformer.Generate());
         }
 
-        System.Console.WriteLine(TokenMethods.TokensToString(res));
+        System.Console.WriteLine(V1_TokenMethods.V1_TokensToString(res));
     }
 }

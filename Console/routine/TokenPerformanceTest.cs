@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
-using Core.conversion;
 using Core.midi;
-using Core.midi.token;
+using Core.tokens.v1;
 using static System.Console;
 using static Core.midi.Chord.KeyEnum;
 using static Core.midi.Chord.TypeEnum;
@@ -19,14 +18,14 @@ public static class TokenPerformanceTest
 
         var n = 450;
 
-        var tokens = TokenMethods.TokensFromString("2..F3p4.56S2M.1762f.453Ms5pp2.3F76p4M23");
+        var tokens = V1_TokenMethods.V1_TokensFromString("2..F3p4.56S2M.1762f.453Ms5pp2.3F76p4M23");
         var moreTokens = Enumerable.Repeat(tokens, 1000).SelectMany(it => it).ToList();
 
-        var notes = Conversion.Reconstruct(moreTokens, leadSheet, 0);
+        var notes = V1_TokenMethods.V1_Reconstruct(moreTokens, leadSheet, 0);
 
         for (var i = 0; i < n; i++)
         {
-            _ = Conversion.Tokenize(notes);
+            _ = V1_TokenMethods.V1_Tokenize(notes);
         }
 
         sw.Stop();
