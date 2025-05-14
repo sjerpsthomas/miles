@@ -18,7 +18,10 @@ public class WJDToNotes
         60,  52, 53, 54, 55,
             
         // Ornithology (Charlie Parker)
-        61,  56, 57, 58, 59
+        61,  56, 57, 58, 59,
+        
+        // Billie's Bounce (Charlie Parker)
+        // 52,  53, 54, 55, 56,
     ];
     
     public void Run(int melId, string path)
