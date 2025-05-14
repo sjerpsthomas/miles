@@ -40,7 +40,7 @@ public static class V2_OctaveStage
             currentOctaveLength += length;
             
             // Find second note
-            if (index > tokens.Count) continue;
+            if (index + 1 >= tokens.Count) continue;
             if (tokens[index + 1] is not var (scaleNote2, _, length2, _)) continue;
 
             // Skip when note not leading to octave break
@@ -48,6 +48,8 @@ public static class V2_OctaveStage
 
             var direction = scaleNote < scaleNote2 ? OctaveDirection.Down : OctaveDirection.Up;
 
+            Console.WriteLine($"{scaleNote} - {scaleNote2}");
+            
             // Create octave event
             octaveEvents.Add(
                 new OctaveEvent(direction, index + 1, currentOctaveLength)
@@ -57,13 +59,15 @@ public static class V2_OctaveStage
         }
 
         // Limit octave events based on priority
-        var measureCount = (int)Math.Truncate(tokens.Last().Time) + 1;
-        octaveEvents = octaveEvents
-            .OrderByDescending(it => it.Priority)
-            .Take(measureCount / 2)
-            .OrderBy(it => it.Index)
-            .ToList();
+        // var measureCount = (int)Math.Truncate(tokens.Last().Time) + 1;
+        // octaveEvents = octaveEvents
+        //     .OrderByDescending(it => it.Priority)
+        //     .Take(measureCount / 2)
+        //     .OrderBy(it => it.Index)
+        //     .ToList();
 
+        Console.WriteLine(string.Join(", ", octaveEvents.Select(it => it.ToString())));
+        
         // Create tokens
         var res = new V2_RelativeMelody { Tokens = new(tokens.Count) };
         {
@@ -79,7 +83,8 @@ public static class V2_OctaveStage
                     if (octaveEvent.Index == index)
                     {
                         currentOctave += octaveEvent.Direction == OctaveDirection.Up ? 1 : -1;
-                        currentOctave = Math.Clamp(currentOctave, 1, 3);
+                        currentOctave = Math.Clamp(currentOctave, 0, 5);
+                        // Console.WriteLine($"{octaveEvent.Direction} --> {currentOctave}");
                         octaveEventIndex++;
                     }
                 }
