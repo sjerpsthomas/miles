@@ -24,6 +24,9 @@ public static class V2_OctaveStage
         // Early return
         if (tokens is [])
             return new V2_RelativeMelody();
+
+        var t = 0.0;
+        var currentOctaveLength = 0.0;
         
         // Get all octave events
         List<OctaveEvent> octaveEvents = [];
@@ -32,43 +35,32 @@ public static class V2_OctaveStage
             // Get token, skip if not note
             var token = tokens[index];
             if (token is not var (scaleNote, _, length, _)) continue;
-                
-            // Skip when note not leading to octave break
-            if (scaleNote is > 2 and < 6) continue;
+
+            t += length;
+            currentOctaveLength += length;
             
             // Find second note
-            var secondIndex = index;
-            do secondIndex++;
-            while (secondIndex < tokens.Count - 1);
-
-            if (secondIndex >= tokens.Count)
-                continue;
-            if (tokens[secondIndex] is not var (scaleNote2, _, length2, _))
-                continue;
+            if (index > tokens.Count) continue;
+            if (tokens[index + 1] is not var (scaleNote2, _, length2, _)) continue;
 
             // Skip when note not leading to octave break
-            if (scaleNote2 is > 2 and < 6) continue;
-            if (scaleNote2 <= 2 && scaleNote <= 2) continue;
-            if (scaleNote2 >= 6 && scaleNote >= 6) continue;
+            if (Math.Abs(scaleNote - scaleNote2) < 6) continue;
 
             var direction = scaleNote < scaleNote2 ? OctaveDirection.Down : OctaveDirection.Up;
 
-            var priority =
-                Math.Min(length / 0.25, 1.0) +
-                Math.Min(length2 / 0.25, 1.0) +
-                (6 - (Math.Max(scaleNote, scaleNote2) - Math.Min(scaleNote, scaleNote2))) / 2.0;
-            
             // Create octave event
             octaveEvents.Add(
-                new OctaveEvent(direction, index + 1, priority)
+                new OctaveEvent(direction, index + 1, currentOctaveLength)
             );
+
+            currentOctaveLength = 0.0;
         }
 
         // Limit octave events based on priority
         var measureCount = (int)Math.Truncate(tokens.Last().Time) + 1;
         octaveEvents = octaveEvents
-            .OrderBy(it => it.Priority)
-            .Take(measureCount)
+            .OrderByDescending(it => it.Priority)
+            .Take(measureCount / 2)
             .OrderBy(it => it.Index)
             .ToList();
 

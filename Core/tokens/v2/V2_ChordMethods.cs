@@ -11,14 +11,17 @@ public static class V2_ChordMethods
         {
             case Major:
                 if (note == 3) return 4;
+                if (note == 6) return 5;
                 if (note == 10) return 11;
                 break;
             case Dominant:
                 if (note == 3) return 4;
+                if (note == 6) return 5;
                 if (note == 1) return 10;
                 break;
             case Minor:
                 if (note == 4) return 3;
+                if (note == 6) return 5;
                 if (note == 11) return 10;
                 break;
             case HalfDim7:
