@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.midi;
 using Core.tokens.v1;
+using Core.tokens.v2.conversion;
+using Core.tokens.v2.conversion.stage;
 
 namespace Program.midi.scheduler.component.solo.tokens_v1;
 
@@ -19,6 +21,9 @@ public class TokenRandomSoloist: Soloist
 
     public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
+        // Dummy Cobyla to fix stutter
+        Console.WriteLine($"Dummy Cobyla init: {V2_TimingStage.ReconstructTiming(new V2_TimedTokenMelody(), LeadSheet)}");
+        
         List<V1_Token> tokens = [];
         for (var i = 0; i < generateMeasureCount; i++)
         {
