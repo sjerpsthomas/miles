@@ -32,7 +32,7 @@ public static class LevenshteinDistance
     public static void Run(string recordingPath)
     {
         const int numPupils = 5;
-        const int numSessions = 3;
+        const int numSessions = 4;
         const int numPerformances = 3;
 
         for (var pupil = 0; pupil < numPupils; pupil++)

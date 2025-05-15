@@ -1,6 +1,8 @@
 ﻿using Console.routine;
 
-new MidiToNotes().Run(@"C:\Users\thoma\Music\air.mid");
+LevenshteinDistance.Run(@"C:\Users\thoma\Documents\__Thesis\thesis\Recordings\ex_1");
+
+// new MidiToNotes().Run(@"C:\Users\thoma\Music\air.mid");
 
 
 // new LakhTokenizer().Run(@"C:\Users\thoma\Desktop\lmd_full", @"C:\Users\thoma\Desktop\tokens_temp_2", false);
