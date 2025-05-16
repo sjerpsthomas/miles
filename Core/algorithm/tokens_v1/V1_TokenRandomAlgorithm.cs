@@ -1,29 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.midi;
+﻿using Core.midi;
 using Core.tokens.v1;
-using Core.tokens.v2.conversion;
-using Core.tokens.v2.conversion.stage;
 
-namespace Program.midi.scheduler.component.solo.tokens_v1;
+namespace Core.algorithm.tokens_v1;
 
-public class TokenRandomSoloist: Soloist
+public class V1_TokenRandomAlgorithm: IAlgorithm
 {
     public LeadSheet LeadSheet;
 
     public Random Random = new();
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet) => LeadSheet = leadSheet;
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet) => LeadSheet = leadSheet;
 
     // Empty; Token Random does not use user content
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum) { }
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum) { }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
-        // Dummy Cobyla to fix stutter
-        Console.WriteLine($"Dummy Cobyla init: {V2_TimingStage.ReconstructTiming(new V2_TimedTokenMelody(), LeadSheet)}");
-        
         List<V1_Token> tokens = [];
         for (var i = 0; i < generateMeasureCount; i++)
         {

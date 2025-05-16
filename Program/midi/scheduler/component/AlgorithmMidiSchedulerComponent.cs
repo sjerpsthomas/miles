@@ -1,22 +1,23 @@
 ﻿using System.Linq;
+using Core.algorithm;
 using Core.midi;
 
-namespace Program.midi.scheduler.component.solo;
+namespace Program.midi.scheduler.component;
 
-public class SoloMidiSchedulerComponent : MidiSchedulerComponent
+public class AlgorithmMidiSchedulerComponent : MidiSchedulerComponent
 {
     public LeadSheet LeadSheet;
 
-    public Soloist Soloist;
+    public IAlgorithm Algorithm;
 
     public int Repetitions;
     
-    public SoloMidiSchedulerComponent(MidiSong solo, LeadSheet leadSheet, Soloist soloist)
+    public AlgorithmMidiSchedulerComponent(MidiSong[] solos, LeadSheet leadSheet, IAlgorithm algorithm)
     {
         LeadSheet = leadSheet;
-        Soloist = soloist;
+        Algorithm = algorithm;
         
-        Soloist.Initialize(solo, LeadSheet);
+        Algorithm.Initialize(solos, LeadSheet);
     }
     
     public override void HandleMeasure(int currentMeasure)
@@ -33,9 +34,9 @@ public class SoloMidiSchedulerComponent : MidiSchedulerComponent
         
         // Get recorded measures, ingest
         var recordedMeasures = Recorder.GetUserMeasures(recordMeasureCount).ToList();
-        Soloist.IngestMeasures(recordedMeasures, currentMeasure - recordMeasureCount);
+        Algorithm.IngestMeasures(recordedMeasures, currentMeasure - recordMeasureCount);
 
-        var measures = Soloist.Generate(generateMeasureCount, currentMeasure);
+        var measures = Algorithm.Generate(generateMeasureCount, currentMeasure);
         
         // Schedule measures
         for (var i = 0; i < measures.Count; i++)

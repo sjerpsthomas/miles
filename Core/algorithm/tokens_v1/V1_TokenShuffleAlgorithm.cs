@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.midi;
+﻿using Core.midi;
 using Core.models.tokens_v1;
 using Core.tokens.v1;
 
-namespace Program.midi.scheduler.component.solo.tokens_v1;
+namespace Core.algorithm.tokens_v1;
 
-public class TokenShuffleSoloist : Soloist
+public class V1_TokenShuffleAlgorithm : IAlgorithm
 {
     public LeadSheet LeadSheet;
 
     public List<MidiNote> Notes;
 
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet) => LeadSheet = leadSheet;
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet) => LeadSheet = leadSheet;
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
     {
         // Set notes
         Notes = measures.SelectMany((measure, i) =>
@@ -23,7 +20,7 @@ public class TokenShuffleSoloist : Soloist
         ).ToList();
     }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Tokenize, permutate tokens
         var tokens = V1_TokenMethods.V1_Tokenize(Notes, LeadSheet);

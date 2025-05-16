@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using Core.midi;
+﻿using Core.midi;
 using Core.tokens.v1;
 
-namespace Program.midi.scheduler.component.solo;
+namespace Core.algorithm;
 
-public class NoteRandomSoloist : Soloist
+public class NoteRandomAlgorithm : IAlgorithm
 {
     private LeadSheet _leadSheet;
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
         _leadSheet = leadSheet;
     }
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum) { }
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum) { }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Create new measures
         var measures = new List<MidiMeasure>();

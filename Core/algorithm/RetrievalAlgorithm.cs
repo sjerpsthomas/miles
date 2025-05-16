@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
-using Core.midi;
+﻿using Core.midi;
 
-namespace Program.midi.scheduler.component.solo;
+namespace Core.algorithm;
 
-public class RetrievalSoloist : Soloist
+public class RetrievalAlgorithm : IAlgorithm
 {
     private MidiSong _solo;
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
-        _solo = solo;
+        _solo = solos[0];
 
         // Change output name for all notes
         foreach (var measure in _solo.Measures)
@@ -21,9 +20,9 @@ public class RetrievalSoloist : Soloist
         }
     }
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum) { }
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum) { }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Schedule measures from solo
         return _solo.Measures.GetRange(startMeasureNum % _solo.Measures.Count, generateMeasureCount);

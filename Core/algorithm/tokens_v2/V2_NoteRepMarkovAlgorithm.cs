@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.midi;
+﻿using Core.midi;
 using Core.models.tokens_v2;
 using Core.tokens.v2.conversion.stage;
 
-namespace Program.midi.scheduler.component.solo.tokens_v2;
+namespace Core.algorithm.tokens_v2;
 
 public record NoteRepresentation(
     int Note, // [0, 24]
@@ -13,7 +10,7 @@ public record NoteRepresentation(
     int Ioi // [0, 3]
 );
 
-public class V2_NoteRepMarkovSoloist: Soloist
+public class V2_NoteRepMarkovAlgorithm: IAlgorithm
 {
     public List<NoteRepresentation> RepsFromNotes(List<MidiNote> notes)
     {
@@ -101,14 +98,14 @@ public class V2_NoteRepMarkovSoloist: Soloist
 
     public LeadSheet LeadSheet;
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
         LeadSheet = leadSheet;
         
-        IngestMeasures(solo.Measures, 0);
+        IngestMeasures(solos[0].Measures, 0);
     }
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
     {
         // Create notes
         List<MidiNote> notes = [];
@@ -124,7 +121,7 @@ public class V2_NoteRepMarkovSoloist: Soloist
         Model.LearnSequence(reps);
     }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Generate reps
         var reps = Model.Generate(40);

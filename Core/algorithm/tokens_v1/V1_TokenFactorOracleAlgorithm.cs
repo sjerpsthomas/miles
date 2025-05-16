@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using Core.midi;
+﻿using Core.midi;
 using Core.models.tokens_v1;
 using Core.tokens.v1;
 
-namespace Program.midi.scheduler.component.solo.tokens_v1;
+namespace Core.algorithm.tokens_v1;
 
-public class TokenFactorOracleSoloist : Soloist
+public class V1_TokenFactorOracleAlgorithm : IAlgorithm
 {
-    public V1_TokenFactorOracle TokenFactorOracle;
+    public V1_TokenFactorOracle TokenFactorOracle = new();
     public LeadSheet LeadSheet;
 
     public int HumanFourStart;
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
-        TokenFactorOracle = new();
-        
-        IngestMeasures(solo.Measures, 0);
+        IngestMeasures(solos[0].Measures, 0);
         
         LeadSheet = leadSheet;
     }
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
     {
         HumanFourStart = TokenFactorOracle.Nodes.Count;
         
@@ -37,7 +33,7 @@ public class TokenFactorOracleSoloist : Soloist
         TokenFactorOracle.AddTokens(tokens);
     }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         List<V1_Token> res = [];
         

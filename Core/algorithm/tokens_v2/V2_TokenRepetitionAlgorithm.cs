@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Core.midi;
+﻿using Core.midi;
 using Core.tokens.v2;
 
-namespace Program.midi.scheduler.component.solo.tokens_v2;
+namespace Core.algorithm.tokens_v2;
 
-public class TokenRepetitionSoloist: Soloist
+public class V2_TokenRepetitionAlgorithm: IAlgorithm
 {
     public List<MidiNote> Notes;
     public LeadSheet LeadSheet;
@@ -20,20 +18,16 @@ public class TokenRepetitionSoloist: Soloist
         }
     }
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
-    {
-        // Nothing
-        LeadSheet = leadSheet;
-    }
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet) => LeadSheet = leadSheet;
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
     {
         // Get all notes
         Notes = [];
         AddMeasures(measures);
     }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         var tokens = V2_TokenMethods.V2_Tokenize(Notes, LeadSheet);
         Console.WriteLine(V2_TokenMethods.V2_TokensToString(tokens));

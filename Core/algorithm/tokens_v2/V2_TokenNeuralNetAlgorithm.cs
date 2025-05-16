@@ -1,31 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Core.midi;
+﻿using Core.midi;
 using Core.models.tokens_v2;
 using Core.tokens.v2;
 
-namespace Program.midi.scheduler.component.solo.tokens_v2;
+namespace Core.algorithm.tokens_v2;
 
-public class V2_TokenNeuralNetSoloist: Soloist
+public class V2_TokenNeuralNetAlgorithm: IAlgorithm
 {
     public V2_TokenNeuralNet NeuralNet;
     public LeadSheet LeadSheet;
 
     public List<V2_Token> Tokens = [];
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
          LeadSheet = leadSheet;
 
          NeuralNet = new V2_TokenNeuralNet();
          
-         IngestMeasures(solo.Measures, 0);
+         IngestMeasures(solos[0].Measures, 0);
          
          // TODO: Load from user://
          NeuralNet.Load(@"C:\Users\thoma\Desktop\tokens_temp\neural_net");
     }
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
     {
         List<MidiNote> notes = [];
         
@@ -37,7 +35,7 @@ public class V2_TokenNeuralNetSoloist: Soloist
     }
 
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         List<V2_Token> res = [];
         

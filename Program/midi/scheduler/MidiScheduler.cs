@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using Core.algorithm;
+using Core.algorithm.tokens_v1;
+using Core.algorithm.tokens_v2;
 using Core.midi;
+using Core.tokens.v2.conversion;
+using Core.tokens.v2.conversion.stage;
 using Godot;
 using Program.midi.recorder;
 using Program.midi.scheduler.component;
-using Program.midi.scheduler.component.solo;
-using Program.midi.scheduler.component.solo.tokens_v1;
-using Program.midi.scheduler.component.solo.tokens_v2;
 using Program.screen.performance;
 using Program.util;
 using static Godot.FileAccess.ModeFlags;
@@ -70,10 +73,16 @@ public partial class MidiScheduler : Node
 
 		var soloistIndex = (int)init.Get("soloist");
 		
-		// Load necessary files
-		var backingTrack = MidiSong.FromNotesFileStream(new FileAccessStream(standardPath + "backing.notes", Read));
-		var soloTrack = MidiSong.FromNotesFileStream(new FileAccessStream(standardPath + "solo.notes", Read));
+		// Load lead sheet
 		var leadSheet = LeadSheet.FromStream(new FileAccessStream(standardPath + "sheet.json", Read));
+
+		// Load music data
+		var backingTrack = LoadSong("backing.notes");
+		MidiSong[] solos =
+		[
+			LoadSong("solo.notes"),
+			..Enumerable.Range(1, 4).Select(i => LoadSong($"_extra_{i}.notes"))
+		];
 		
 		// Get BPM, apply to MidiRecorder song
 		Bpm = leadSheet.Bpm;
@@ -90,30 +99,35 @@ public partial class MidiScheduler : Node
 			Repetitions = Repetitions,
 		});
 
-		Soloist soloist = soloistIndex switch
+		IAlgorithm algorithm = soloistIndex switch
 		{
 			// 0 => new NoteRandomSoloist(),
-			0 => new V2_TokenReplaySoloist(),
-			1 => new RetrievalSoloist(),
-			2 => new NoteFactorOracleSoloist(),
-			3 => new TokenRandomSoloist(),
-			4 => new TokenFactorOracleSoloist(), 
-			5 => new TokenMarkovSoloist(standardPath),
-			6 => new TokenShuffleSoloist(),
-			7 => new TokenTransformerSoloist(),
-			8 => new V2_TokenFOSoloist(),
-			9 => new V2_TokenMarkovSoloist(standardPath),
-			10 => new V2_NoteRepMarkovSoloist(),
-			11 => new V2_TokenNeuralNetSoloist(),
+			0 => new V2_TokenReplayAlgorithm(),
+			1 => new RetrievalAlgorithm(),
+			2 => new NoteFactorOracleAlgorithm(),
+			3 => new V1_TokenRandomAlgorithm(),
+			4 => new V1_TokenFactorOracleAlgorithm(), 
+			5 => new V1_TokenMarkovAlgorithm(),
+			6 => new V1_TokenShuffleAlgorithm(),
+			7 => new V1_TokenTransformerAlgorithm(),
+			8 => new V2_TokenFactorOracleAlgorithm(),
+			9 => new V2_TokenMarkovAlgorithm(),
+			10 => new V2_NoteRepMarkovAlgorithm(),
+			11 => new V2_TokenNeuralNetAlgorithm(),
 			_ => throw new ArgumentOutOfRangeException()
 		};
         
-		Components.Add(new SoloMidiSchedulerComponent(soloTrack, leadSheet, soloist)
+		Components.Add(new AlgorithmMidiSchedulerComponent(solos, leadSheet, algorithm)
 		{
 			Scheduler = this,
 			Recorder = Recorder,
 			Repetitions = Repetitions
 		});
+		return;
+
+		// (Loads a MidiSong from the specified path)
+		MidiSong LoadSong(string path) =>
+			MidiSong.FromNotesFileStream(new FileAccessStream(standardPath + path, Read));
 	}
 
 	public void InitializePlaybackPerformance(Node init)

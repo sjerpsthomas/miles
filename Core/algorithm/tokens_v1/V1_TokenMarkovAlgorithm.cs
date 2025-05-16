@@ -1,26 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.midi;
+﻿using Core.midi;
 using Core.models.tokens_v1;
 using Core.tokens.v1;
-using Program.util;
-using static Godot.FileAccess.ModeFlags;
 
-namespace Program.midi.scheduler.component.solo.tokens_v1;
+namespace Core.algorithm.tokens_v1;
 
-public class TokenMarkovSoloist : Soloist
+public class V1_TokenMarkovAlgorithm : IAlgorithm
 {
     public LeadSheet LeadSheet;
 
     public V1_TokenMarkov Model = new(3);
-
-    public string StandardPath;
-    
-    public TokenMarkovSoloist(string standardPath)
-    {
-        StandardPath = standardPath;
-    }
     
     private void Learn(List<MidiMeasure> measures)
     {
@@ -46,32 +34,22 @@ public class TokenMarkovSoloist : Soloist
         Model.Learn(tokensList);
     }
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
         LeadSheet = leadSheet;
         
-        // Learn the solo's measures
-        Learn(solo.Measures);
-        
-        // Learn tokens from extra songs
-        for (var i = 1; i <= 4; i++)
-        {
-            // Get from file
-            var fileAccessStream = new FileAccessStream(StandardPath + $"_extra_{i}.notes", Read);
-            var extraSong = MidiSong.FromNotesFileStream(fileAccessStream);
-            var extraSongTokens = V1_TokenMethods.V1_Tokenize(extraSong.ToNotes(), LeadSheet);
-            
-            Learn(extraSongTokens);
-        }
+        // Learn from all solos
+        foreach (var solo in solos)
+            Learn(solo.Measures);
     }
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
     {
         // Learn the given measures
         Learn(measures);
     }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Generate measures
         var tokens = Model.Walk(4)

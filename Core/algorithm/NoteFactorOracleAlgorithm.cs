@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Core.midi;
+﻿using Core.midi;
 using Core.models;
 using Core.tokens.v1;
 
-namespace Program.midi.scheduler.component.solo;
+namespace Core.algorithm;
 
-public class NoteFactorOracleSoloist : Soloist
+public class NoteFactorOracleAlgorithm : IAlgorithm
 {
     private MidiMelody _melody;
 
@@ -16,16 +14,16 @@ public class NoteFactorOracleSoloist : Soloist
 
     public int HumanFourStart;
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
-        _melody = MidiMelody.FromMeasures(solo.Measures, leadSheet);
+        _melody = MidiMelody.FromMeasures(solos[0].Measures, leadSheet);
 
         NoteFactorOracle.AddMelody(_melody);
 
         _leadSheet = leadSheet;
     }
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int measureNum)
+    public void IngestMeasures(List<MidiMeasure> measures, int measureNum)
     {
         HumanFourStart = NoteFactorOracle.Nodes.Count;
         
@@ -36,7 +34,7 @@ public class NoteFactorOracleSoloist : Soloist
         NoteFactorOracle.AddMelody(recordedMelody);
     }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Create new measures
         var measures = new List<MidiMeasure>();

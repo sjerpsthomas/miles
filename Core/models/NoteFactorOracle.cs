@@ -21,7 +21,7 @@ public class NoteFactorOracle
 
         public bool Has(int note) => _transitions.Keys.Any(key => key.Note == note);
 
-        public (MidiMelody.MelodyNote, int) Traverse(int currentIndex, Random rng)
+        public (MidiMelody.MelodyNote?, int) Traverse(int currentIndex, Random rng)
         {
             if (_transitions.Count == 0)
                 return (null, -1);
@@ -29,10 +29,11 @@ public class NoteFactorOracle
             // Increase odds of continuing
             if (rng.NextDouble() < 0.5)
             {
-                var (newKey, value) = _transitions.FirstOrDefault(tuple => tuple.Value == currentIndex + 1,
-                    new KeyValuePair<MidiMelody.MelodyNote, int>(null, -1));
-                if (value != -1)
-                    return (newKey, value);
+                using var newKvps = _transitions
+                    .Where(tuple => tuple.Value == currentIndex + 1)
+                    .GetEnumerator();
+
+                return newKvps.MoveNext() ? (newKvps.Current.Key, newKvps.Current.Value) : (null, -1);
             }
                 
             // Get random note from transitions, return it with next index

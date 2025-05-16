@@ -1,32 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using Core.midi;
+﻿using Core.midi;
 using Core.models.tokens_v1;
 using Core.tokens.v1;
 
-namespace Program.midi.scheduler.component.solo.tokens_v1;
+namespace Core.algorithm.tokens_v1;
 
-public class TokenTransformerSoloist: Soloist
+public class V1_TokenTransformerAlgorithm: IAlgorithm
 {
     public GenericTransformer Transformer;
     public List<MidiNote> Notes = [];
     public LeadSheet LeadSheet;
     
-    public override void Initialize(MidiSong solo, LeadSheet leadSheet)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
          LeadSheet = leadSheet;
 
          Transformer = new GenericTransformer("250225_transformer.onnx");
     }
 
-    public override void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
     {
         for (var index = 0; index < measures.Count; index++)
             foreach (var note in measures[index].Notes)
                 Notes.Add(note with { Time = note.Time + index + startMeasureNum });
     }
 
-    public override List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
     {
         // Deduce and set tokens
         var tokens = V1_TokenMethods.V1_Tokenize(Notes, LeadSheet);
