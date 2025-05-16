@@ -13,7 +13,7 @@ public partial class MidiServer : Node
 
     public MidiScheduler Scheduler;
     
-    public MidiIn LearnerIn;
+    public MidiIn Input;
 
     public Dictionary<OutputName, MidiOut> Outputs;
 
@@ -31,15 +31,15 @@ public partial class MidiServer : Node
         var keyboardMidiName = (string)GetNode("/root/Config").Get("keyboard_midi_name");
         try
         {
-            LearnerIn = FindMidiIn(keyboardMidiName);
+            Input = FindMidiIn(keyboardMidiName);
         }
         catch (Exception)
         {
             // Default to no input
-            LearnerIn = FindMidiIn("no_input");
+            Input = FindMidiIn("no_input");
             GetNode("/root/Config").Set("keyboard_midi_name", "no_input");
         }
-        LearnerIn.Start();
+        Input.Start();
         
         Outputs = new()
         {
@@ -57,7 +57,7 @@ public partial class MidiServer : Node
 
         Console.WriteLine($"[MIDI] Setup successful (using keyboard '{keyboardMidiName}')!");
 
-        LearnerIn.MessageReceived += (_, args) =>
+        Input.MessageReceived += (_, args) =>
         {
             if (args.MidiEvent is not NoteEvent noteEvent) return;
 
