@@ -10,7 +10,16 @@ public class V2_TokenMarkovAlgorithm : IAlgorithm
 
     public GenericContinuator<V2_Token> Model = new(it => (int)it, kMax: 6);
 
-    private void Learn(List<MidiMeasure> measures, int startMeasureNum)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
+    {
+        LeadSheet = leadSheet;
+        
+        // Learn from all solos
+        foreach (var solo in solos)
+            Learn(solo.Measures);
+    }
+
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0)
     {
         // Create notes
         List<MidiNote> notes = [];
@@ -27,22 +36,7 @@ public class V2_TokenMarkovAlgorithm : IAlgorithm
         Model.LearnSequence(tokens);
     }
 
-    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
-    {
-        LeadSheet = leadSheet;
-        
-        // Learn from all solos
-        foreach (var solo in solos)
-            Learn(solo.Measures, 0);
-    }
-
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
-    {
-        // Learn the given measures
-        Learn(measures, startMeasureNum);
-    }
-
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         // Generate tokens
         var res = Model.GenerateChunks((int)V2_Token.Measure, generateMeasureCount, 7);

@@ -12,9 +12,9 @@ public class NoteRandomAlgorithm : IAlgorithm
         _leadSheet = leadSheet;
     }
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum) { }
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0) { }
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         // Create new measures
         var measures = new List<MidiMeasure>();

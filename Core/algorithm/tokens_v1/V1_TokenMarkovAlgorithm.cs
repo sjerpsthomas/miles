@@ -10,7 +10,16 @@ public class V1_TokenMarkovAlgorithm : IAlgorithm
 
     public V1_TokenMarkov Model = new(3);
     
-    private void Learn(List<MidiMeasure> measures)
+    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
+    {
+        LeadSheet = leadSheet;
+        
+        // Learn from all solos
+        foreach (var solo in solos)
+            Learn(solo.Measures);
+    }
+
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0)
     {
         // Create notes
         List<MidiNote> notes = [];
@@ -24,32 +33,12 @@ public class V1_TokenMarkovAlgorithm : IAlgorithm
 
         // Create tokens, learn from them
         var tokens = V1_TokenMethods.V1_Tokenize(notes, LeadSheet);
-        Learn(tokens);
-    }
-
-    private void Learn(List<V1_Token> tokens)
-    {
         List<List<V1_Token>> tokensList = [tokens];
         Console.WriteLine($"learning from {V1_TokenMethods.V1_TokensToString(tokens)}");
         Model.Learn(tokensList);
     }
-    
-    public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
-    {
-        LeadSheet = leadSheet;
-        
-        // Learn from all solos
-        foreach (var solo in solos)
-            Learn(solo.Measures);
-    }
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
-    {
-        // Learn the given measures
-        Learn(measures);
-    }
-
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         // Generate measures
         var tokens = Model.Walk(4)

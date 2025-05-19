@@ -16,12 +16,12 @@ public class V2_TokenFactorOracleAlgorithm : IAlgorithm
     {
         FO = new GenericFactorOracle<List<V2_Token>>(new V2_TokenListComparer());
         
-        IngestMeasures(solos[0].Measures, 0);
+        Learn(solos[0].Measures, 0);
         
         LeadSheet = leadSheet;
     }
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0)
     {
         HumanFourStart = FO.Nodes.Count;
         
@@ -39,7 +39,7 @@ public class V2_TokenFactorOracleAlgorithm : IAlgorithm
         FO.AddValues(chunks);
     }
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         List<V2_Token> res = [];
         

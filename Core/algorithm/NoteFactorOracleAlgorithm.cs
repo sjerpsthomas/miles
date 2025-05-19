@@ -23,7 +23,7 @@ public class NoteFactorOracleAlgorithm : IAlgorithm
         _leadSheet = leadSheet;
     }
 
-    public void IngestMeasures(List<MidiMeasure> measures, int measureNum)
+    public void Learn(List<MidiMeasure> measures, int measureNum = 0)
     {
         HumanFourStart = NoteFactorOracle.Nodes.Count;
         
@@ -34,7 +34,7 @@ public class NoteFactorOracleAlgorithm : IAlgorithm
         NoteFactorOracle.AddMelody(recordedMelody);
     }
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         // Create new measures
         var measures = new List<MidiMeasure>();

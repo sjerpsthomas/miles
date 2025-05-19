@@ -12,7 +12,7 @@ public class V1_TokenShuffleAlgorithm : IAlgorithm
 
     public void Initialize(MidiSong[] solos, LeadSheet leadSheet) => LeadSheet = leadSheet;
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0)
     {
         // Set notes
         Notes = measures.SelectMany((measure, i) =>
@@ -20,13 +20,11 @@ public class V1_TokenShuffleAlgorithm : IAlgorithm
         ).ToList();
     }
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         // Tokenize, permutate tokens
         var tokens = V1_TokenMethods.V1_Tokenize(Notes, LeadSheet);
         var permutatedTokens = new V1_TokenShuffleModel().Permutate(tokens);
-
-        Console.WriteLine(V1_TokenMethods.V1_TokensToString(permutatedTokens));
         
         // Reconstruct, return notes
         var notes = V1_TokenMethods.V1_Reconstruct(permutatedTokens, LeadSheet, startMeasureNum);

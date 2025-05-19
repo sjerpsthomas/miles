@@ -13,7 +13,7 @@ public class V2_TokenReplayAlgorithm : IAlgorithm
     
     public void Initialize(MidiSong[] solos, LeadSheet leadSheet) => LeadSheet = leadSheet;
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum)
     {
         // Get notes (shifted by measure number)
         List<MidiNote> notes = [];

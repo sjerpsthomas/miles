@@ -13,12 +13,12 @@ public class V1_TokenFactorOracleAlgorithm : IAlgorithm
     
     public void Initialize(MidiSong[] solos, LeadSheet leadSheet)
     {
-        IngestMeasures(solos[0].Measures, 0);
+        Learn(solos[0].Measures, 0);
         
         LeadSheet = leadSheet;
     }
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0)
     {
         HumanFourStart = TokenFactorOracle.Nodes.Count;
         
@@ -33,7 +33,7 @@ public class V1_TokenFactorOracleAlgorithm : IAlgorithm
         TokenFactorOracle.AddTokens(tokens);
     }
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         List<V1_Token> res = [];
         

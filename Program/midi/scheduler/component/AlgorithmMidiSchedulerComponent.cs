@@ -34,7 +34,7 @@ public class AlgorithmMidiSchedulerComponent : MidiSchedulerComponent
         
         // Get recorded measures, ingest
         var recordedMeasures = Recorder.GetUserMeasures(recordMeasureCount).ToList();
-        Algorithm.IngestMeasures(recordedMeasures, currentMeasure - recordMeasureCount);
+        Algorithm.Learn(recordedMeasures, currentMeasure - recordMeasureCount);
 
         var measures = Algorithm.Generate(generateMeasureCount, currentMeasure);
         

@@ -17,14 +17,14 @@ public class V1_TokenTransformerAlgorithm: IAlgorithm
          Transformer = new GenericTransformer("250225_transformer.onnx");
     }
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0)
     {
         for (var index = 0; index < measures.Count; index++)
             foreach (var note in measures[index].Notes)
                 Notes.Add(note with { Time = note.Time + index + startMeasureNum });
     }
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         // Deduce and set tokens
         var tokens = V1_TokenMethods.V1_Tokenize(Notes, LeadSheet);

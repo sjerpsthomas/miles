@@ -17,13 +17,13 @@ public class V2_TokenNeuralNetAlgorithm: IAlgorithm
 
          NeuralNet = new V2_TokenNeuralNet();
          
-         IngestMeasures(solos[0].Measures, 0);
+         Learn(solos[0].Measures);
          
          // TODO: Load from user://
          NeuralNet.Load(@"C:\Users\thoma\Desktop\tokens_temp\neural_net");
     }
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0)
     {
         List<MidiNote> notes = [];
         
@@ -35,7 +35,7 @@ public class V2_TokenNeuralNetAlgorithm: IAlgorithm
     }
 
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         List<V2_Token> res = [];
         

@@ -12,9 +12,9 @@ public class V1_TokenRandomAlgorithm: IAlgorithm
     public void Initialize(MidiSong[] solos, LeadSheet leadSheet) => LeadSheet = leadSheet;
 
     // Empty; Token Random does not use user content
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum) { }
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0) { }
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         List<V1_Token> tokens = [];
         for (var i = 0; i < generateMeasureCount; i++)
@@ -30,9 +30,8 @@ public class V1_TokenRandomAlgorithm: IAlgorithm
         return MidiSong.FromNotes(notes).Measures;
     }
 
-    private V1_Token GetToken()
-    {
-        return Random.NextSingle() switch
+    private V1_Token GetToken() =>
+        Random.NextSingle() switch
         {
             < 0.15f => V1_Token.Rest,
             < 0.40f => (V1_Token)Random.Next(0, 8),
@@ -44,5 +43,4 @@ public class V1_TokenRandomAlgorithm: IAlgorithm
             < 0.93f => V1_Token.Loud,
             _ =>       V1_Token.Quiet
         };
-    }
 }

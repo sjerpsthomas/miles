@@ -102,10 +102,10 @@ public class V2_NoteRepMarkovAlgorithm: IAlgorithm
     {
         LeadSheet = leadSheet;
         
-        IngestMeasures(solos[0].Measures, 0);
+        Learn(solos[0].Measures, 0);
     }
 
-    public void IngestMeasures(List<MidiMeasure> measures, int startMeasureNum)
+    public void Learn(List<MidiMeasure> measures, int startMeasureNum = 0)
     {
         // Create notes
         List<MidiNote> notes = [];
@@ -121,7 +121,7 @@ public class V2_NoteRepMarkovAlgorithm: IAlgorithm
         Model.LearnSequence(reps);
     }
 
-    public List<MidiMeasure> Generate(int generateMeasureCount, int startMeasureNum)
+    public List<MidiMeasure> Generate(int generateMeasureCount = 4, int startMeasureNum = 0)
     {
         // Generate reps
         var reps = Model.Generate(40);
