@@ -1,6 +1,11 @@
 from dataclasses import dataclass
-from recording import Recording
 import json
+
+# Import recording (hack)
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from recording import Recording
 
 # IDs of songs
 SONG_IDS: dict[str, int] = {
