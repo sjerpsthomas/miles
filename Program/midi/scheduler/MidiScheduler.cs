@@ -132,6 +132,9 @@ public partial class MidiScheduler : Node
 
 	public void InitializePlaybackPerformance(Node init)
 	{
+		var standardName = (string)init.Get("standard_name");
+		var standardPath = $"user://saves/{standardName}/";
+		
 		var notesPath = (string)init.Get("notes_path");
 		var startMeasure = (int)init.Get("start_measure");
 		
@@ -140,16 +143,17 @@ public partial class MidiScheduler : Node
 		Recorder.Active = false;
 		
 		// Load track
-		var track = MidiSong.FromNotesFileStream(new FileAccessStream(notesPath, Read));
+		var track = MidiSong.FromNotesFileStream(new FileAccessStream("res://recordings/" + notesPath, Read));
+		var leadSheet = LeadSheet.FromStream(new FileAccessStream(standardPath + "sheet.json", Read));
 		
 		// Get BPM, apply to MidiRecorder song
 		Bpm = track.Bpm;
 		Recorder.Song.Bpm = Bpm;
         
-		// Add component
-		SongLength = 32;
+		SongLength = leadSheet.Chords.Count;
 		Repetitions = 2;
 		
+		// Add component
 		Components.Add(new SongMidiSchedulerComponent
 		{
 			Scheduler = this,

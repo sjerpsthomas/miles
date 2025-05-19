@@ -7,39 +7,22 @@ var current_standard: String
 func _ready() -> void:
 	# Get the previously-played notes path (not very elegant)
 	var notes_path := PerformanceScreenInit.notes_path
-	if notes_path == "": notes_path = "1/1/1"
+	if notes_path == "": notes_path = "ex2_par0_per0"
 	
-	#%TabBar.current_tab = 1
-	#_on_tab_bar_tab_changed(1)
-	
-	notes_path = notes_path.replace("res://recordings/", "")
-	notes_path = notes_path.replace(".notes", "")
-	
-	%IndexTextEdit.text = notes_path
-	update_current_standard(notes_path)
+	# TODO: may be commented out
+	%TabBar.current_tab = 1
+	_on_tab_bar_tab_changed(1)
 
 
 func update_current_standard(text: String) -> void:
 	%IndexTextEdit.flat = true
 	
-	var params = text.split('/')
-	if params.size() != 3: return
-	
-	var pupil = int(params[0])
-	if pupil < 1 or pupil > 5: return
-	
-	var session = int(params[1])
-	if session < 1 or session > 4: return
-	
-	var performance = int(params[2])
-	if performance < 1 or performance > 3: return
-	
-	var standard_index = PerformanceScreenInit.info["pupils"][pupil - 1]\
-		["sessions"][session - 1]["performance"][performance - 1]["song"]
+	if not (text in PerformanceScreenInit.info): return
+	var performance_info = PerformanceScreenInit.info[text]
 	
 	current_standard = [
-		"Long Ago and Far Away", "Summertime", "My Little Suede Shoes"
-	][standard_index]
+		"Long Ago and Far Away", "Summertime", "My Little Suede Shoes", "Billies Bounce"
+	][performance_info["song"]]
 	
 	%IndexTextEdit.flat = false
 	%Standards.navigate_by_name(current_standard)

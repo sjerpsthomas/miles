@@ -14,6 +14,21 @@ public class MidiToNotes
         var notesFilePath = Path.ChangeExtension(midiFilePath, ".notes");
         song.ToNotesFileStream(new FileStream(notesFilePath, FileMode.CreateNew));
 
+
+        System.Console.WriteLine("What BPM would you like to give the song?");
+        string read;
+        do
+        {
+            read = System.Console.ReadLine()!;
+        } while (!int.TryParse(read, out song.Bpm));
+        
+        
+        // System.Console.WriteLine("What song ID would you like to give the song?");
+        // do
+        // {
+        //     read = System.Console.ReadLine()!;
+        // } while (!int.TryParse(read, out song.));
+        
         System.Console.WriteLine($"MIDI track saved to {notesFilePath}!");
     }
 
@@ -29,8 +44,6 @@ public class MidiToNotes
         {
             read = System.Console.ReadLine()!;
         } while (!Enum.TryParse(read, true, out res));
-
-        System.Console.WriteLine($"Picked {res.ToString()}!");
         
         return res;
     }
