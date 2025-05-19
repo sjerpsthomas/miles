@@ -255,7 +255,5 @@ for i, config in enumerate(form_config):
 
 
 
-with open("info_2.json", "w") as f:
-    asdf = json.dumps(info, indent=4, cls=CompactJSONEncoder)
-
-    f.write(asdf)
+with open("info.json", "w") as f:
+    json.dump(info, f, indent=4, cls=CompactJSONEncoder)
