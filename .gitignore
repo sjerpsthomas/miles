@@ -10,3 +10,4 @@ Console/wjazzd.db
 *.onnx
 Plotting/spreadsheet.xlsx
 /Plotting/charts
+/Recordings/__pycache__
