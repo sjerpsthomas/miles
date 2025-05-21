@@ -1,6 +1,6 @@
 ﻿using Console.routine;
 
-LevenshteinDistance.Run(@"C:\Users\thoma\Documents\__Thesis\thesis\Recordings\ex_1");
+LevenshteinDistance.Run(@"C:\Users\thoma\Documents\__Thesis\thesis\Recordings\ex2");
 
 // new MidiToNotes().Run(@"C:\Users\thoma\Music\air.mid");
 

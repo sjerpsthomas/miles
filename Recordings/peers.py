@@ -1,5 +1,5 @@
 import json
-from util import CompactJSONEncoder
+from compact_json_encoder import CompactJSONEncoder
 
 with open("info.json") as f:
     info = json.load(f)

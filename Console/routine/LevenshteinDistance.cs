@@ -31,18 +31,18 @@ public static class LevenshteinDistance
     
     public static void Run(string recordingPath)
     {
-        const int numPupils = 5;
+        const int numPupils = 3;
         const int numSessions = 4;
-        const int numPerformances = 3;
+        const int numPerformances = 4;
 
         for (var pupil = 0; pupil < numPupils; pupil++)
         {
-            for (var session = 0; session < numSessions; session++)
+            // for (var session = 0; session < numSessions; session++)
             {
                 for (var performance = 0; performance < numPerformances; performance++)
                 {
                     // Open song
-                    var filePath = $"{recordingPath}/{pupil + 1}/{session + 1}/{performance + 1}.notes";
+                    var filePath = $"{recordingPath}/{pupil}/{performance}.notes";
                     var song = MidiSong.FromNotesFileStream(new FileStream(filePath, FileMode.Open));
 
                     // Get tokens of fours of human and algorithm
@@ -50,13 +50,13 @@ public static class LevenshteinDistance
                     var algorithmFoursTokens = GetFoursTokens(song, OutputName.Algorithm);
                     
                     // Get distances
-                    var distances = GetDistances(humanFoursTokens, algorithmFoursTokens);
+                    var distances = GetDistances(humanFoursTokens, algorithmFoursTokens, measureCount: 48);
                     
                     // Save distances to file
-                    var directory = $@"{recordingPath}\edit_distance\{pupil + 1}\{session + 1}";
+                    var directory = $@"{recordingPath}\edit_distance\{pupil}\";
                     Directory.CreateDirectory(directory);
                     
-                    var outputPath = $@"{directory}\{performance + 1}.txt";
+                    var outputPath = $@"{directory}\{performance}.txt";
                     File.WriteAllLines(outputPath, distances.Select(it => it.ToString()));
                 }
             }
