@@ -60,7 +60,7 @@ class PerformanceInfo:
     song: int
     algorithm: int
     recording: Recording
-    reports: list[int]
+    scores: list[int]
     edit_distances: list[int]
 
 @dataclass
@@ -75,7 +75,7 @@ class PupilInfo:
 # (Retrieves pupil info from spreadsheet.xlsx)
 def get_all_pupil_info(file_name: str = "recordings/info.json") -> list[PupilInfo]:
     file = open(file_name, "r")
-    info_json = json.load(file)
+    info = json.load(file)
 
     res: list[PupilInfo] = []
 
@@ -90,26 +90,16 @@ def get_all_pupil_info(file_name: str = "recordings/info.json") -> list[PupilInf
             # For every performance they do within that session
             for performance in range(NUM_PERFORMANCES):
                 # Get info
-                json_performance = info_json["pupils"][pupil]["sessions"][session]["performance"][performance]
+                json_performance = info[f"ex1_par{pupil}_ses{session}_per{performance}"]
 
-                song = json_performance["song"]
-                algorithm = json_performance["algorithm"]
-                reports = json_performance["scores"]
-
-                # Get recording
-                recording_path: str = f"recordings/{pupil + 1}/{session + 1}/{performance + 1}.notes"
-                recording: Recording = Recording(recording_path)
-
-                # Get edit distances
-                edit_distances: list[int] = []
-                try:
-                    edit_distances_path: str = f"recordings/edit_distance/{pupil + 1}/{session + 1}/{performance + 1}.txt"
-                    with open(edit_distances_path, 'r') as f:
-                        edit_distances = [ int(line) for line in f ]
-                except: pass
+                song: int = json_performance["song"]
+                algorithm: int = json_performance["algorithm"]
+                scores: list[int] = json_performance["scores"]["-1"]
+                edit_distances: list[int] = json_performance["edit_distances"]
+                recording: Recording = Recording("recordings/" + json_performance["path"])
 
                 # Create performance info, add
-                performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, reports, edit_distances)
+                performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, scores, edit_distances)
                 session_info.performances.append(performance_info)
             
             pupil_info.sessions.append(session_info)
