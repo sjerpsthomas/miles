@@ -24,15 +24,15 @@ SONG_NAMES: dict[int, str] = {
 # IDs of algorithms
 ALGORITHM_IDS: dict[str, int] = {
     "Note Retrieval": 0,
-    "Token Factor Oracle": 1,
-    "Token Markov": 2,
+    "Token Factor Oracle v1": 1,
+    "Token Markov v1": 2,
 }
 
 # Names of algorithms
 ALGORITHM_NAMES: dict[int, str] = {
     0: "Note Retrieval",
-    1: "Token Factor Oracle",
-    2: "Token Markov",
+    1: "Token Factor Oracle v1",
+    2: "Token Markov v1",
 }
 
 # Pitch classes of root, third and fifth of songs
@@ -55,12 +55,15 @@ NUM_ALGORITHMS = 3
 NUM_SESSIONS = 4
 NUM_QUESTIONS = 4
 
+NUM_EXPERTS = 3
+
 @dataclass
 class PerformanceInfo:
     song: int
     algorithm: int
     recording: Recording
     scores: list[int]
+    expert_scores: list[list[int]]
     edit_distances: list[int]
 
 @dataclass
@@ -95,11 +98,14 @@ def get_all_pupil_info(file_name: str = "recordings/info.json") -> list[PupilInf
                 song: int = json_performance["song"]
                 algorithm: int = json_performance["algorithm"]
                 scores: list[int] = json_performance["scores"]["-1"]
+
+                expert_scores: list[list[int]] = [json_performance["scores"][str(i)] for i in json_performance["scores"] if i != "-1"]
+
                 edit_distances: list[int] = json_performance["edit_distances"]
                 recording: Recording = Recording("recordings/" + json_performance["path"])
 
                 # Create performance info, add
-                performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, scores, edit_distances)
+                performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, scores, expert_scores, edit_distances)
                 session_info.performances.append(performance_info)
             
             pupil_info.sessions.append(session_info)

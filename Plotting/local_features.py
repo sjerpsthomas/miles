@@ -93,9 +93,9 @@ def melodic_arc_duration_avg(measures: list[Measure], bpm: float) -> float: retu
 
 def melodic_arc_height_avg(measures: list[Measure], bpm: float) -> float: return float(np.average([height for (_, height) in melodic_arc_list(measures, bpm)]))
 
-def extrema_ratio(measures: list[Measure]) -> float:
+def extrema_ratio(measures: list[Measure], bpm: float) -> float:
     # Get number of melodic arcs and note count
-    melodic_arc_count: int = len(melodic_arc_list(measures))
+    melodic_arc_count: int = len(melodic_arc_list(measures, bpm))
     note_count: int = sum(len(measure.notes) for measure in measures)
 
     # Get number of notes that are reversals (and account for 'fencepost counting')
@@ -107,7 +107,8 @@ def extrema_ratio(measures: list[Measure]) -> float:
 def ioi_list(measures: list[Measure], bpm: float) -> NDArray:
     return np.diff([note.time for note in to_bpm_independent(measures, bpm)])
 
-def ioi_avg(measures: list[Measure]) -> float: return float(np.average(ioi_list(measures)))
+def ioi_avg(measures: list[Measure], bpm: float) -> float:
+    return float(np.average(ioi_list(measures, bpm)))
 
 def npvi(measures: list[Measure], bpm: float) -> float:
     time_intervals = ioi_list(measures, bpm)
