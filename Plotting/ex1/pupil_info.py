@@ -65,6 +65,7 @@ class PerformanceInfo:
     scores: list[int]
     expert_scores: list[list[int]]
     edit_distances: list[int]
+    ordering: dict[int, str] | None
 
 @dataclass
 class SessionInfo:
@@ -93,19 +94,22 @@ def get_all_pupil_info(file_name: str = "recordings/info.json") -> list[PupilInf
             # For every performance they do within that session
             for performance in range(NUM_PERFORMANCES):
                 # Get info
-                json_performance = info[f"ex1_par{pupil}_ses{session}_per{performance}"]
+                json_performance: dict[str, any] = info[f"ex1_par{pupil}_ses{session}_per{performance}"]
 
                 song: int = json_performance["song"]
                 algorithm: int = json_performance["algorithm"]
                 scores: list[int] = json_performance["scores"]["-1"]
 
                 expert_scores: list[list[int]] = [json_performance["scores"][str(i)] for i in json_performance["scores"] if i != "-1"]
+                ordering: dict[int, str] | None = None
+                if "ordering" in json_performance:
+                    ordering = {int(k): json_performance["ordering"][k] for k in json_performance["ordering"]}
 
                 edit_distances: list[int] = json_performance["edit_distances"]
                 recording: Recording = Recording("recordings/" + json_performance["path"])
 
                 # Create performance info, add
-                performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, scores, expert_scores, edit_distances)
+                performance_info: PerformanceInfo = PerformanceInfo(song, algorithm, recording, scores, expert_scores, edit_distances, ordering)
                 session_info.performances.append(performance_info)
             
             pupil_info.sessions.append(session_info)
