@@ -18,6 +18,9 @@ This folder contains the *.notes recordings of all performances of both experime
 ### Plotting
 This folder contains all Python code of the analysis framework, which is responsible for generating all Matplotlib figures.
 
+### EvaluationForm
+This is a GitHub submodule that links to [sjerpsthomas/evaluation-form](https://github.com/sjerpsthomas/evaluation-form), which contains all code of the evaluation form.
+
 ## Symlinks
 In order to run the code in this repository, the following symlinks (symbolic links) need to be made:
 
