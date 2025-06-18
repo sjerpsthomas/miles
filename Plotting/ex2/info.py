@@ -45,7 +45,7 @@ class Performance:
         self.algorithm = data["algorithm"]
         self.scores = { int(p): data["scores"][p] for p in data["scores"] }
         self.edit_distances = data["edit_distances"]
-        self.recording = Recording(f"recordings/{data["path"]}")
+        self.recording = Recording(f"recordings/{data["path"]}", num_measures=48)
         self.comment = data["comment"]
 
 

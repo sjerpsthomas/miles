@@ -18,7 +18,7 @@ class Recording:
     bpm: int
     measures: list[Measure]
 
-    def __init__(self, file_name: str) -> None:
+    def __init__(self, file_name: str, num_measures: int = 64) -> None:
         with open(file_name, "rb") as f:
             io = MidiSongIO(f)
             song: MidiSong = io.read()
@@ -27,12 +27,12 @@ class Recording:
             notes = song.get_solo()
 
             # Initialize empty measures
-            self.measures = [Measure([]) for _ in range(NUM_MEASURES)]
+            self.measures = [Measure([]) for _ in range(num_measures)]
 
             # Append notes to measures
             for note in notes:
                 measure_num: int = int(note.time)
-                if measure_num >= NUM_MEASURES: continue
+                if measure_num >= num_measures: continue
 
                 measure: Measure = self.measures[measure_num]
                 relative_note = replace(note, time=(note.time - measure_num))
@@ -53,7 +53,8 @@ class Recording:
     def human_fours(self) -> list[list[Measure]]:
         res: list[list[Measure]] = []
 
-        for i in range(0, NUM_MEASURES, 8):
+        num_measures: int = len(self.measures)
+        for i in range(0, num_measures, 8):
             measures_of_loopback = list(map(lambda measure: measure.of_output_name(OutputName.LOOPBACK), self.measures[i:i+4]))
             res.append(measures_of_loopback)
         
@@ -63,7 +64,8 @@ class Recording:
     def agent_fours(self) -> list[list[Measure]]:
         res: list[list[Measure]] = []
 
-        for i in range(4, NUM_MEASURES, 8):
+        num_measures: int = len(self.measures)
+        for i in range(4, num_measures, 8):
             measures_of_algorithm = list(map(lambda measure: measure.of_output_name(OutputName.ALGORITHM), self.measures[i:i+4]))
             res.append(measures_of_algorithm)
         

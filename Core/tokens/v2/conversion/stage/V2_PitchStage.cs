@@ -17,8 +17,7 @@ public static class V2_PitchStage
         {
             var (_, time, length, note, velocity) = midiNotes[i];
 
-            var octaveScaleNote = V2_ChordMethods.GetOctaveScaleNote(leadSheet, time + startMeasureNum, note);
-            resArr[i] = new V2_RelativeMelodyToken(octaveScaleNote, time, length, velocity);
+            resArr[i] = new V2_RelativeMelodyToken(note, time, length, velocity);
         }
 
         return new V2_RelativeMelody { Tokens = resArr.Select(it => it!).ToList() };

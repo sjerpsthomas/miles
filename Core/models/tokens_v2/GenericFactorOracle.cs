@@ -31,12 +31,13 @@ public class GenericFactorOracle<T>(IEqualityComparer<T> equalityComparer)
         // Create a new node
         var newNode = new Node(equalityComparer);
         
-        // Add the node if it is the first
+        // Add a starting node
         if (Nodes is not [.., var lastNode])
         {
-            newNode.Supply = -1;
-            Nodes.Add(newNode);
-            return;
+            var startingNode = new Node(equalityComparer);
+            startingNode.Supply = -1;
+            Nodes.Add(startingNode);
+            lastNode = startingNode;
         }
         
         // Create a new transition form m to m + 1,

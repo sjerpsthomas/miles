@@ -35,7 +35,7 @@ class MidiSong:
 		return [note for note in self.notes if note.output_name not in [OutputName.LOOPBACK, OutputName.ALGORITHM]]
 	
 	def get_solo(self) -> list[MidiNote]:
-		return [note for note in self.notes if note.output_name in [OutputName.LOOPBACK, OutputName.ALGORITHM]]
+		return [note for note in self.notes if note.output_name in [OutputName.LOOPBACK, OutputName.ALGORITHM, OutputName.UNKNOWN]]
 
 
 class MidiSongIO:
