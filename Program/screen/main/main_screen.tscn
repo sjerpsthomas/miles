@@ -40,7 +40,8 @@ theme_override_constants/shadow_offset_x = 5
 theme_override_constants/shadow_offset_y = 5
 theme_override_fonts/font = ExtResource("2_7jmhx")
 theme_override_font_sizes/font_size = 60
-text = "Evaluating Trading Fours with an Improvisational Musical System"
+text = "Mixed-Initiative musicaL
+interactivE System"
 horizontal_alignment = 1
 autowrap_mode = 2
 

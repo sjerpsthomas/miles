@@ -10,8 +10,8 @@ func _ready() -> void:
 	if notes_path == "": notes_path = "ex2_par0_per0"
 	
 	# TODO: may be commented out
-	%TabBar.current_tab = 1
-	_on_tab_bar_tab_changed(1)
+	#%TabBar.current_tab = 1
+	#_on_tab_bar_tab_changed(1)
 
 
 func update_current_standard(text: String) -> void:
